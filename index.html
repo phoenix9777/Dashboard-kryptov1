@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V37</title>
+    <title>Krypto Journal PRO V40</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -12,29 +12,35 @@
         .journal-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--purp); font-weight: 800; margin-bottom: 4px; }
         .alltime-val { font-size: 30px; font-weight: 800; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
+        .live-dot { height: 8px; width: 8px; background: var(--sol); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
         .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
-        .slider-track { display: flex; transition: transform 0.4s ease-out; width: 500%; }
-        .slide { width: 20%; padding: 18px; box-sizing: border-box; min-height: 250px; }
+        .slider-track { display: flex; transition: transform 0.4s ease-out; width: 600%; }
+        .slide { width: 16.66%; padding: 18px; box-sizing: border-box; min-height: 250px; }
         .dots { text-align: center; margin-bottom: 15px; }
         .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
         .dot.active { width: 12px; background-color: var(--purp); border-radius: 3px; }
+        
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
         .val { font-size: 22px; font-weight: 700; }
         .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; margin-top: 6px; overflow: hidden; }
         .bar-fill { height: 100%; transition: width 1s ease; }
+        
         input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; outline:none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
         .btn-backup { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; width: 48%; margin-top: 10px; }
         .edit-btn { color: var(--purp); font-weight: bold; margin-right: 10px; }
+        .prog-val { color: var(--sol); font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="journal-title">Krypto Journal</div>
+        <div class="journal-title"><span class="live-dot"></span>LIVE PORTFOLIO</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
@@ -53,18 +59,31 @@
                 </div>
             </div>
             <div class="slide">
-                <div class="yield-label">Staking Ernte</div>
-                <div id="sol-weekly-yield" style="font-size:26px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
-                <div style="font-size:12px; color:#848e9c;">Ertrag pro Woche</div>
-                <div style="margin-top:20px; font-size:12px; opacity:0.8; color:#848e9c;">
-                    Alliance (6.29%): <span id="st-alliance" style="color:#fff">0.00</span><br>
-                    Trust (5.63%): <span id="st-trust" style="color:#fff">0.00</span>
+                <div class="yield-label">Wöchentliche Ernte</div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px;">
+                    <div><div id="sol-weekly-yield" style="font-size:22px; font-weight:bold; color:var(--sol);">0.0000 SOL</div><div style="font-size:10px; color:#848e9c;">Zuwachs SOL</div></div>
+                    <div style="text-align:right;"><div id="sui-weekly-yield" style="font-size:22px; font-weight:bold; color:var(--sui);">0.0 SUI</div><div style="font-size:10px; color:#848e9c;">Zuwachs SUI</div></div>
+                </div>
+                <div style="margin-top:20px; font-size:11px; color:#848e9c; background: rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+                    SOL Alliance: <span id="st-alliance" style="color:#fff">0.0</span> | Trust: <span id="st-trust" style="color:#fff">0.0</span><br>
+                    SUI Staked: <span id="st-sui" style="color:#fff">0.0</span>
                 </div>
             </div>
             <div class="slide">
                 <div class="yield-label">Break-Even</div>
                 <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$--</span></div>
                 <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;"><span>SUI:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$--</span></div>
+            </div>
+            <div class="slide">
+                <div class="yield-label">Ausblick (5 Jahre)</div>
+                <div style="margin-top:10px;">
+                    <div style="font-size:12px; color:#848e9c;">Bestand 2031 (mit Zinseszins):</div>
+                    <div id="prog-sol" class="prog-val">0.00 SOL</div>
+                    <div id="prog-sui" class="prog-val" style="color:var(--sui); margin-top:5px;">0 SUI</div>
+                    <hr style="border:0; border-top:1px solid #2b2f36; margin:15px 0;">
+                    <div style="font-size:12px; color:#848e9c;">Wert bei SOL ATH ($260):</div>
+                    <div id="prog-value" style="font-size:24px; font-weight:800; color:var(--purp);">$ 0.00</div>
+                </div>
             </div>
         </div>
     </div>
@@ -88,11 +107,12 @@
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
         <input type="number" id="tx-eur" placeholder="Investiert in €">
-        <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"><input type="number" id="tx-price" placeholder="Kurs in $"></div>
+        <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"></div>
         <select id="tx-node">
             <option value="none">Kein Staking</option>
-            <option value="alliance">Capital Alliance (6.29%)</option>
-            <option value="trust">Trust Nodes (5.63%)</option>
+            <option value="alliance">SOL: Alliance (6.29%)</option>
+            <option value="trust">SOL: Trust Nodes (5.63%)</option>
+            <option value="sui_staked">SUI: Validator (4.80%)</option>
         </select>
         <button id="save-btn" onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
@@ -105,56 +125,98 @@
     </div>
 
     <script>
-        const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
+        const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.0480, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
-        let editIdx = -1;
-        let chartM, chartA, currentSlide = 0;
+        let prices = { SOL: 0, SUI: 0, EUR: 0.94 };
+        let editIdx = -1, startX = 0, currentSlide = 0;
 
-        async function refresh() {
+        function initLivePrices() {
+            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade');
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.s === 'SOLUSDT') prices.SOL = parseFloat(data.p);
+                if (data.s === 'SUIUSDT') prices.SUI = parseFloat(data.p);
+                updateUI();
+            };
+            ws.onclose = () => setTimeout(initLivePrices, 5000);
+        }
+
+        async function initData() {
             try {
-                const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
-                const p = await res.json();
-                const solP = p.SOL.USD, suiP = p.SUI.USD, eurR = p.SOL.USD / p.SOL.EUR;
-
-                let sQ = txs.filter(t => t.asset === 'SOL').reduce((s,t) => s + t.amount, 0);
-                let suQ = txs.filter(t => t.asset === 'SUI').reduce((s,t) => s + t.amount, 0);
-                let invEur = txs.reduce((s,t) => s + (t.eur || 0), 0);
-                let totalUsd = (sQ * solP) + (suQ * suiP);
-
-                document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
-                document.getElementById('sol-qty').innerText = sQ.toFixed(4) + ' SOL';
-                document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
-                document.getElementById('sol-p-live').innerText = '$' + solP.toFixed(2);
-                document.getElementById('sui-p-live').innerText = '$' + suiP.toFixed(2);
-
-                let diffEur = (totalUsd / eurR) - invEur;
-                let perf = document.getElementById('total-perf-eur');
-                perf.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString() + ' € Allzeit';
-                perf.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
-                perf.style.backgroundColor = diffEur >= 0 ? 'rgba(0,230,118,0.1)' : 'rgba(246,70,93,0.1)';
-
-                document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invEur * eurR) / sQ).toFixed(2) : '$ --';
-                document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
-                document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
-                document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
-                document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
-
-                let weekly = txs.reduce((s,t) => s + (t.amount * (APR[t.node] || 0) / 52), 0);
-                document.getElementById('sol-weekly-yield').innerText = weekly.toFixed(4) + ' SOL';
-                document.getElementById('st-alliance').innerText = txs.filter(t=>t.node==='alliance').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
-                document.getElementById('st-trust').innerText = txs.filter(t=>t.node==='trust').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
-
-                updateCharts(totalUsd);
-                renderHist();
+                const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
+                const data = await res.json();
+                prices.EUR = data.EUR;
+                refreshCharts();
             } catch(e) {}
+        }
+
+        function updateUI() {
+            if (prices.SOL === 0) return;
+            let sQ = txs.filter(t => t.asset === 'SOL').reduce((s,t) => s + t.amount, 0);
+            let suQ = txs.filter(t => t.asset === 'SUI').reduce((s,t) => s + t.amount, 0);
+            let invEur = txs.reduce((s,t) => s + (t.eur || 0), 0);
+            let totalUsd = (sQ * prices.SOL) + (suQ * prices.SUI);
+
+            document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
+            let diffEur = (totalUsd * prices.EUR) - invEur;
+            let perf = document.getElementById('total-perf-eur');
+            perf.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString() + ' € Allzeit';
+            perf.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
+            perf.style.backgroundColor = diffEur >= 0 ? 'rgba(0,230,118,0.1)' : 'rgba(246,70,93,0.1)';
+
+            document.getElementById('sol-qty').innerText = sQ.toFixed(4) + ' SOL';
+            document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
+            document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
+            document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
+
+            document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invEur / prices.EUR) / sQ).toFixed(2) : '$ --';
+            document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((invEur / prices.EUR) / suQ).toFixed(2) : '$ --';
+
+            // Staking & Prognose
+            let solW = 0, suiW = 0, futSol = sQ, futSui = suQ;
+            txs.forEach(t => {
+                let rate = APR[t.node] || 0;
+                if(t.asset === 'SOL') {
+                    solW += (t.amount * rate / 52);
+                    futSol += (t.amount * Math.pow(1 + rate, 5)) - t.amount;
+                } else {
+                    suiW += (t.amount * rate / 52);
+                    futSui += (t.amount * Math.pow(1 + rate, 5)) - t.amount;
+                }
+            });
+
+            document.getElementById('sol-weekly-yield').innerText = solW.toFixed(4) + ' SOL';
+            document.getElementById('sui-weekly-yield').innerText = suiW.toFixed(1) + ' SUI';
+            document.getElementById('st-alliance').innerText = txs.filter(t=>t.node==='alliance').reduce((s,t)=>s+t.amount,0).toFixed(1);
+            document.getElementById('st-trust').innerText = txs.filter(t=>t.node==='trust').reduce((s,t)=>s+t.amount,0).toFixed(1);
+            document.getElementById('st-sui').innerText = txs.filter(t=>t.node==='sui_staked').reduce((s,t)=>s+t.amount,0).toFixed(1);
+
+            document.getElementById('prog-sol').innerText = futSol.toFixed(2) + ' SOL';
+            document.getElementById('prog-sui').innerText = Math.round(futSui).toLocaleString() + ' SUI';
+            document.getElementById('prog-value').innerText = '$ ' + (futSol * 260 + futSui * 5).toLocaleString(undefined, {maximumFractionDigits:0});
+
+            document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
+            document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
+            document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
+            document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
+        }
+
+        function refreshCharts() {
+            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
+            const dummy = (txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+t.amount,0) * 100);
+            if(chartM) chartM.destroy();
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [dummy*0.8, dummy*0.9, dummy], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            if(chartA) chartA.destroy();
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, dummy], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
+            renderHist();
         }
 
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
-                let nLabel = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : '');
+                let nLabel = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : (t.node === 'sui_staked' ? ' (S)' : ''));
                 b.innerHTML += `<tr><td><b>${t.asset}</b>${nLabel}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
             });
         }
@@ -162,58 +224,40 @@
         function saveTx() {
             const q = parseFloat(document.getElementById('tx-qty').value) || 0;
             if(q > 0) {
-                const newTx = {
-                    asset: document.getElementById('tx-asset').value,
-                    eur: parseFloat(document.getElementById('tx-eur').value) || 0,
-                    amount: q,
-                    node: document.getElementById('tx-node').value,
-                    date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]
-                };
+                const newTx = { asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value) || 0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] };
                 if(editIdx > -1) txs[editIdx] = newTx; else txs.push(newTx);
                 localStorage.setItem(DB_KEY, JSON.stringify(txs));
                 editIdx = -1;
                 document.getElementById('save-btn').innerText = "JOURNAL SPEICHERN";
-                refresh();
+                refreshCharts(); updateUI();
             }
         }
 
         function editTx(i) {
-            const t = txs[i];
-            editIdx = i;
-            document.getElementById('tx-asset').value = t.asset;
-            document.getElementById('tx-eur').value = t.eur;
-            document.getElementById('tx-qty').value = t.amount;
-            document.getElementById('tx-node').value = t.node || 'none';
-            document.getElementById('tx-date').value = t.date;
-            document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN";
-            window.scrollTo({ top: 400, behavior: 'smooth' });
+            const t = txs[i]; editIdx = i;
+            document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-qty').value = t.amount;
+            document.getElementById('tx-node').value = t.node || 'none'; document.getElementById('tx-date').value = t.date;
+            document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN"; window.scrollTo({ top: 400, behavior: 'smooth' });
         }
 
-        function updateCharts(cur) {
-            const opt = { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { ticks: { color: '#848e9c', font: { size: 9 } } } } };
-            if(chartM) chartM.destroy();
-            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [cur*0.8, cur*0.9, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
-            if(chartA) chartA.destroy();
-            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
-        }
-
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refreshCharts(); updateUI(); } }
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
-        function importData() { const code = prompt("Daten einfügen:"); if(code) { try { txs = JSON.parse(code); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refresh(); alert("Historie geladen!"); } catch(e) { alert("Format-Fehler!"); } } }
+        function importData() { const code = prompt("Daten einfügen:"); if(code) { try { txs = JSON.parse(code); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refreshCharts(); updateUI(); alert("Historie geladen!"); } catch(e) { alert("Format-Fehler!"); } } }
 
-        let startX = 0; document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let diff = startX - e.changedTouches[0].clientX;
             if(Math.abs(diff) > 60) {
-                if(diff > 0 && currentSlide < 4) currentSlide++; else if(diff < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 20}%)`;
-                for(let i=0; i<5; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
+                if(diff > 0 && currentSlide < 5) currentSlide++; else if(diff < 0 && currentSlide > 0) currentSlide--;
+                document.getElementById('track').style.transform = `translateX(-${currentSlide * 16.66}%)`;
+                for(let i=0; i<6; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
             }
         });
         const dotBox = document.getElementById('dotBox'); 
-        for(let i=0; i<5; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
+        for(let i=0; i<6; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
         
-        refresh(); setInterval(refresh, 25000);
+        initData();
+        initLivePrices();
     </script>
 </body>
 </html>
