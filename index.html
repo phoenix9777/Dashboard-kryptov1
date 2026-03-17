@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence PRO</title>
+    <title>Krypto Intelligence V72 ULTRA</title>
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,37 +14,32 @@
 
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 10px; padding-bottom: 60px; overflow-x: hidden; user-select: none; }
-        .header { text-align: center; padding: 15px 0 10px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; }
-        .journal-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--purp); font-weight: 800; margin-bottom: 4px; }
-        .alltime-val { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 10px; padding-bottom: 60px; overflow-x: hidden; }
+        .header { text-align: center; padding: 15px 0 10px 0; border-bottom: 1px solid #2b2f36; }
+        .alltime-val { font-size: 32px; font-weight: 800; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 13px; margin-top: 5px; }
-        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 20px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; height: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .slider-container { width: 100%; overflow: hidden; border-radius: 20px; background: var(--card); border: 1px solid #2b2f36; margin: 10px 0; height: 460px; }
         .slider-track { display: flex; transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1); width: 500%; height: 100%; }
         .slide { width: 20%; box-sizing: border-box; height: 100%; padding: 20px; display: flex; flex-direction: column; }
         .dots { text-align: center; margin-bottom: 15px; }
-        .dot { height: 5px; width: 5px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; transition: 0.3s; }
+        .dot { height: 5px; width: 5px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
         .dot.active { width: 15px; background-color: var(--purp); border-radius: 3px; }
         .card { background: var(--card); border-radius: 18px; padding: 15px; margin-bottom: 10px; border: 1px solid #2b2f36; }
-        .yield-label { font-size: 10px; color: #848e9c; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        .intel-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; align-items: center; }
-        .status-pill { padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 10px; text-transform: uppercase; color:#000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 14px; border-radius: 12px; width: 100%; margin-top: 5px; font-size: 16px; box-sizing: border-box; outline:none; -webkit-appearance: none; }
-        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 14px; width: 100%; margin-top: 10px; font-weight: 800; letter-spacing: 1px; transition: 0.2s; }
-        button:active { transform: scale(0.98); opacity: 0.8; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .history-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .edit-btn { color: var(--purp); font-weight: bold; margin-right: 15px; padding: 5px; }
-        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .info-tile { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .yield-label { font-size: 10px; color: #848e9c; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; }
+        .intel-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; align-items: center; }
+        .status-pill { padding: 3px 10px; border-radius: 6px; font-weight: 800; font-size: 10px; text-transform: uppercase; color:#000; }
+        .info-tile { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         .tile-val { font-size: 18px; font-weight: 800; margin-top: 4px; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-top: 5px; font-size: 16px; outline:none; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 10px; font-weight: 800; }
+        .news-item { font-size: 11px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .news-sentiment { font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
+        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .prog-hero { font-size: 38px; font-weight: 900; color: var(--purp); text-shadow: 0 0 20px rgba(130,105,217,0.3); margin: 15px 0; }
-        .btn-secondary { background: #2b2f36; font-size: 11px; padding: 12px; }
     </style>
 </head>
 <body>
     <div class="header" onclick="location.reload()">
-        <div class="journal-title">PRO INTELLIGENCE</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
@@ -52,61 +47,48 @@
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
             <div class="slide">
-                <div><div class="yield-label">Trend (3M)</div><div style="height:140px"><canvas id="monthChart"></canvas></div></div>
-                <div style="margin-top:20px; border-top: 1px solid #2b2f36; padding-top:15px;">
-                    <div class="yield-label">Recovery Path</div><div style="height:140px"><canvas id="alltimeChart"></canvas></div>
-                </div>
+                <div><div class="yield-label">Market Trend (3M)</div><div style="height:140px"><canvas id="monthChart"></canvas></div></div>
+                <div style="margin-top:20px; border-top: 1px solid #2b2f36; padding-top:15px;"><div class="yield-label">Recovery Path</div><div style="height:140px"><canvas id="alltimeChart"></canvas></div></div>
             </div>
-            
             <div class="slide">
-                <div class="yield-label">Fortschritt</div>
-                <div style="margin-bottom:15px">
-                    <div style="display:flex; justify-content:space-between; font-size:11px"><span>SOL (700)</span><span id="sol-pct" style="font-weight:bold">0%</span></div>
-                    <div style="background:#2b2f36;height:8px;border-radius:4px;margin:6px 0;"><div id="sol-bar" style="height:100%;background:var(--sol);width:0%;border-radius:4px;transition:1s;"></div></div>
+                <div class="yield-label">Ziele Fortschritt</div>
+                <div style="margin-bottom:12px"><div style="display:flex; justify-content:space-between; font-size:11px"><span>SOL (700)</span><span id="sol-pct">0%</span></div><div style="background:#2b2f36;height:6px;border-radius:3px;margin:4px 0;"><div id="sol-bar" style="height:100%;background:var(--sol);width:0%;border-radius:3px;transition:1s;"></div></div></div>
+                <div style="display:flex; justify-content:space-between; font-size:11px"><span>SUI (8k)</span><span id="sui-pct">0%</span></div><div style="background:#2b2f36;height:6px;border-radius:3px;margin:4px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:3px;transition:1s;"></div></div>
+                <div class="grid-half" style="margin-top:15px;">
+                    <div class="info-tile"><div class="yield-label" style="color:var(--sol)">SOL Ernte</div><div id="sol-weekly-yield" class="tile-val">0.0000</div></div>
+                    <div class="info-tile"><div class="yield-label" style="color:var(--sui)">SUI Ernte</div><div id="sui-weekly-yield" class="tile-val">0.00</div></div>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-size:11px"><span>SUI (8k)</span><span id="sui-pct" style="font-weight:bold">0%</span></div>
-                <div style="background:#2b2f36;height:8px;border-radius:4px;margin:6px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:4px;transition:1s;"></div></div>
-                
-                <div class="grid-half" style="margin-top:20px;">
-                    <div class="info-tile"><div class="yield-label" style="color:var(--sol)">SOL Ernte</div><div id="sol-weekly-yield" class="tile-val">0.0000</div><div style="font-size:8px;color:#848e9c">PRO WOCHE</div></div>
-                    <div class="info-tile"><div class="yield-label" style="color:var(--sui)">SUI Ernte</div><div id="sui-weekly-yield" class="tile-val">0.00</div><div style="font-size:8px;color:#848e9c">PRO WOCHE</div></div>
-                </div>
-                
-                <div style="margin-top:auto; padding-top:10px; border-top:1px solid #2b2f36">
+                <div style="margin-top:auto; border-top: 1px solid #2b2f36; padding-top:10px;">
                     <div class="intel-row" style="border:none; padding:2px 0;"><span>SOL Entry:</span><span id="sol-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
                     <div class="intel-row" style="border:none; padding:2px 0;"><span>SUI Entry:</span><span id="sui-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
                 </div>
             </div>
-
             <div class="slide">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <div class="yield-label" style="margin-bottom:0">Market Analysis</div>
-                    <select id="intel-asset-select" onchange="syncAndAnalyze()" style="background:#2b2f36; border:1px solid var(--purp); color:#fff; border-radius:8px; padding:4px 12px; font-size:11px; width:auto;">
-                        <option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BITCOIN</option><option value="ETH">ETHEREUM</option>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div class="yield-label">AI Analysis</div>
+                    <select id="intel-asset-select" onchange="syncAndAnalyze()" style="width:auto; font-size:11px; padding:4px 10px; border-radius:8px; background:var(--card); border:1px solid var(--purp);">
+                        <option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option>
                     </select>
                 </div>
-                <div class="intel-row"><span>Trend Status:</span><span id="intel-trend" class="status-pill" style="background:#3d434d">SYNCING...</span></div>
-                <div class="intel-row"><span>Fear & Greed:</span><span id="fear-val" style="font-weight:bold;">--</span></div>
-                <div class="intel-row"><span>Resistance:</span><span id="res-val" style="color:var(--red); font-weight:bold;">$--</span></div>
-                <div class="intel-row"><span>Support:</span><span id="sup-val" style="color:var(--sol); font-weight:bold;">$--</span></div>
-                <div class="intel-row"><span>Signal:</span><span id="sig-val" class="status-pill" style="background:var(--purp); color:#fff;">NEUTRAL</span></div>
-                <div class="intel-row" style="margin-top:15px; border-top: 1px solid #2b2f36; padding-top:15px;"><span>4H Probability:</span><span id="p-4h" style="font-weight:bold">--</span></div>
+                <div class="intel-row"><span>Market Trend:</span><span id="intel-trend" class="status-pill">SYNC...</span></div>
+                <div id="news-container" style="margin-top:15px; overflow-y:auto; flex-grow:1;">
+                    <div class="yield-label">KI News Ticker</div>
+                    <div id="news-list" class="news-list"></div>
+                </div>
             </div>
-
             <div class="slide">
-                <div class="yield-label">Prognose 2031</div>
+                <div class="yield-label">Strategie-Prognose 2031</div>
                 <div style="text-align:center;">
-                    <div id="prog-sol" style="color:var(--sol); font-weight:800; font-size:28px;">0.00 SOL</div>
-                    <div id="prog-sui" style="color:var(--sui); font-weight:800; font-size:28px;">0 SUI</div>
+                    <div id="prog-sol" style="color:var(--sol); font-weight:800; font-size:26px;">0.00 SOL</div>
+                    <div id="prog-sui" style="color:var(--sui); font-weight:800; font-size:26px;">0 SUI</div>
                     <div id="prog-value" class="prog-hero">$ 0.00</div>
-                    <div style="font-size:9px; color:#848e9c; text-transform:uppercase; letter-spacing:1px; line-height:1.4">Gesamtwert des Bestands<br>bei ATH (SOL $260 | SUI $5)</div>
+                    <div style="font-size:9px; color:#848e9c; text-transform:uppercase; letter-spacing:1px; line-height:1.4">Wert inkl. Sparplan (500€ bis 10/27<br>danach 2000€ mtl.) bei ATH</div>
                 </div>
-                <div style="margin-top:auto; border-top: 1px solid #2b2f36; padding-top:15px;">
-                    <div class="intel-row" style="border:none"><span>Noch bis SOL Ziel:</span><span id="sol-left" style="font-weight:bold">--</span></div>
-                    <div class="intel-row" style="border:none"><span>Passives Einkommen:</span><span id="monthly-income" style="color:var(--sol); font-weight:bold;">--</span></div>
+                <div style="margin-top:auto; border-top: 1px solid #2b2f36; padding-top:10px;">
+                    <div class="intel-row" style="border:none"><span>Rest bis SOL Ziel:</span><span id="sol-left" style="font-weight:bold">--</span></div>
+                    <div class="intel-row" style="border:none"><span>Aktuelle SOL Zufuhr:</span><span id="monthly-income" style="color:var(--sol); font-weight:bold;">--</span></div>
                 </div>
             </div>
-
             <div class="slide" style="padding:0"><div id="tradingview_chart" style="height: 100%; width: 100%;"></div></div>
         </div>
     </div>
@@ -120,160 +102,108 @@
     <div class="card" style="border-top: 2px solid var(--purp);">
         <div class="grid-half"><input type="date" id="tx-date"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select></div>
         <div class="grid-half"><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"></div>
-        <input type="number" id="tx-qty" placeholder="Menge (Coins)" step="any">
-        <select id="tx-node">
-            <option value="none">Kein Staking</option>
-            <option value="alliance">SOL Alliance (6.29%)</option>
-            <option value="trust">SOL Trust (5.63%)</option>
-            <option value="sui_staked">SUI Staking (4.8%)</option>
-        </select>
-        <button onclick="saveTx()" id="save-btn">DATENSATZ SPEICHERN</button>
+        <input type="number" id="tx-qty" placeholder="Menge (Coins) - Auto">
+        <button onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
 
     <div class="card" style="padding:5px 15px;"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-    
-    <button onclick="generateSteuerPDF()" style="background:#2b2f36; color:var(--sol); margin-bottom:10px; border:1px solid var(--sol);">📄 PDF STEUER-REPORT GENERIEREN</button>
-    
-    <div style="display:flex; justify-content:space-between; margin: 0 0 30px 0;">
-        <button onclick="exportData()" class="btn-secondary" style="width:48%;">💾 BACKUP</button>
-        <button onclick="importData()" class="btn-secondary" style="width:48%;">🔄 RESTORE</button>
+    <button onclick="generateSteuerPDF()" style="background:#2b2f36; color:var(--sol); margin-bottom:10px; border:1px solid var(--sol);">📄 PDF STEUER-REPORT</button>
+    <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
+        <button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px; color:#fff;">💾 BACKUP</button>
+        <button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px; color:#fff;">🔄 RESTORE</button>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.048, none: 0 };
+        const APR = { alliance: 0.0629, trust: 0.0563, sui_staked: 0.048, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94 };
         let historyPrice = { SOL: 0, SUI: 0, BTC: 0, ETH: 0 };
-        let startX = 0, currentSlide = 0, editIdx = -1, chartM, chartA;
+        let currentSlide = 0, startX = 0;
 
         function calcQty() {
-            const eur = parseFloat(document.getElementById('tx-eur').value) || 0;
-            const kurs = parseFloat(document.getElementById('tx-price').value) || 0;
-            if(eur > 0 && kurs > 0) {
-                const qty = (eur / prices.EUR) / kurs;
-                document.getElementById('tx-qty').value = qty.toFixed(4);
-            }
+            const e = parseFloat(document.getElementById('tx-eur').value) || 0;
+            const k = parseFloat(document.getElementById('tx-price').value) || 0;
+            if(e>0 && k>0) document.getElementById('tx-qty').value = ((e/prices.EUR)/k).toFixed(4);
         }
 
-        // PDF GENERATOR FUNKTION
-        function generateSteuerPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Design Elemente
-            doc.setFillColor(24, 26, 32);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(130, 105, 217);
-            doc.setFontSize(22);
-            doc.text("Krypto Intelligence Steuer-Report", 14, 25);
-            
-            doc.setTextColor(100);
-            doc.setFontSize(10);
-            doc.text("Generiert am: " + new Date().toLocaleString(), 14, 35);
-            
-            // Tabelle erstellen
-            const tableData = txs.map(t => [
-                t.date,
-                t.asset,
-                t.amount,
-                t.eur.toFixed(2) + " €",
-                t.price ? "$" + t.price : "--"
-            ]);
-            
-            doc.autoTable({
-                head: [['Datum', 'Asset', 'Menge', 'Invest (€)', 'Kurs ($)']],
-                body: tableData,
-                startY: 50,
-                theme: 'grid',
-                headStyles: { fillColor: [130, 105, 217] }
-            });
-            
-            // Footer Info
-            const finalY = doc.lastAutoTable.finalY + 15;
-            doc.setTextColor(0);
-            doc.setFontSize(12);
-            doc.text("Portfolio Status:", 14, finalY);
-            doc.text("Gesamtwert: " + document.getElementById('total-val-usd').innerText, 14, finalY + 7);
-            
-            doc.save("Krypto_Report_" + new Date().toISOString().split('T')[0] + ".pdf");
-        }
-
-        async function initData() {
-            try {
-                const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
-                const d = await res.json(); prices.EUR = d.EUR;
-                fetchIntel(); initLivePrices(); initTV('BINANCE:SOLUSDT');
-                setTimeout(() => { updateUI(); renderHist(); refreshCharts(); }, 800);
-            } catch(e) {}
-        }
-
-        function syncAndAnalyze() {
+        async function fetchNews() {
             const asset = document.getElementById('intel-asset-select').value;
-            initTV(`BINANCE:${asset}USDT`);
-            updateIntelligence();
-        }
-
-        function initTV(symbol) {
-            document.getElementById('tradingview_chart').innerHTML = '';
-            new TradingView.widget({ "autosize": true, "symbol": symbol, "interval": "60", "theme": "dark", "style": "1", "locale": "de", "container_id": "tradingview_chart", "hide_top_toolbar": true });
-        }
-
-        async function fetchIntel() {
+            const list = document.getElementById('news-list');
             try {
-                const res = await fetch('https://api.alternative.me/fng/');
+                const res = await fetch(`https://news.treeofalpha.com/api/news?limit=5&text=${asset}`);
                 const data = await res.json();
-                document.getElementById('fear-val').innerText = data.data[0].value + ' (' + data.data[0].value_classification + ')';
-            } catch(e) {}
+                list.innerHTML = '';
+                data.forEach(n => {
+                    const color = n.sentiment === 'bullish' ? 'var(--sol)' : (n.sentiment === 'bearish' ? 'var(--red)' : '#848e9c');
+                    list.innerHTML += `<div class="news-item"><span>${n.title.substring(0,35)}...</span><span class="news-sentiment" style="color:${color}; border:1px solid ${color}">${n.sentiment || 'neu'}</span></div>`;
+                });
+            } catch(e) { list.innerHTML = '<div class="news-item">News offline...</div>'; }
+        }
+
+        function generateSteuerPDF() {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFillColor(11, 14, 17); doc.rect(0, 0, 210, 297, 'F');
+            doc.setTextColor(130, 105, 217); doc.setFontSize(22); doc.text("Krypto Steuer-Report", 14, 25);
+            const tableData = txs.map(t => [t.date, t.asset, t.amount, t.eur + " €", t.price ? "$" + t.price : "--"]);
+            doc.autoTable({ head: [['Datum', 'Asset', 'Menge', 'Invest (€)', 'Kurs ($)']], body: tableData, startY: 40, theme: 'dark' });
+            doc.save("Krypto_Report.pdf");
+        }
+
+        function initLivePrices() {
+            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade/btcusdt@trade/ethusdt@trade');
+            ws.onmessage = (e) => {
+                const d = JSON.parse(e.data); const p = parseFloat(d.p);
+                if(d.s === 'SOLUSDT') prices.SOL = p; if(d.s === 'SUIUSDT') prices.SUI = p;
+                if(d.s === 'BTCUSDT') prices.BTC = p; if(d.s === 'ETHUSDT') prices.ETH = p;
+                updateUI(); updateIntelligence();
+            };
+            setInterval(fetchNews, 60000);
         }
 
         function updateIntelligence() {
             const asset = document.getElementById('intel-asset-select').value;
-            const curPrice = prices[asset];
-            if(!curPrice) return;
+            const curPrice = prices[asset]; if(!curPrice) return;
             if(historyPrice[asset] === 0) historyPrice[asset] = curPrice;
             const trendEl = document.getElementById('intel-trend');
             const isBullish = curPrice >= historyPrice[asset];
             trendEl.innerText = isBullish ? 'BULLISH' : 'BEARISH';
             trendEl.style.background = isBullish ? 'var(--sol)' : 'var(--red)';
-            document.getElementById('res-val').innerText = '$' + (curPrice * 1.03).toLocaleString();
-            document.getElementById('sup-val').innerText = '$' + (curPrice * 0.97).toLocaleString();
-            const sig = document.getElementById('sig-val');
-            sig.innerText = isBullish ? 'STRENGTH' : 'WEAKNESS';
-            sig.style.background = isBullish ? 'var(--sol)' : 'var(--red)';
-            sig.style.color = isBullish ? '#000' : '#fff';
-            document.getElementById('p-4h').innerText = (isBullish ? '62%' : '44%') + ' Bullish';
-        }
-
-        function initLivePrices() {
-            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade/btcusdt@trade/ethusdt@trade');
-            ws.onmessage = (e) => { 
-                const d = JSON.parse(e.data);
-                const p = parseFloat(d.p);
-                if(d.s === 'SOLUSDT') prices.SOL = p;
-                if(d.s === 'SUIUSDT') prices.SUI = p;
-                if(d.s === 'BTCUSDT') prices.BTC = p;
-                if(d.s === 'ETHUSDT') prices.ETH = p;
-                updateUI(); updateIntelligence();
-            };
-            setInterval(() => { historyPrice = {...prices}; }, 300000);
         }
 
         function updateUI() {
-            let sQ = 0, suQ = 0, invE = 0, sW = 0, suW = 0, fSol = 0, fSui = 0, sE = 0, suE = 0;
+            let sQ=0, suQ=0, invE=0, sW=0, suW=0, fSol=0, fSui=0, sE=0, suE=0;
             txs.forEach(t => {
-                let amount = parseFloat(t.amount) || 0;
-                let eur = parseFloat(t.eur) || 0;
-                invE += eur;
-                let rate = APR[t.node] || 0;
+                let amount = parseFloat(t.amount)||0; let eur = parseFloat(t.eur)||0; invE += eur;
+                let rate = APR[t.node]||0;
                 if(t.asset === 'SOL') { sQ += amount; sE += eur; sW += (amount * rate / 52); fSol += (amount * Math.pow(1 + rate, 5)); }
-                else { suQ += amount; suE += eur; suW += (amount * rate / 52); fSui += (amount * Math.pow(1 + rate, 5)); }
+                else if(t.asset === 'SUI') { suQ += amount; suE += eur; suW += (amount * rate / 52); fSui += (amount * Math.pow(1 + rate, 5)); }
             });
+
+            // SPARPLAN LOGIK V72
+            const heute = new Date();
+            const okt27 = new Date(2027, 9, 1);
+            const jan31 = new Date(2031, 0, 1);
+            
+            const monateBisOkt27 = Math.max(0, (okt27.getFullYear() - heute.getFullYear()) * 12 + okt27.getMonth() - heute.getMonth());
+            const monateAbOkt27 = Math.max(0, (jan31.getFullYear() - okt27.getFullYear()) * 12 + jan31.getMonth() - okt27.getMonth());
+
+            const solPreisEur = prices.SOL / prices.EUR;
+            const suiPreisEur = prices.SUI / prices.EUR;
+
+            const solPhase1 = (450 / solPreisEur) * monateBisOkt27;
+            const solPhase2 = (1600 / solPreisEur) * monateAbOkt27;
+            const suiPhase1 = (50 / suiPreisEur) * monateBisOkt27;
+            const suiPhase2 = (400 / suiPreisEur) * monateAbOkt27;
+
+            const totalSol2031 = fSol + solPhase1 + solPhase2;
+            const totalSui2031 = fSui + suiPhase1 + suiPhase2;
+
             document.getElementById('total-val-usd').innerText = '$ ' + (sQ * prices.SOL + suQ * prices.SUI).toLocaleString(undefined, {minimumFractionDigits: 2});
             let diffE = ((sQ * prices.SOL + suQ * prices.SUI) * prices.EUR) - invE;
             let perf = document.getElementById('total-perf-eur');
-            perf.innerText = (invE > 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString() + ' € Allzeit' : '-- €');
+            perf.innerText = (invE > 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString(undefined, {maximumFractionDigits:0}) + ' €' : '-- €');
             perf.style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
             
             document.getElementById('sol-qty').innerText = sQ.toFixed(2) + ' SOL';
@@ -281,58 +211,30 @@
             document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
             document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             
-            document.getElementById('sol-be').innerText = sQ > 0 ? '$' + ((sE / prices.EUR) / sQ).toFixed(2) : '$--';
-            document.getElementById('sui-be').innerText = suQ > 0 ? '$' + ((suE / prices.EUR) / suQ).toFixed(2) : '$--';
-            
-            document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4);
-            document.getElementById('sui-weekly-yield').innerText = suW.toFixed(2);
-            
-            document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(1) + ' SOL';
-            document.getElementById('prog-sui').innerText = (fSui || suQ).toFixed(0) + ' SUI';
-            document.getElementById('prog-value').innerText = '$' + ((fSol || sQ) * 260 + (fSui || suQ) * 5).toLocaleString(undefined, {maximumFractionDigits:0});
-            
             document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
             document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
             document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
             document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
             
-            document.getElementById('sol-left').innerText = Math.max(0, (700 - sQ)).toFixed(1) + ' SOL';
-            document.getElementById('monthly-income').innerText = (sW * 4).toFixed(2) + ' SOL';
+            document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4);
+            document.getElementById('sui-weekly-yield').innerText = suW.toFixed(2);
+            document.getElementById('sol-be').innerText = sQ > 0 ? '$' + ((sE / prices.EUR) / sQ).toFixed(2) : '$--';
+            document.getElementById('sui-be').innerText = suQ > 0 ? '$' + ((suE / prices.EUR) / suQ).toFixed(2) : '$--';
+
+            document.getElementById('prog-sol').innerText = totalSol2031.toFixed(1) + ' SOL';
+            document.getElementById('prog-sui').innerText = totalSui2031.toFixed(0) + ' SUI';
+            document.getElementById('prog-value').innerText = '$' + (totalSol2031 * 260 + totalSui2031 * 5).toLocaleString(undefined, {maximumFractionDigits:0});
+            document.getElementById('sol-left').innerText = Math.max(0, (700 - totalSol2031)).toFixed(1) + ' SOL';
+            document.getElementById('monthly-income').innerText = "+" + (450 / solPreisEur).toFixed(2) + " SOL / mtl.";
         }
 
-        function saveTx() {
-            const q = parseFloat(document.getElementById('tx-qty').value) || 0;
-            if(q > 0) {
-                const n = { asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value) || 0, price: parseFloat(document.getElementById('tx-price').value) || 0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] };
-                if(editIdx > -1) txs[editIdx] = n; else txs.push(n);
-                localStorage.setItem(DB_KEY, JSON.stringify(txs));
-                editIdx = -1; document.getElementById('save-btn').innerText = "DATENSATZ SPEICHERN";
-                renderHist(); updateUI();
-            }
-        }
-
-        function renderHist() {
-            const b = document.getElementById('history-body'); b.innerHTML = '';
-            txs.slice().reverse().forEach((t, i) => {
-                let idx = txs.length - 1 - i;
-                b.innerHTML += `<tr><td><b>${t.asset}</b><br><small>${t.date}</small></td><td>+${t.amount}<br><small>$${t.price || '--'}</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);" onclick="delTx(${idx})">✕</span></td></tr>`;
-            });
-        }
-
-        function editTx(i) {
-            const t = txs[i]; editIdx = i;
-            document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-price').value = t.price || '';
-            document.getElementById('tx-qty').value = t.amount; document.getElementById('tx-node').value = t.node; document.getElementById('tx-date').value = t.date;
-            document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN";
-        }
-
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Code kopiert!")); }
-        function importData() { 
-            let c = prompt("Backup einfügen:"); 
-            if(c) { try { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
-        }
-
+        function syncAndAnalyze() { initTV(`BINANCE:${document.getElementById('intel-asset-select').value}USDT`); fetchNews(); }
+        function initTV(s) { document.getElementById('tradingview_chart').innerHTML = ''; new TradingView.widget({ "autosize": true, "symbol": s, "interval": "60", "theme": "dark", "container_id": "tradingview_chart", "hide_top_toolbar": true }); }
+        function saveTx() { const q = parseFloat(document.getElementById('tx-qty').value)||0; if(q>0){ txs.push({ asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value)||0, price: parseFloat(document.getElementById('tx-price').value)||0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] }); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); refreshCharts(); } }
+        function renderHist() { const b = document.getElementById('history-body'); b.innerHTML = ''; txs.slice().reverse().forEach((t, i) => { b.innerHTML += `<tr><td><b>${t.asset}</b><br><small>${t.date}</small></td><td>+${t.amount}<br><small>$${t.price || '--'}</small></td><td style="text-align:right;"><span style="color:var(--red);" onclick="delTx(${txs.length-1-i})">✕</span></td></tr>`; }); }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); refreshCharts(); } }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Kopiert!")); }
+        function importData() { let c = prompt("Backup:"); if(c) { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } }
         function refreshCharts() {
             const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c', font: { size: 9 } } }, y: { display: false } } };
             let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
@@ -341,19 +243,11 @@
             if(chartA) chartA.destroy();
             chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2800], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
-
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
-        document.getElementById('slider').addEventListener('touchend', e => {
-            let d = startX - e.changedTouches[0].clientX;
-            if(Math.abs(d) > 50) {
-                if(d > 0 && currentSlide < 4) currentSlide++; else if(d < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 20}%)`;
-                const dots = document.getElementById('dotBox').children;
-                for(let i=0; i<5; i++) dots[i].classList.toggle('active', i === currentSlide);
-            }
-        });
+        document.getElementById('slider').addEventListener('touchend', e => { let d = startX - e.changedTouches[0].clientX; if(Math.abs(d)>50) { if(d>0 && currentSlide<4) currentSlide++; else if(d<0 && currentSlide>0) currentSlide--; document.getElementById('track').style.transform = `translateX(-${currentSlide*20}%)`; const dots = document.getElementById('dotBox').children; for(let i=0; i<5; i++) dots[i].classList.toggle('active', i===currentSlide); } });
         const dBox = document.getElementById('dotBox'); for(let i=0; i<5; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
-        initData();
+        async function init() { try { const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR'); const d = await res.json(); prices.EUR = d.EUR; } catch(e) {} initLivePrices(); initTV('BINANCE:SOLUSDT'); fetchNews(); renderHist(); }
+        init();
     </script>
 </body>
 </html>
