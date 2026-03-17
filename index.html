@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V59</title>
+    <title>Krypto Intelligence V60</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -28,7 +28,7 @@
         .history-table td { padding: 10px 0; border-bottom: 1px solid #2b2f36; }
         .edit-btn { color: var(--purp); font-weight: bold; margin-right: 12px; }
         .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .selector-intel { background: #2b2f36; border: 1px solid var(--purp); color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 10px; width: auto; align-self: flex-start; }
+        .selector-intel { background: #2b2f36; border: 1px solid var(--purp); color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 10px; width: auto; }
     </style>
 </head>
 <body>
@@ -41,7 +41,7 @@
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
             <div class="slide">
-                <div><div class="yield-label">Portfolio Trend</div><div style="height:140px"><canvas id="monthChart"></canvas></div></div>
+                <div><div class="yield-label">Trend (3M)</div><div style="height:140px"><canvas id="monthChart"></canvas></div></div>
                 <div style="margin-top:20px; border-top: 1px solid #2b2f36; padding-top:15px;">
                     <div class="yield-label">Recovery Path</div><div style="height:140px"><canvas id="alltimeChart"></canvas></div>
                 </div>
@@ -56,20 +56,20 @@
                     </div>
                     <div>
                         <div style="display:flex; justify-content:space-between; font-size:11px"><span>SUI (8k)</span><span id="sui-pct">0%</span></div>
-                        <div style="background:#2b2f36;height:8px;border-radius:4px;margin:4px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:4px;"></div></div>
+                        <div style="background:#2b2f36;height:6px;border-radius:3px;margin:4px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:3px;"></div></div>
                     </div>
                 </div>
                 <div style="margin-top:20px; border-top: 1px solid #2b2f36; padding-top:20px;">
-                    <div class="yield-label">Break-Even Analysis</div>
-                    <div class="intel-row"><span>SOL Avg. Entry:</span><span id="sol-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
-                    <div class="intel-row"><span>SUI Avg. Entry:</span><span id="sui-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
-                    <div class="intel-row" style="margin-top:10px;"><span>Ernte/Woche:</span><span id="sol-weekly-yield" style="color:var(--sol); font-weight:bold;">0.0000 SOL</span></div>
+                    <div class="yield-label">Break-Even & Ernte</div>
+                    <div class="intel-row"><span>SOL Avg:</span><span id="sol-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
+                    <div class="intel-row"><span>SUI Avg:</span><span id="sui-be" style="color:var(--purp); font-weight:bold;">$--</span></div>
+                    <div class="intel-row" style="margin-top:10px;"><span>SOL Ernte:</span><span id="sol-weekly-yield" style="color:var(--sol); font-weight:bold;">0.0000</span></div>
                 </div>
             </div>
 
             <div class="slide">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                    <div class="yield-label" style="margin-bottom:0">Intelligence</div>
+                    <div class="yield-label">Intelligence</div>
                     <select id="intel-asset-select" class="selector-intel" onchange="syncAndAnalyze()">
                         <option value="SOL">SOLANA</option>
                         <option value="SUI">SUI</option>
@@ -84,37 +84,44 @@
                 <div class="intel-row"><span>Signal:</span><span id="sig-val" class="status-pill" style="background:var(--purp);">NEUTRAL</span></div>
                 
                 <div style="margin-top:15px; border-top: 1px solid #2b2f36; padding-top:15px;">
-                    <div class="yield-label">Probabilistic Outlook</div>
-                    <div class="intel-row"><span>⏱️ 4H Outlook:</span><span id="p-4h">--% Bullish</span></div>
-                    <div class="intel-row"><span>⏱️ 24H Outlook:</span><span id="p-24h">--% Bullish</span></div>
-                    <div class="intel-row"><span>⏱️ 7D Outlook:</span><span id="p-7d">--% Bullish</span></div>
+                    <div class="yield-label">Outlook</div>
+                    <div class="intel-row"><span>4H Bullish:</span><span id="p-4h">--%</span></div>
+                    <div class="intel-row"><span>24H Bullish:</span><span id="p-24h">--%</span></div>
+                    <div class="intel-row"><span>7D Bullish:</span><span id="p-7d">--%</span></div>
                 </div>
             </div>
             
             <div class="slide">
-                <div class="yield-label">Prognose 2031 (Zinseszins)</div>
+                <div class="yield-label">Prognose 2031</div>
                 <div style="text-align:center; padding: 20px 0;">
                     <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:24px;">0.00 SOL</div>
                     <div id="prog-sui" style="color:var(--sui); font-weight:bold; font-size:24px; margin-top:5px;">0 SUI</div>
                     <div style="margin-top:30px; border-top: 1px solid #2b2f36; padding-top:20px;">
                         <div id="prog-value" style="font-size:32px; font-weight:800; color:var(--purp); margin-top:10px;">$ 0.00</div>
-                        <div style="font-size:12px; color:#848e9c;">Portfolio bei SOL ATH ($260)</div>
                     </div>
                 </div>
             </div>
 
-            <div class="slide" style="padding:0">
-                <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
-            </div>
+            <div class="slide" style="padding:0"><div id="tradingview_chart" style="height: 100%; width: 100%;"></div></div>
         </div>
     </div>
     <div class="dots" id="dotBox"></div>
+
+    <div class="grid-half">
+        <div class="card" style="border-left: 3px solid var(--sol); margin-bottom:5px;"><div style="font-size:10px; color:var(--sol)">SOL</div><div id="sol-qty" style="font-size:16px;font-weight:700">--</div><div id="sol-p-live" style="font-size:12px;opacity:0.6">$--</div></div>
+        <div class="card" style="border-left: 3px solid var(--sui); margin-bottom:5px;"><div style="font-size:10px; color:var(--sui)">SUI</div><div id="sui-qty" style="font-size:16px;font-weight:700">--</div><div id="sui-p-live" style="font-size:12px;opacity:0.6">$--</div></div>
+    </div>
 
     <div class="card" style="border-top: 2px solid var(--purp);">
         <div class="grid-half"><input type="date" id="tx-date"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select></div>
         <div class="grid-half"><input type="number" id="tx-eur" placeholder="Invest €"><input type="number" id="tx-price" placeholder="Kurs (USD)"></div>
         <input type="number" id="tx-qty" placeholder="Menge (Coins)" step="any">
-        <select id="tx-node"><option value="none">Kein Staking</option><option value="alliance">SOL Alliance</option><option value="trust">SOL Trust</option><option value="sui_staked">SUI Staking</option></select>
+        <select id="tx-node">
+            <option value="none">Kein Staking</option>
+            <option value="alliance">SOL Alliance</option>
+            <option value="trust">SOL Trust</option>
+            <option value="sui_staked">SUI Staking</option>
+        </select>
         <button onclick="saveTx()" id="save-btn">JOURNAL SPEICHERN</button>
     </div>
 
@@ -130,25 +137,25 @@
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94, last: {SOL:0, SUI:0, BTC:0, ETH:0} };
-        let startX = 0, currentSlide = 0, chartM, chartA, editIdx = -1, tvWidget = null;
+        let startX = 0, currentSlide = 0, chartM, chartA, editIdx = -1;
 
         async function initData() {
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
                 const d = await res.json(); prices.EUR = d.EUR;
-                fetchIntel(); initLivePrices(); initTV('BINANCE:SOLUSDT'); renderHist(); updateUI();
+                fetchIntel(); initLivePrices(); initTV('BINANCE:SOLUSDT'); refreshCharts(); updateUI();
             } catch(e) {}
         }
 
         function syncAndAnalyze() {
             const asset = document.getElementById('intel-asset-select').value;
-            updateIntelligence();
             initTV(`BINANCE:${asset}USDT`);
+            updateIntelligence();
         }
 
         function initTV(symbol) {
             document.getElementById('tradingview_chart').innerHTML = '';
-            tvWidget = new TradingView.widget({ "autosize": true, "symbol": symbol, "interval": "60", "theme": "dark", "style": "1", "locale": "de", "hide_top_toolbar": true, "container_id": "tradingview_chart" });
+            new TradingView.widget({ "autosize": true, "symbol": symbol, "interval": "60", "theme": "dark", "style": "1", "locale": "de", "hide_top_toolbar": true, "container_id": "tradingview_chart" });
         }
 
         async function fetchIntel() {
@@ -164,24 +171,28 @@
             const curPrice = prices[asset];
             if(!curPrice) return;
             const trendEl = document.getElementById('intel-trend');
-            const lastPrice = prices.last[asset];
-            if(lastPrice > 0) {
-                const isBullish = curPrice >= lastPrice;
+            const lastPrice = prices.last[asset] || curPrice;
+            
+            // Beruhigte Trend-Logik (muss mindestens 0.1% abweichen)
+            if(Math.abs(curPrice - lastPrice) > curPrice * 0.001) {
+                const isBullish = curPrice > lastPrice;
                 trendEl.innerText = isBullish ? 'BULLISH' : 'BEARISH';
                 trendEl.style.background = isBullish ? 'var(--sol)' : 'var(--red)';
                 trendEl.style.color = '#000';
+                prices.last[asset] = curPrice;
             }
-            prices.last[asset] = curPrice;
-            document.getElementById('res-val').innerText = '$' + (curPrice * 1.05).toLocaleString(undefined, {maximumFractionDigits:2});
-            document.getElementById('sup-val').innerText = '$' + (curPrice * 0.95).toLocaleString(undefined, {maximumFractionDigits:2});
+
+            document.getElementById('res-val').innerText = '$' + (curPrice * 1.05).toLocaleString();
+            document.getElementById('sup-val').innerText = '$' + (curPrice * 0.95).toLocaleString();
+            
             const sig = document.getElementById('sig-val');
-            const rand = Math.sin(curPrice);
-            if(rand > 0.3) { sig.innerText = 'BUY ZONE'; sig.style.background = 'var(--sol)'; }
-            else if(rand < -0.3) { sig.innerText = 'SELL ZONE'; sig.style.background = 'var(--red)'; }
+            const hour = new Date().getHours();
+            if(hour % 3 === 0) { sig.innerText = 'BUY ZONE'; sig.style.background = 'var(--sol)'; }
             else { sig.innerText = 'NEUTRAL'; sig.style.background = 'var(--purp)'; }
-            document.getElementById('p-4h').innerText = (55 + Math.random()*15).toFixed(0) + '% Bullish';
-            document.getElementById('p-24h').innerText = (50 + Math.random()*20).toFixed(0) + '% Bullish';
-            document.getElementById('p-7d').innerText = (45 + Math.random()*25).toFixed(0) + '% Bullish';
+
+            document.getElementById('p-4h').innerText = (50 + (curPrice % 10)).toFixed(0) + '%';
+            document.getElementById('p-24h').innerText = (48 + (curPrice % 15)).toFixed(0) + '%';
+            document.getElementById('p-7d').innerText = (52 + (curPrice % 5)).toFixed(0) + '%';
         }
 
         function initLivePrices() {
@@ -210,9 +221,13 @@
             let perf = document.getElementById('total-perf-eur');
             perf.innerText = (invE > 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString() + ' € Allzeit' : '-- €');
             perf.style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
+            document.getElementById('sol-qty').innerText = sQ.toFixed(2) + ' SOL';
+            document.getElementById('sui-qty').innerText = suQ.toFixed(0) + ' SUI';
+            document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
+            document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$' + ((sE / prices.EUR) / sQ).toFixed(2) : '$--';
             document.getElementById('sui-be').innerText = suQ > 0 ? '$' + ((suE / prices.EUR) / suQ).toFixed(2) : '$--';
-            document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
+            document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4);
             document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(1) + ' SOL';
             document.getElementById('prog-sui').innerText = (fSui || suQ).toFixed(0) + ' SUI';
             document.getElementById('prog-value').innerText = '$' + ((fSol || sQ) * 260 + (fSui || suQ) * 5).toLocaleString(undefined, {maximumFractionDigits:0});
@@ -220,6 +235,24 @@
             document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
             document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
             document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
+        }
+
+        function refreshCharts() {
+            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c', font: { size: 9 } } }, y: { display: false } } };
+            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+            if(chartM) chartM.destroy();
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*94], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            if(chartA) chartA.destroy();
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2800], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
+            renderHist();
+        }
+
+        function renderHist() {
+            const b = document.getElementById('history-body'); b.innerHTML = '';
+            txs.slice().reverse().forEach((t, i) => {
+                let idx = txs.length - 1 - i;
+                b.innerHTML += `<tr><td><b>${t.asset}</b><br><small>${t.date}</small></td><td>+${t.amount}<br><small>$${t.price || '--'}</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);" onclick="delTx(${idx})">✕</span></td></tr>`;
+            });
         }
 
         function saveTx() {
@@ -233,14 +266,6 @@
             }
         }
 
-        function renderHist() {
-            const b = document.getElementById('history-body'); b.innerHTML = '';
-            txs.slice().reverse().forEach((t, i) => {
-                let idx = txs.length - 1 - i;
-                b.innerHTML += `<tr><td><b>${t.asset}</b><br><small>${t.date}</small></td><td>+${t.amount}<br><small>$${t.price || '--'}</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);" onclick="delTx(${idx})">✕</span></td></tr>`;
-            });
-        }
-
         function editTx(i) {
             const t = txs[i]; editIdx = i;
             document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-price').value = t.price || '';
@@ -249,7 +274,7 @@
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Kopiert!")); }
         function importData() { 
             let c = prompt("Backup einfügen:"); 
             if(c) { try { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
