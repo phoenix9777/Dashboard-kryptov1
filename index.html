@@ -3,60 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal Final</title>
+    <title>Krypto Journal Swipe</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; }
-        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 20px; }
-        .alltime-val { font-size: 32px; font-weight: 800; color: #fff; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; overflow-x: hidden; }
+        .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 15px; }
+        .alltime-val { font-size: 32px; font-weight: 800; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
+        
+        /* Slider Styles */
+        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 15px; }
+        .slider-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 200%; }
+        .slide { width: 50%; padding: 18px; box-sizing: border-box; min-height: 220px; }
+        .dots { text-align: center; margin-bottom: 15px; }
+        .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 4px; transition: 0.3s; }
+        .dot.active { width: 15px; background-color: var(--purp); border-radius: 3px; }
+
+        /* Goal View Styles */
+        .goal-item { margin-bottom: 15px; }
+        .goal-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: #848e9c; }
+        .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 4px; }
+        .bar-fill { height: 100%; transition: width 1s ease; border-radius: 5px; }
+
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
-        .chart-container { height: 180px; margin-top: 10px; }
-        .asset-row { display: flex; justify-content: space-between; align-items: center; }
-        .qty { font-size: 22px; font-weight: 700; }
-        .usd-val { color: #848e9c; font-size: 14px; }
+        .chart-container { height: 160px; }
         input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
-        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2b2f36; font-size: 13px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="alltime-label" style="font-size: 11px; color: #848e9c; letter-spacing: 1px;">GESAMTWERT (USD)</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
-        <div id="total-perf-eur" class="perf-badge">-- €</div>
+        <div id="total-perf-eur" class="perf-badge">-- € Allzeit</div>
     </div>
 
-    <div class="card">
-        <div style="font-size: 12px; color: #848e9c; margin-bottom: 10px;">RECOVERY CHART (ALLZEIT)</div>
-        <div class="chart-container"><canvas id="recoveryChart"></canvas></div>
-    </div>
-
-    <div class="card" style="border-left: 4px solid var(--sol)">
-        <div class="asset-row">
-            <div>
-                <div style="font-size: 12px; color: var(--sol); font-weight: 800;">SOLANA</div>
-                <div id="sol-qty-display" class="qty">-- SOL</div>
+    <div class="slider-container" id="slider">
+        <div class="slider-track" id="track">
+            <div class="slide">
+                <div style="font-size: 11px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">RECOVERY CHART</div>
+                <div class="chart-container"><canvas id="recoveryChart"></canvas></div>
             </div>
-            <div style="text-align: right">
-                <div id="sol-price-live" style="font-weight: bold;">$--</div>
-                <div id="sol-usd-total" class="usd-val">$--</div>
+            <div class="slide">
+                <div style="font-size: 11px; color: #848e9c; margin-bottom: 15px; letter-spacing: 1px;">ZIELE & FORTSCHRITT</div>
+                
+                <div class="goal-item">
+                    <div class="goal-label"><span>SOL Ziel (700)</span><span id="sol-pct" style="color:var(--sol)">0%</span></div>
+                    <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol); box-shadow: 0 0 10px var(--sol);"></div></div>
+                    <div id="sol-left" style="font-size: 10px; color: #555; text-align: right;">Noch -- SOL</div>
+                </div>
+
+                <div class="goal-item">
+                    <div class="goal-label"><span>SUI Ziel (8.000)</span><span id="sui-pct" style="color:var(--sui)">0%</span></div>
+                    <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui); box-shadow: 0 0 10px var(--sui);"></div></div>
+                    <div id="sui-left" style="font-size: 10px; color: #555; text-align: right;">Noch -- SUI</div>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class="dots">
+        <span class="dot active" id="dot0"></span>
+        <span class="dot" id="dot1"></span>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--sol)">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div><div style="font-size:11px; color:var(--sol); font-weight:800;">SOLANA</div><div id="sol-qty" class="val" style="font-size:22px">-- SOL</div></div>
+            <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div><div id="sol-usd-val" style="color:#848e9c; font-size:14px;">$--</div></div>
+        </div>
+    </div>
+
     <div class="card" style="border-left: 4px solid var(--sui)">
-        <div class="asset-row">
-            <div>
-                <div style="font-size: 12px; color: var(--sui); font-weight: 800;">SUI</div>
-                <div id="sui-qty-display" class="qty">-- SUI</div>
-            </div>
-            <div style="text-align: right">
-                <div id="sui-price-live" style="font-weight: bold;">$--</div>
-                <div id="sui-usd-total" class="usd-val">$--</div>
-            </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div><div style="font-size:11px; color:var(--sui); font-weight:800;">SUI</div><div id="sui-qty" class="val" style="font-size:22px">-- SUI</div></div>
+            <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div><div id="sui-usd-val" style="color:#848e9c; font-size:14px;">$--</div></div>
         </div>
     </div>
 
@@ -64,112 +88,124 @@
         <div style="font-size: 11px; color: var(--purp); font-weight: bold;">NEUER KAUF</div>
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
-        <input type="number" id="tx-eur" placeholder="Investiert in €">
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="tx-qty" placeholder="Menge Coins">
-            <input type="number" id="tx-price" placeholder="Kurs in $">
-        </div>
+        <input type="number" id="tx-eur" placeholder="Investiert €">
+        <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"><input type="number" id="tx-price" placeholder="Kurs $"></div>
         <button onclick="saveTx()">JOURNAL AKTUALISIEREN</button>
     </div>
 
-    <div id="history-box" class="card"></div>
+    <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('krypto_v18')) || [
+        let txs = JSON.parse(localStorage.getItem('krypto_v20')) || [
             {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500, price: 95.30},
             {asset: 'SOL', date: '2021-Start', amount: 22.3481, eur: 9500, price: 425.00}
         ];
 
         let myChart;
 
+        // Swipe Logic
+        let startX = 0;
+        let currentSlide = 0;
+        const track = document.getElementById('track');
+
+        document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        document.getElementById('slider').addEventListener('touchend', e => {
+            let diff = startX - e.changedTouches[0].clientX;
+            if(Math.abs(diff) > 50) {
+                currentSlide = diff > 0 ? 1 : 0;
+                track.style.transform = `translateX(-${currentSlide * 50}%)`;
+                document.getElementById('dot0').classList.toggle('active', currentSlide === 0);
+                document.getElementById('dot1').classList.toggle('active', currentSlide === 1);
+            }
+        });
+
         async function refresh() {
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
-                const prices = await res.json();
-                const sP = prices.SOL.USD;
-                const suP = prices.SUI.USD;
-                const eurRate = prices.SOL.EUR / prices.SOL.USD;
+                const p = await res.json();
+                const solP = p.SOL.USD, suiP = p.SUI.USD, eurR = p.SOL.EUR / p.SOL.USD;
 
-                let solSum = transactions.filter(t => t.asset === 'SOL').reduce((s, t) => s + t.amount, 0);
-                let suiSum = transactions.filter(t => t.asset === 'SUI').reduce((s, t) => s + t.amount, 0);
-                let totalInvestEur = transactions.reduce((s, t) => s + (t.eur || 0), 0);
+                let sQ = txs.filter(t => t.asset === 'SOL').reduce((s,t) => s + t.amount, 0);
+                let suQ = txs.filter(t => t.asset === 'SUI').reduce((s,t) => s + t.amount, 0);
+                let invest = txs.reduce((s,t) => s + (t.eur || 0), 0);
 
-                let solUsd = solSum * sP;
-                let suiUsd = suiSum * suP;
-                let totalUsd = solUsd + suiUsd;
-                let totalEur = totalUsd * eurRate;
+                let totalUsd = (sQ * solP) + (suQ * suiP);
+                let totalEur = totalUsd * eurR;
 
                 document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                document.getElementById('sol-qty-display').innerText = solSum.toLocaleString(undefined, {minimumFractionDigits: 4}) + ' SOL';
-                document.getElementById('sui-qty-display').innerText = suiSum.toLocaleString() + ' SUI';
-                document.getElementById('sol-price-live').innerText = '$' + sP.toFixed(2);
-                document.getElementById('sui-price-live').innerText = '$' + suP.toFixed(2);
-                document.getElementById('sol-usd-total').innerText = '$ ' + solUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
-                document.getElementById('sui-usd-total').innerText = '$ ' + suiUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('sol-qty').innerText = sQ.toLocaleString(undefined, {minimumFractionDigits: 4}) + ' SOL';
+                document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
+                document.getElementById('sol-p-live').innerText = '$' + solP.toFixed(2);
+                document.getElementById('sui-p-live').innerText = '$' + suiP.toFixed(2);
+                document.getElementById('sol-usd-val').innerText = '$ ' + (sQ*solP).toLocaleString();
+                document.getElementById('sui-usd-val').innerText = '$ ' + (suQ*suiP).toLocaleString();
 
-                let diffEur = totalEur - totalInvestEur;
-                let perfEl = document.getElementById('total-perf-eur');
-                perfEl.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' € Allzeit';
-                perfEl.style.backgroundColor = diffEur >= 0 ? 'rgba(0, 230, 118, 0.2)' : 'rgba(246, 70, 93, 0.2)';
-                perfEl.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
+                let diff = totalEur - invest;
+                let perf = document.getElementById('total-perf-eur');
+                perf.innerText = (diff >= 0 ? '+' : '-') + Math.abs(diff).toLocaleString() + ' € Allzeit';
+                perf.style.backgroundColor = diff >= 0 ? 'rgba(0, 230, 118, 0.2)' : 'rgba(246, 70, 93, 0.2)';
+                perf.style.color = diff >= 0 ? 'var(--sol)' : 'var(--red)';
+
+                // Goal Updates
+                let solPct = (sQ / 700) * 100;
+                let suiPct = (suQ / 8000) * 100;
+                document.getElementById('sol-bar').style.width = Math.min(solPct, 100) + '%';
+                document.getElementById('sol-pct').innerText = solPct.toFixed(1) + '%';
+                document.getElementById('sol-left').innerText = `Noch ${(700-sQ).toFixed(2)} SOL`;
+                document.getElementById('sui-bar').style.width = Math.min(suiPct, 100) + '%';
+                document.getElementById('sui-pct').innerText = suiPct.toFixed(1) + '%';
+                document.getElementById('sui-left').innerText = `Noch ${(8000-suQ).toLocaleString()} SUI`;
 
                 updateChart(totalUsd);
-                showHistory();
+                renderHist();
             } catch(e) {}
         }
 
-        function updateChart(current) {
+        function updateChart(cur) {
             const ctx = document.getElementById('recoveryChart').getContext('2d');
             if (myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['2021', '2023', '2025', 'Jetzt'],
+                    labels: ['2021', '23', '25', 'Jetzt'],
                     datasets: [{
-                        data: [10000, 1200, 2400, current],
-                        borderColor: '#8269d9',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(130, 105, 217, 0.1)',
-                        pointRadius: 0
+                        data: [10000, 1200, 2400, cur],
+                        borderColor: '#8269d9', borderWidth: 3, tension: 0.4, fill: true,
+                        backgroundColor: 'rgba(130, 105, 217, 0.1)', pointRadius: 0
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-                    scales: { x: { display: true, ticks: { color: '#848e9c' } }, y: { display: false } }
+                    scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } }
                 }
             });
         }
 
-        function showHistory() {
-            const box = document.getElementById('history-box');
-            box.innerHTML = '<div style="font-size: 11px; color: #848e9c; margin-bottom: 10px;">HISTORIE</div>';
-            transactions.slice().reverse().forEach((t, i) => {
-                let idx = transactions.length - 1 - i;
-                box.innerHTML += `<div class="history-item">
-                    <span><b>${t.asset}</b> <small style="color:#555">${t.date}</small></span>
-                    <span>+${t.amount.toFixed(2)} <span style="color:var(--red); margin-left:10px" onclick="delTx(${idx})">✕</span></span>
-                </div>`;
+        function renderHist() {
+            const b = document.getElementById('history-body');
+            b.innerHTML = '';
+            txs.slice().reverse().forEach((t, i) => {
+                let idx = txs.length - 1 - i;
+                b.innerHTML += `<tr>
+                    <td><b>${t.asset}</b><br><small style="color:#555">${t.date}</small></td>
+                    <td>+${t.amount.toFixed(2)}<br><small style="color:#848e9c">${t.eur} €</small></td>
+                    <td>$${t.price ? t.price.toFixed(2) : '--'}</td>
+                    <td style="text-align:right; color:var(--red)" onclick="delTx(${idx})">✕</td>
+                </tr>`;
             });
         }
 
         function saveTx() {
-            const asset = document.getElementById('tx-asset').value;
-            const eur = parseFloat(document.getElementById('tx-eur').value) || 0;
-            const amount = parseFloat(document.getElementById('tx-qty').value) || 0;
-            const price = parseFloat(document.getElementById('tx-price').value) || 0;
-            const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
-            if(amount > 0) {
-                transactions.push({asset, date, amount, eur, price});
-                localStorage.setItem('krypto_v18', JSON.stringify(transactions));
+            const a = document.getElementById('tx-asset').value, e = parseFloat(document.getElementById('tx-eur').value) || 0,
+                  q = parseFloat(document.getElementById('tx-qty').value) || 0, p = parseFloat(document.getElementById('tx-price').value) || 0,
+                  d = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
+            if(q > 0) {
+                txs.push({asset: a, date: d, amount: q, eur: e, price: p});
+                localStorage.setItem('krypto_v20', JSON.stringify(txs));
                 refresh();
-                document.getElementById('tx-eur').value = '';
-                document.getElementById('tx-qty').value = '';
-                document.getElementById('tx-price').value = '';
             }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { transactions.splice(i,1); localStorage.setItem('krypto_v18', JSON.stringify(transactions)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v20', JSON.stringify(txs)); refresh(); } }
 
         refresh();
         setInterval(refresh, 25000);
