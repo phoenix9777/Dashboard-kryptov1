@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal Final V32</title>
+    <title>Krypto Journal V33</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -22,11 +22,11 @@
         .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; margin-top: 6px; overflow: hidden; }
         .bar-fill { height: 100%; transition: width 1s ease; }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; outline:none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .history-table td { padding: 10px 0; border-bottom: 1px solid #2b2f36; }
-        .btn-backup { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; width: 48%; }
+        .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
+        .btn-backup { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; width: 48%; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -39,9 +39,9 @@
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
             <div class="slide"><div class="yield-label">Trend (3M)</div><div style="height:180px"><canvas id="monthChart"></canvas></div></div>
-            <div class="slide"><div class="yield-label">Recovery</div><div style="height:180px"><canvas id="alltimeChart"></canvas></div></div>
+            <div class="slide"><div class="yield-label">Recovery (Allzeit)</div><div style="height:180px"><canvas id="alltimeChart"></canvas></div></div>
             <div class="slide">
-                <div class="yield-label">Strandhaus Ziele</div>
+                <div class="yield-label">Ziele</div>
                 <div style="margin-top:20px">
                     <div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (700)</span><span id="sol-pct">0%</span></div>
                     <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol)"></div></div>
@@ -53,9 +53,9 @@
                 <div class="yield-label">Staking Ernte</div>
                 <div id="sol-weekly-yield" style="font-size:26px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
                 <div style="font-size:12px; color:#848e9c;">Zuwachs pro Woche</div>
-                <div style="margin-top:20px; font-size:12px; opacity:0.8">
-                    Trust Nodes (5.63%): <span id="st-trust">0.00</span><br>
-                    Alliance (6.29%): <span id="st-alliance">0.00</span>
+                <div style="margin-top:20px; font-size:12px; opacity:0.8; color:#848e9c;">
+                    Trust (5.63%): <span id="st-trust" style="color:#fff">0.00</span><br>
+                    Alliance (6.29%): <span id="st-alliance" style="color:#fff">0.00</span>
                 </div>
             </div>
             <div class="slide">
@@ -103,7 +103,8 @@
 
     <script>
         const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
-        let txs = JSON.parse(localStorage.getItem('krypto_v1')) || [];
+        const DB_KEY = 'krypto_v1'; // Zurück auf Standard-Key für dein Backup
+        let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let chartM, chartA, currentSlide = 0;
 
         async function refresh() {
@@ -157,7 +158,8 @@
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
-                b.innerHTML += `<tr><td><b>${t.asset}</b> (${t.node})<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;color:var(--red)" onclick="delTx(${idx})">✕</td></tr>`;
+                let nLabel = t.node === 'trust' ? ' (T)' : (t.node === 'alliance' ? ' (A)' : '');
+                b.innerHTML += `<tr><td><b>${t.asset}</b>${nLabel}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</td></tr>`;
             });
         }
 
@@ -171,14 +173,26 @@
                     node: document.getElementById('tx-node').value,
                     date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]
                 });
-                localStorage.setItem('krypto_v1', JSON.stringify(txs));
+                localStorage.setItem(DB_KEY, JSON.stringify(txs));
                 refresh();
             }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v1', JSON.stringify(txs)); refresh(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)); alert("Code kopiert!"); }
-        function importData() { const code = prompt("Code einfügen:"); if(code) { txs = JSON.parse(code); localStorage.setItem('krypto_v1', JSON.stringify(txs)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refresh(); } }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
+        
+        function importData() { 
+            const code = prompt("Backup einfügen:"); 
+            if(code) { 
+                try {
+                    const parsed = JSON.parse(code);
+                    txs = parsed;
+                    localStorage.setItem(DB_KEY, JSON.stringify(txs)); 
+                    refresh();
+                    alert("Wiederhergestellt!");
+                } catch(e) { alert("Ungültiger Code!"); }
+            } 
+        }
 
         let startX = 0; document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
@@ -189,7 +203,9 @@
                 for(let i=0; i<5; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
             }
         });
-        const dotBox = document.getElementById('dotBox'); for(let i=0; i<5; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
+        const dotBox = document.getElementById('dotBox'); 
+        for(let i=0; i<5; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
+        
         refresh(); setInterval(refresh, 25000);
     </script>
 </body>
