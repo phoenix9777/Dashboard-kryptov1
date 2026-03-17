@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V35</title>
+    <title>Krypto Journal V37</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -28,6 +28,7 @@
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
         .btn-backup { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; width: 48%; margin-top: 10px; }
+        .edit-btn { color: var(--purp); font-weight: bold; margin-right: 10px; }
     </style>
 </head>
 <body>
@@ -54,7 +55,7 @@
             <div class="slide">
                 <div class="yield-label">Staking Ernte</div>
                 <div id="sol-weekly-yield" style="font-size:26px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
-                <div style="font-size:12px; color:#848e9c;">Zuwachs pro Woche</div>
+                <div style="font-size:12px; color:#848e9c;">Ertrag pro Woche</div>
                 <div style="margin-top:20px; font-size:12px; opacity:0.8; color:#848e9c;">
                     Alliance (6.29%): <span id="st-alliance" style="color:#fff">0.00</span><br>
                     Trust (5.63%): <span id="st-trust" style="color:#fff">0.00</span>
@@ -93,7 +94,7 @@
             <option value="alliance">Capital Alliance (6.29%)</option>
             <option value="trust">Trust Nodes (5.63%)</option>
         </select>
-        <button onclick="saveTx()">JOURNAL SPEICHERN</button>
+        <button id="save-btn" onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
@@ -107,6 +108,7 @@
         const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+        let editIdx = -1;
         let chartM, chartA, currentSlide = 0;
 
         async function refresh() {
@@ -148,6 +150,45 @@
             } catch(e) {}
         }
 
+        function renderHist() {
+            const b = document.getElementById('history-body'); b.innerHTML = '';
+            txs.slice().reverse().forEach((t, i) => {
+                let idx = txs.length - 1 - i;
+                let nLabel = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : '');
+                b.innerHTML += `<tr><td><b>${t.asset}</b>${nLabel}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
+            });
+        }
+
+        function saveTx() {
+            const q = parseFloat(document.getElementById('tx-qty').value) || 0;
+            if(q > 0) {
+                const newTx = {
+                    asset: document.getElementById('tx-asset').value,
+                    eur: parseFloat(document.getElementById('tx-eur').value) || 0,
+                    amount: q,
+                    node: document.getElementById('tx-node').value,
+                    date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]
+                };
+                if(editIdx > -1) txs[editIdx] = newTx; else txs.push(newTx);
+                localStorage.setItem(DB_KEY, JSON.stringify(txs));
+                editIdx = -1;
+                document.getElementById('save-btn').innerText = "JOURNAL SPEICHERN";
+                refresh();
+            }
+        }
+
+        function editTx(i) {
+            const t = txs[i];
+            editIdx = i;
+            document.getElementById('tx-asset').value = t.asset;
+            document.getElementById('tx-eur').value = t.eur;
+            document.getElementById('tx-qty').value = t.amount;
+            document.getElementById('tx-node').value = t.node || 'none';
+            document.getElementById('tx-date').value = t.date;
+            document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN";
+            window.scrollTo({ top: 400, behavior: 'smooth' });
+        }
+
         function updateCharts(cur) {
             const opt = { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { ticks: { color: '#848e9c', font: { size: 9 } } } } };
             if(chartM) chartM.destroy();
@@ -156,44 +197,9 @@
             chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
-        function renderHist() {
-            const b = document.getElementById('history-body'); b.innerHTML = '';
-            txs.slice().reverse().forEach((t, i) => {
-                let idx = txs.length - 1 - i;
-                let nLabel = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : '');
-                b.innerHTML += `<tr><td><b>${t.asset}</b>${nLabel}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</td></tr>`;
-            });
-        }
-
-        function saveTx() {
-            const q = parseFloat(document.getElementById('tx-qty').value) || 0;
-            if(q > 0) {
-                txs.push({
-                    asset: document.getElementById('tx-asset').value,
-                    eur: parseFloat(document.getElementById('tx-eur').value) || 0,
-                    amount: q,
-                    node: document.getElementById('tx-node').value,
-                    date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]
-                });
-                localStorage.setItem(DB_KEY, JSON.stringify(txs));
-                refresh();
-            }
-        }
-
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refresh(); } }
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
-        
-        function importData() { 
-            const code = prompt("Daten einfügen:"); 
-            if(code) { 
-                try {
-                    txs = JSON.parse(code);
-                    localStorage.setItem(DB_KEY, JSON.stringify(txs)); 
-                    refresh();
-                    alert("Historie geladen!");
-                } catch(e) { alert("Format-Fehler!"); }
-            } 
-        }
+        function importData() { const code = prompt("Daten einfügen:"); if(code) { try { txs = JSON.parse(code); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refresh(); alert("Historie geladen!"); } catch(e) { alert("Format-Fehler!"); } } }
 
         let startX = 0; document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
