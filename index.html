@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V43 FIX</title>
+    <title>Krypto Journal V44 FINAL FIX</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -146,7 +146,7 @@
                 const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
                 const d = await res.json(); prices.EUR = d.EUR;
                 refreshCharts();
-                updateUI(); // Sofort nach dem Laden berechnen
+                updateUI();
             } catch(e) {}
         }
 
@@ -173,7 +173,6 @@
                 }
             });
 
-            // Wenn fSol noch immer sQ entspricht (kein Staking ausgewählt), nutzen wir sQ als Fallback
             if (fSol <= sQ) fSol = sQ; 
 
             let totalUsd = (sQ * prices.SOL) + (suQ * prices.SUI);
@@ -220,7 +219,6 @@
 
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
-            if(!txs || txs.length === 0) { b.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#848e9c;padding:20px;">Keine Historie gefunden. Klick auf Restore!</td></tr>'; return; }
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
                 let nL = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : (t.node === 'sui_staked' ? ' (S)' : ''));
@@ -248,7 +246,20 @@
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refreshCharts(); updateUI(); } }
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
-        function importData() { const c = prompt("Daten einfügen:"); if(c) { try { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refreshCharts(); updateUI(); alert("Historie geladen!"); } catch(e) { alert("Format-Fehler!"); } } }
+        
+        function importData() { 
+            const raw = prompt("Daten einfügen:"); 
+            if(raw) { 
+                try {
+                    // Automatischer Fix für Sonderzeichen und Formatierung
+                    const clean = raw.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").trim();
+                    txs = JSON.parse(clean);
+                    localStorage.setItem(DB_KEY, JSON.stringify(txs)); 
+                    refreshCharts(); updateUI();
+                    alert("Historie erfolgreich geladen!");
+                } catch(e) { alert("Fehler beim Einlesen. Bitte den exakten Text kopieren!"); }
+            } 
+        }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
