@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bochum Masterplan</title>
+    <style>
+        :root { --bg: #000; --card: #111; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system; margin: 0; padding: 20px; }
+        h1 { background: linear-gradient(90deg, var(--sol), var(--sui)); -webkit-background-clip: text; color: transparent; text-align: center; font-size: 24px; margin-bottom: 20px; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .val { font-size: 32px; font-weight: 800; color: var(--sol); margin: 5px 0; }
+        .live-price { font-size: 14px; color: #888; text-align: right; }
+        .bar-bg { background: #222; height: 12px; border-radius: 6px; width: 100%; margin: 15px 0; overflow: hidden; }
+        .bar-fill { background: var(--sol); height: 100%; width: 0%; transition: width 1.5s ease; box-shadow: 0 0 10px var(--sol); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .mini { text-align: center; border: 1px solid #222; border-radius: 15px; padding: 15px; }
+        input { background: #222; border: 1px solid var(--purp); color: #fff; padding: 10px; border-radius: 10px; width: 100%; margin-top: 10px; font-size: 16px; }
+        button { background: var(--purp); color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; margin-top: 10px; font-weight: bold; }
+        .history { font-size: 13px; width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .history td { padding: 8px 0; border-bottom: 1px solid #222; }
+    </style>
+</head>
+<body>
+    <h1>BOCHUM MASTERPLAN 🏖️</h1>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between">
+            <div class="label">Gesamtbestand</div>
+            <div id="price" class="live-price">Suche Kurs...</div>
+        </div>
+        <div id="sol-display" class="val">-- SOL</div>
+        <div id="eur-display" style="font-size: 18px; color: #888;">-- €</div>
+        <div class="bar-bg"><div id="progress-bar" class="bar-fill"></div></div>
+        <div id="percent-display" style="text-align:right; font-size:14px; color:var(--sol)">0%</div>
+    </div>
+
+    <div class="grid">
+        <div class="mini" style="border-color: var(--sol)">
+            <div class="label">Ziel SOL</div>
+            <div style="font-size:18px; font-weight:bold">700</div>
+        </div>
+        <div class="mini" style="border-color: var(--sui)">
+            <div class="label">Ziel SUI</div>
+            <div style="font-size:18px; font-weight:bold">8.000</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px; border-color: var(--purp)">
+        <div class="label" style="color:var(--purp)">Änderung eintragen</div>
+        <input type="number" id="new-amount" placeholder="Neue SOL Menge (z.B. 35.5)" step="any">
+        <button onclick="updateBalance()">Bestand Speichern</button>
+    </div>
+
+    <script>
+        // Daten laden oder Standardwerte setzen
+        let solAmount = localStorage.getItem('solAmount') || 28.9841;
+        document.getElementById('sol-display').innerText = parseFloat(solAmount).toFixed(4) + ' SOL';
+
+        async function getLivePrice() {
+            try {
+                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=eur');
+                const d = await r.json();
+                const p = d.solana.eur;
+                const totalEur = solAmount * p;
+                const progress = (solAmount / 700) * 100;
+
+                document.getElementById('price').innerText = 'Live: ' + p.toFixed(2) + ' €';
+                document.getElementById('eur-display').innerText = totalEur.toLocaleString('de-DE', {style:'currency', currency:'EUR'});
+                document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+                document.getElementById('percent-display').innerText = progress.toFixed(2) + '% erreicht';
+            } catch(e) { document.getElementById('price').innerText = 'Offline'; }
+        }
+
+        function updateBalance() {
+            const val = document.getElementById('new-amount').value;
+            if(val) {
+                solAmount = val;
+                localStorage.setItem('solAmount', val);
+                document.getElementById('sol-display').innerText = parseFloat(val).toFixed(4) + ' SOL';
+                getLivePrice();
+                alert("Bestand aktualisiert!");
+            }
+        }
+
+        getLivePrice();
+        setInterval(getLivePrice, 30000);
+    </script>
+</body>
+</html>
