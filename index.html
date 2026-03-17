@@ -28,7 +28,7 @@
     <div class="card" style="border-left: 4px solid var(--sol)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="label">Solana (SOL)</div>
-            <div id="sol-price" style="color:#888; font-size:13px;">$ --</div>
+            <div id="sol-price" style="color:#888; font-size:13px;">Lade...</div>
         </div>
         <div id="sol-total" class="val" style="color:var(--sol)">-- SOL</div>
         <div id="sol-usd" style="font-size: 16px; color: #aaa;">$ --</div>
@@ -39,7 +39,7 @@
     <div class="card" style="border-left: 4px solid var(--sui)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="label">Sui (SUI)</div>
-            <div id="sui-price" style="color:#888; font-size:13px;">$ --</div>
+            <div id="sui-price" style="color:#888; font-size:13px;">Lade...</div>
         </div>
         <div id="sui-total" class="val" style="color:var(--sui)">-- SUI</div>
         <div id="sui-usd" style="font-size: 16px; color: #aaa;">$ --</div>
@@ -72,23 +72,21 @@
     </div>
 
     <script>
-        // Startdaten (Deine 22.3 SOL + der März Kauf)
-        let txs = JSON.parse(localStorage.getItem('bochum_final')) || [
+        // Einheitlicher Speichername
+        let txs = JSON.parse(localStorage.getItem('krypto_journal_v10')) || [
             {asset: 'SOL', date: '2026-03-02', amount: 6.636, price: 95.30},
             {asset: 'SOL', date: 'Start', amount: 22.3481, price: 0}
         ];
 
         async function update() {
-            let sol = txs.filter(t => t.asset === 'SOL').reduce((s, t) => s + t.amount, 0);
-            let sui = txs.filter(t => t.asset === 'SUI').reduce((s, t) => s + t.amount, 0);
+            let sol = txs.filter(t => t.asset === 'SOL').reduce((s, t) => s + parseFloat(t.amount), 0);
+            let sui = txs.filter(t => t.asset === 'SUI').reduce((s, t) => s + parseFloat(t.amount), 0);
 
             document.getElementById('sol-total').innerText = sol.toLocaleString('de-DE', {minimumFractionDigits: 3}) + ' SOL';
             document.getElementById('sui-total').innerText = sui.toLocaleString('de-DE') + ' SUI';
 
             const hb = document.getElementById('history-body');
             hb.innerHTML = '';
-            
-            // Umgekehrte Liste für neueste oben
             txs.slice().reverse().forEach((t, index) => {
                 let realIndex = txs.length - 1 - index;
                 hb.insertAdjacentHTML('beforeend', `<tr>
@@ -100,16 +98,17 @@
             });
 
             try {
-                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,sui&vs_currencies=usd');
-                const d = await r.json();
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana,sui&vs_currencies=usd');
+                const data = await response.json();
                 
-                const solP = d.solana.usd;
-                const suiP = d.sui.usd;
+                const solPrice = data.solana.usd;
+                const suiPrice = data.sui.usd;
 
-                document.getElementById('sol-price').innerText = 'Live: $' + solP.toFixed(2);
-                document.getElementById('sui-price').innerText = 'Live: $' + suiP.toFixed(2);
-                document.getElementById('sol-usd').innerText = '$ ' + (sol * solP).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                document.getElementById('sui-usd').innerText = '$ ' + (sui * suiP).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('sol-price').innerText = 'Live: $' + solPrice.toFixed(2);
+                document.getElementById('sui-price').innerText = 'Live: $' + suiPrice.toFixed(2);
+                
+                document.getElementById('sol-usd').innerText = '$ ' + (sol * solPrice).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('sui-usd').innerText = '$ ' + (sui * suiPrice).toLocaleString('en-US', {minimumFractionDigits: 2});
 
                 let solProg = (sol / 700) * 100;
                 let suiProg = (sui / 8000) * 100;
@@ -118,18 +117,21 @@
                 document.getElementById('sol-percent').innerText = solProg.toFixed(1) + '% von 700';
                 document.getElementById('sui-bar').style.width = Math.min(suiProg, 100) + '%';
                 document.getElementById('sui-percent').innerText = suiProg.toFixed(1) + '% von 8.000';
-            } catch(e) { console.log("Preise konnten nicht geladen werden."); }
+            } catch(e) { 
+                document.getElementById('sol-price').innerText = 'Error';
+                document.getElementById('sui-price').innerText = 'Error';
+            }
         }
 
         function addTransaction() {
             const asset = document.getElementById('asset-input').value;
-            const amount = parseFloat(document.getElementById('amount-input').value);
-            const price = parseFloat(document.getElementById('price-input').value) || 0;
+            const amount = document.getElementById('amount-input').value;
+            const price = document.getElementById('price-input').value;
             const date = document.getElementById('date-input').value || new Date().toISOString().split('T')[0];
 
-            if(amount > 0) {
-                txs.push({asset, date, amount, price});
-                localStorage.setItem('bochum_final', JSON.stringify(txs));
+            if(amount) {
+                txs.push({asset, date, amount: parseFloat(amount), price: parseFloat(price) || 0});
+                localStorage.setItem('krypto_journal_v10', JSON.stringify(txs));
                 update();
                 document.getElementById('amount-input').value = '';
                 document.getElementById('price-input').value = '';
@@ -139,7 +141,7 @@
         function deleteTx(index) {
             if(confirm("Eintrag löschen?")) {
                 txs.splice(index, 1);
-                localStorage.setItem('bochum_final', JSON.stringify(txs));
+                localStorage.setItem('krypto_journal_v10', JSON.stringify(txs));
                 update();
             }
         }
