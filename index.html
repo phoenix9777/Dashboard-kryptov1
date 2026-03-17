@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V50</title>
+    <title>Krypto Journal V51</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -25,7 +25,7 @@
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
-        .btn-fix { background: var(--sol); color: #000; font-weight: bold; margin-bottom: 20px; }
+        .btn-fix { background: var(--sol); color: #000; font-weight: bold; margin-bottom: 20px; width:100%; padding:15px; border-radius:12px; border:none;}
     </style>
 </head>
 <body>
@@ -54,9 +54,12 @@
             </div>
             <div class="slide">
                 <div class="yield-label">Ernte/Woche</div>
-                <div id="sol-weekly-yield" style="font-size:24px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
-                <div style="font-size:10px; color:#848e9c; margin-bottom:10px;">Zuwachs pro Woche</div>
-                <div style="font-size:11px; color:#848e9c;">Alliance: <span id="st-alliance" style="color:#fff">0.0</span> | Trust: <span id="st-trust" style="color:#fff">0.0</span></div>
+                <div style="margin-top:10px;">
+                    <div id="sol-weekly-yield" style="font-size:22px; font-weight:bold; color:var(--sol);">0.0000 SOL</div>
+                    <div style="font-size:10px; color:#848e9c; margin-bottom:15px;">Zuwachs SOL</div>
+                    <div id="sui-weekly-yield" style="font-size:22px; font-weight:bold; color:var(--sui);">0.00 SUI</div>
+                    <div style="font-size:10px; color:#848e9c;">Zuwachs SUI</div>
+                </div>
             </div>
             <div class="slide">
                 <div class="yield-label">Break-Even</div>
@@ -68,7 +71,7 @@
                 <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:20px; margin-top:10px;">0.00 SOL</div>
                 <div id="prog-sui" style="color:var(--sui); font-weight:bold; font-size:20px;">0 SUI</div>
                 <div id="prog-value" style="font-size:26px; font-weight:800; color:var(--purp); margin-top:15px;">$ 0.00</div>
-                <div style="font-size:10px; color:#848e9c;">Portfolio-Wert bei SOL ATH ($260)</div>
+                <div style="font-size:10px; color:#848e9c;">Portfolio-Wert bei SOL ATH</div>
             </div>
         </div>
     </div>
@@ -81,10 +84,7 @@
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
         <input type="number" id="tx-eur" placeholder="Investiert in €">
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="tx-qty" placeholder="Menge">
-            <input type="number" id="tx-price" placeholder="Kurs in $">
-        </div>
+        <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"><input type="number" id="tx-price" placeholder="Kurs in $"></div>
         <select id="tx-node">
             <option value="none">Kein Staking</option>
             <option value="alliance">SOL: Alliance (6.29%)</option>
@@ -96,8 +96,8 @@
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
     <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
-        <button onclick="exportData()" style="background:#2b2f36; width:48%;">💾 BACKUP</button>
-        <button onclick="importData()" style="background:#2b2f36; width:48%;">🔄 RESTORE</button>
+        <button onclick="exportData()" style="background:#2b2f36; width:48%; padding:15px; border-radius:12px; border:none; color:#fff;">💾 BACKUP</button>
+        <button onclick="importData()" style="background:#2b2f36; width:48%; padding:15px; border-radius:12px; border:none; color:#fff;">🔄 RESTORE</button>
     </div>
 
     <script>
@@ -119,16 +119,15 @@
 
         function updateUI() {
             if (prices.SOL === 0) return;
-            let sQ = 0, suQ = 0, invE = 0, sW = 0, fSol = 0, fSui = 0, sAl = 0, sTr = 0;
+            let sQ = 0, suQ = 0, invE = 0, sW = 0, suW = 0, fSol = 0, fSui = 0;
             txs.forEach(t => {
                 let amount = parseFloat(t.amount) || 0;
                 invE += (parseFloat(t.eur) || 0);
                 let rate = APR[t.node] || 0;
                 if(t.asset === 'SOL') {
                     sQ += amount; sW += (amount * rate / 52); fSol += (amount * Math.pow(1 + rate, 5));
-                    if(t.node === 'alliance') sAl += amount; if(t.node === 'trust') sTr += amount;
                 } else {
-                    suQ += amount; fSui += (amount * Math.pow(1 + rate, 5));
+                    suQ += amount; suW += (amount * rate / 52); fSui += (amount * Math.pow(1 + rate, 5));
                 }
             });
 
@@ -144,9 +143,9 @@
             document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invE / prices.EUR) / sQ).toFixed(2) : '$ --';
             document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((invE / prices.EUR) / suQ).toFixed(2) : '$ --';
+            
             document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
-            document.getElementById('st-alliance').innerText = sAl.toFixed(1);
-            document.getElementById('st-trust').innerText = sTr.toFixed(1);
+            document.getElementById('sui-weekly-yield').innerText = suW.toFixed(2) + ' SUI';
             
             document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(2) + ' SOL';
             document.getElementById('prog-sui').innerText = (fSui || suQ).toFixed(0) + ' SUI';
@@ -169,15 +168,6 @@
             ];
             localStorage.setItem(DB_KEY, JSON.stringify(txs));
             location.reload();
-        }
-
-        function refreshCharts() {
-            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
-            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-            if(chartM) chartM.destroy();
-            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*93], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
-            if(chartA) chartA.destroy();
-            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         function renderHist() {
@@ -203,6 +193,15 @@
         function importData() { 
             let c = prompt("Backup einfügen:"); 
             if(c) { try { c = c.replace(/[\u201C\u201D\u2018\u2019]/g, '"').trim(); txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
+        }
+
+        function refreshCharts() {
+            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
+            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+            if(chartM) chartM.destroy();
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            if(chartA) chartA.destroy();
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
