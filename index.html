@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Master-Journal</title>
+    <title>Krypto Journal Safety</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -25,6 +25,7 @@
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
+        .btn-small { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; margin-top: 0; width: 48%; }
     </style>
 </head>
 <body>
@@ -36,37 +37,20 @@
 
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
+            <div class="slide"><div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">TREND (3 MONATE)</div><div style="height: 180px;"><canvas id="monthChart"></canvas></div></div>
+            <div class="slide"><div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">RECOVERY (ALLZEIT)</div><div style="height: 180px;"><canvas id="alltimeChart"></canvas></div></div>
             <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">TREND (CMC STYLE)</div>
-                <div style="height: 180px;"><canvas id="monthChart"></canvas></div>
+                <div style="font-size: 10px; color: #848e9c; margin-bottom: 15px;">ZIELE</div>
+                <div style="margin-bottom:20px"><div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (700)</span><span id="sol-pct" style="color:var(--sol); font-weight:bold;">0%</span></div><div class="bar-bg"><div id="sol-bar" style="background:var(--sol); height:100%; width:0%;"></div></div></div>
+                <div><div style="display:flex; justify-content:space-between; font-size:12px"><span>SUI (8.000)</span><span id="sui-pct" style="color:var(--sui); font-weight:bold;">0%</span></div><div class="bar-bg"><div id="sui-bar" style="background:var(--sui); height:100%; width:0%;"></div></div></div>
             </div>
             <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">RECOVERY (ALLZEIT)</div>
-                <div style="height: 180px;"><canvas id="alltimeChart"></canvas></div>
-            </div>
-            <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 15px; letter-spacing: 1px;">ZIELE & FORTSCHRITT</div>
-                <div style="margin-bottom:20px">
-                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (Ziel 700)</span><span id="sol-pct" style="color:var(--sol); font-weight:bold;">0%</span></div>
-                    <div class="bar-bg"><div id="sol-bar" style="background:var(--sol); height:100%; width:0%; box-shadow: 0 0 10px var(--sol);"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SUI (Ziel 8.000)</span><span id="sui-pct" style="color:var(--sui); font-weight:bold;">0%</span></div>
-                    <div class="bar-bg"><div id="sui-bar" style="background:var(--sui); height:100%; width:0%; box-shadow: 0 0 10px var(--sui);"></div></div>
-                </div>
-            </div>
-            <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">BREAK-EVEN ANALYSE</div>
-                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;">
-                    <span>SOL Zielkurs:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$ --</span>
-                </div>
-                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;">
-                    <span>SUI Zielkurs:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$ --</span>
-                </div>
+                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">BREAK-EVEN</div>
+                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL BE:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$ --</span></div>
+                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;"><span>SUI BE:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$ --</span></div>
             </div>
         </div>
     </div>
-
     <div class="dots" id="dotBox"></div>
 
     <div class="card" style="border-left: 4px solid var(--sol)">
@@ -93,19 +77,23 @@
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
 
+    <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
+        <button class="btn-small" onclick="exportData()">💾 BACKUP (COPY)</button>
+        <button class="btn-small" onclick="importData()">🔄 RESTORE</button>
+    </div>
+
     <script>
-        let txs = JSON.parse(localStorage.getItem('krypto_v25')) || [
+        let txs = JSON.parse(localStorage.getItem('krypto_v26_final')) || [
             {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500, price: 95.30},
             {asset: 'SOL', date: '2021-01-01', amount: 22.3481, eur: 9500, price: 425.00}
         ];
 
         let chartM, chartA;
         let startX = 0, currentSlide = 0;
-
         const dotBox = document.getElementById('dotBox');
         for(let i=0; i<4; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}" id="dot${i}"></span>`;
-
         const track = document.getElementById('track');
+
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let diff = startX - e.changedTouches[0].clientX;
@@ -122,7 +110,6 @@
                 const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
                 const p = await res.json();
                 const solP = p.SOL.USD, suiP = p.SUI.USD, eurRate = p.SOL.USD / p.SOL.EUR;
-
                 let sQ = txs.filter(t => t.asset === 'SOL').reduce((s,t) => s + t.amount, 0);
                 let suQ = txs.filter(t => t.asset === 'SUI').reduce((s,t) => s + t.amount, 0);
                 let investEur = txs.reduce((s,t) => s + (t.eur || 0), 0);
@@ -133,11 +120,11 @@
                 document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
                 document.getElementById('sol-p-live').innerText = '$' + solP.toFixed(2);
                 document.getElementById('sui-p-live').innerText = '$' + suiP.toFixed(2);
-
-                let solBE = (investEur * eurRate) / sQ;
+                
+                let solBE = (investEur * (p.SOL.USD/p.SOL.EUR)) / sQ;
                 document.getElementById('sol-be').innerText = '$ ' + solBE.toFixed(2);
                 document.getElementById('sol-be-s').innerText = 'BE: $' + solBE.toFixed(2);
-                document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((investEur * eurRate) / suQ).toFixed(2) : 'N/A';
+                document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((investEur * (p.SOL.USD/p.SOL.EUR)) / suQ).toFixed(2) : 'N/A';
 
                 let diffEur = (totalUsd / (p.SOL.USD/p.SOL.EUR)) - investEur;
                 let perfEl = document.getElementById('total-perf-eur');
@@ -156,27 +143,18 @@
         }
 
         function updateCharts(cur, solP, suiP) {
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { intersect: false, mode: 'index' },
-                plugins: { legend: { display: false }, tooltip: { enabled: true, backgroundColor: '#181a20', titleColor: '#848e9c', bodyColor: '#fff', borderColor: '#2b2f36', borderWidth: 1, displayColors: false } },
-                scales: { x: { ticks: { color: '#848e9c' }, grid: { display: false } }, y: { position: 'left', ticks: { color: '#848e9c', font: { size: 9 }, callback: v => '$' + v.toLocaleString() }, grid: { color: '#2b2f36' } } }
-            };
-
-            const ctxM = document.getElementById('monthChart').getContext('2d');
+            const chartOpt = { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#848e9c' }, grid: { display: false } }, y: { position: 'left', ticks: { color: '#848e9c', font: { size: 9 }, callback: v => '$' + v.toLocaleString() }, grid: { color: '#2b2f36' } } } };
             const mLabels = ['Jan', 'Feb', 'März'];
             const mData = mLabels.map((m, i) => {
                 let d = `2026-0${i+1}-31`;
-                return (txs.filter(t=>t.asset==='SOL'&&t.date<=d).reduce((s,t)=>s+t.amount,0)*solP) + 
-                       (txs.filter(t=>t.asset==='SUI'&&t.date<=d).reduce((s,t)=>s+t.amount,0)*suiP);
+                return (txs.filter(t=>t.asset==='SOL'&&t.date<=d).reduce((s,t)=>s+t.amount,0)*solP) + (txs.filter(t=>t.asset==='SUI'&&t.date<=d).reduce((s,t)=>s+t.amount,0)*suiP);
             });
+            const ctxM = document.getElementById('monthChart').getContext('2d');
             if(chartM) chartM.destroy();
-            chartM = new Chart(ctxM, { type: 'line', data: { labels: mLabels, datasets: [{ data: mData, borderColor: '#8269d9', borderWeight: 2, fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3, pointRadius: 4, pointHoverRadius: 6 }] }, options: chartOptions });
-
+            chartM = new Chart(ctxM, { type: 'line', data: { labels: mLabels, datasets: [{ data: mData, borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: chartOpt });
             const ctxA = document.getElementById('alltimeChart').getContext('2d');
             if(chartA) chartA.destroy();
-            chartA = new Chart(ctxA, { type: 'line', data: { labels: ['2021', '23', '25', 'Jetzt'], datasets: [{ data: [10000, 1200, 2400, cur], borderColor: '#8269d9', borderWeight: 2, fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4, pointRadius: 4, pointHoverRadius: 6 }] }, options: chartOptions });
+            chartA = new Chart(ctxA, { type: 'line', data: { labels: ['2021', '23', '25', 'Jetzt'], datasets: [{ data: [10000, 1200, 2400, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: chartOpt });
         }
 
         function renderHist() {
@@ -192,10 +170,36 @@
             const a = document.getElementById('tx-asset').value, e = parseFloat(document.getElementById('tx-eur').value) || 0,
                   q = parseFloat(document.getElementById('tx-qty').value) || 0, p = parseFloat(document.getElementById('tx-price').value) || 0,
                   d = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
-            if(q > 0) { txs.push({asset: a, date: d, amount: q, eur: e, price: p}); localStorage.setItem('krypto_v25', JSON.stringify(txs)); refresh(); }
+            if(q > 0) { txs.push({asset: a, date: d, amount: q, eur: e, price: p}); localStorage.setItem('krypto_v26_final', JSON.stringify(txs)); refresh(); }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v25', JSON.stringify(txs)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v26_final', JSON.stringify(txs)); refresh(); } }
+
+        function exportData() {
+            const data = JSON.stringify(txs);
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = data;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            alert("Backup-Code kopiert! Speichere ihn in deinen Notizen.");
+        }
+
+        function importData() {
+            const code = prompt("Backup-Code hier einfügen:");
+            if(code) {
+                try {
+                    const parsed = JSON.parse(code);
+                    if(Array.isArray(parsed)) {
+                        txs = parsed;
+                        localStorage.setItem('krypto_v26_final', JSON.stringify(txs));
+                        refresh();
+                        alert("Wiederhergestellt!");
+                    }
+                } catch(e) { alert("Fehler!"); }
+            }
+        }
 
         refresh();
         setInterval(refresh, 25000);
