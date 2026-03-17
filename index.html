@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V48 FINAL</title>
+    <title>Krypto Journal V49</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -34,7 +34,7 @@
     </div>
 
     <div id="fix-area" style="padding: 0 10px;">
-        <button class="btn-fix" onclick="autoFixData()">⚠️ HISTORIE & DATEN REPARIEREN</button>
+        <button class="btn-fix" onclick="autoFixData()">⚠️ ALLES REPARIEREN (SOL & SUI)</button>
     </div>
 
     <div class="slider-container" id="slider">
@@ -55,76 +55,98 @@
             </div>
             <div class="slide">
                 <div style="font-size:10px;color:#848e9c">BREAK-EVEN</div>
-                <div style="background:#2b2f36; padding:15px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL Kurs:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$--</span></div>
+                <div style="background:#2b2f36; padding:15px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$--</span></div>
+                <div style="background:#2b2f36; padding:15px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SUI:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$--</span></div>
             </div>
             <div class="slide">
-                <div style="font-size:10px;color:#848e9c">AUSBLICK (5 JAHRE)</div>
-                <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:22px; margin-top:10px;">0.00 SOL</div>
-                <div id="prog-value" style="font-size:26px; font-weight:800; color:var(--purp); margin-top:15px;">$ 0.00</div>
-                <div style="font-size:10px; color:#848e9c;">Wert bei SOL ATH ($260)</div>
+                <div style="font-size:10px;color:#848e9c">PROGNOSE 2031</div>
+                <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:18px; margin-top:10px;">0.00 SOL</div>
+                <div id="prog-sui" style="color:var(--sui); font-weight:bold; font-size:18px;">0 SUI</div>
+                <div id="prog-value" style="font-size:24px; font-weight:800; color:var(--purp); margin-top:15px;">$ 0.00</div>
+                <div style="font-size:10px; color:#848e9c;">Portfolio-Wert bei SOL ATH</div>
             </div>
         </div>
     </div>
     <div class="dots" id="dotBox"></div>
 
     <div class="card" style="border-left: 4px solid var(--sol)"><div style="display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:10px;color:var(--sol)">SOLANA</div><div id="sol-qty" style="font-size:22px;font-weight:700">-- SOL</div></div><div id="sol-p-live" style="font-weight:bold;">$--</div></div></div>
+    <div class="card" style="border-left: 4px solid var(--sui)"><div style="display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:10px;color:var(--sui)">SUI</div><div id="sui-qty" style="font-size:22px;font-weight:700">-- SUI</div></div><div id="sui-p-live" style="font-weight:bold;">$--</div></div></div>
 
     <div class="card" style="border-top: 2px solid var(--purp)">
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
         <input type="number" id="tx-eur" placeholder="Investiert in €">
         <input type="number" id="tx-qty" placeholder="Menge">
-        <select id="tx-node"><option value="none">Kein Staking</option><option value="alliance">Alliance (6.29%)</option><option value="trust">Trust Nodes (5.63%)</option></select>
+        <select id="tx-node">
+            <option value="none">Kein Staking</option>
+            <option value="alliance">SOL: Alliance (6.29%)</option>
+            <option value="trust">SOL: Trust Nodes (5.63%)</option>
+            <option value="sui_staked">SUI: Staking (4.8%)</option>
+        </select>
         <button onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-    <div style="display:flex; gap:10px; margin-bottom:30px;">
-        <button onclick="localStorage.clear(); location.reload();" style="background:var(--red); font-size:10px;">DATEN LÖSCHEN</button>
-        <button onclick="importData()" style="background:#2b2f36; font-size:10px;">RESTORE</button>
-    </div>
+    <button onclick="importData()" style="background:#2b2f36; margin-bottom:30px; width:100%;">🔄 RESTORE</button>
 
     <script>
-        const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
+        const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.048, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
-        let prices = { SOL: 0, EUR: 0.94 };
-        let startX = 0, currentSlide = 0;
+        let prices = { SOL: 0, SUI: 0, EUR: 0.94 };
+        let startX = 0, currentSlide = 0, chartM, chartA;
 
         function initLivePrices() {
-            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade');
-            ws.onmessage = (e) => { prices.SOL = parseFloat(JSON.parse(e.data).p); updateUI(); };
+            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade');
+            ws.onmessage = (e) => { 
+                const d = JSON.parse(e.data);
+                if(d.s === 'SOLUSDT') prices.SOL = parseFloat(d.p);
+                if(d.s === 'SUIUSDT') prices.SUI = parseFloat(d.p);
+                updateUI(); 
+            };
         }
 
         function updateUI() {
             if (prices.SOL === 0) return;
-            let sQ = 0, invE = 0, sW = 0, fSol = 0, sAl = 0, sTr = 0;
+            let sQ = 0, suQ = 0, invE = 0, sW = 0, fSol = 0, fSui = 0, sAl = 0, sTr = 0;
             txs.forEach(t => {
                 let amount = parseFloat(t.amount) || 0;
                 invE += (parseFloat(t.eur) || 0);
-                sQ += amount;
                 let rate = APR[t.node] || 0;
-                sW += (amount * rate / 52);
-                fSol += (amount * Math.pow(1 + rate, 5));
-                if(t.node === 'alliance') sAl += amount;
-                if(t.node === 'trust') sTr += amount;
+                if(t.asset === 'SOL') {
+                    sQ += amount; sW += (amount * rate / 52); fSol += (amount * Math.pow(1 + rate, 5));
+                    if(t.node === 'alliance') sAl += amount; if(t.node === 'trust') sTr += amount;
+                } else {
+                    suQ += amount; fSui += (amount * Math.pow(1 + rate, 5));
+                }
             });
 
-            document.getElementById('total-val-usd').innerText = '$ ' + (sQ * prices.SOL).toLocaleString(undefined, {minimumFractionDigits: 2});
-            let diffE = (sQ * prices.SOL * prices.EUR) - invE;
+            document.getElementById('total-val-usd').innerText = '$ ' + (sQ * prices.SOL + suQ * prices.SUI).toLocaleString(undefined, {minimumFractionDigits: 2});
+            let diffE = ((sQ * prices.SOL + suQ * prices.SUI) * prices.EUR) - invE;
             let perf = document.getElementById('total-perf-eur');
             perf.innerText = (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString() + ' € Allzeit';
             perf.style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
+            
             document.getElementById('sol-qty').innerText = sQ.toFixed(4) + ' SOL';
+            document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
             document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
+            document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invE / prices.EUR) / sQ).toFixed(2) : '$ --';
+            document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((invE / prices.EUR) / suQ).toFixed(2) : '$ --';
             document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
             document.getElementById('st-alliance').innerText = sAl.toFixed(1);
             document.getElementById('st-trust').innerText = sTr.toFixed(1);
-            document.getElementById('prog-sol').innerText = fSol.toFixed(2) + ' SOL';
-            document.getElementById('prog-value').innerText = '$ ' + (fSol * 260).toLocaleString(undefined, {maximumFractionDigits:0});
+            
+            document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(2) + ' SOL';
+            document.getElementById('prog-sui').innerText = (fSui || suQ).toFixed(0) + ' SUI';
+            document.getElementById('prog-value').innerText = '$ ' + ((fSol || sQ) * 260 + (fSui || suQ) * 5).toLocaleString(undefined, {maximumFractionDigits:0});
+            
             document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
             document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
+            document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
+            document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
+            
+            document.getElementById('fix-area').style.display = txs.length === 0 ? 'block' : 'none';
         }
 
         function autoFixData() {
@@ -135,8 +157,16 @@
                 {asset:"SOL", date:"2026-03-17", amount:0.5493, eur:0, node:"none"}
             ];
             localStorage.setItem(DB_KEY, JSON.stringify(txs));
-            renderHist(); updateUI();
-            document.getElementById('fix-area').style.display = 'none';
+            renderHist(); updateUI(); refreshCharts();
+        }
+
+        function refreshCharts() {
+            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
+            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+            if(chartM) chartM.destroy();
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*93], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            if(chartA) chartA.destroy();
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         function renderHist() {
@@ -151,11 +181,11 @@
             if(q > 0) {
                 txs.push({ asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value) || 0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] });
                 localStorage.setItem(DB_KEY, JSON.stringify(txs));
-                renderHist(); updateUI();
+                renderHist(); updateUI(); refreshCharts();
             }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); refreshCharts(); } }
         
         function importData() { 
             let c = prompt("Backup einfügen:"); 
@@ -179,7 +209,7 @@
             }
         });
         const dBox = document.getElementById('dotBox'); for(let i=0; i<6; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
-        initLivePrices(); renderHist();
+        initLivePrices(); renderHist(); setTimeout(refreshCharts, 1000);
     </script>
 </body>
 </html>
