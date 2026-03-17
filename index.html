@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V44 FINAL FIX</title>
+    <title>Krypto Journal V45 STABLE</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -14,20 +14,17 @@
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
         .live-dot { height: 8px; width: 8px; background: var(--sol); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        
         .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
         .slider-track { display: flex; transition: transform 0.4s ease-out; width: 600%; }
         .slide { width: 16.66%; padding: 18px; box-sizing: border-box; min-height: 250px; }
         .dots { text-align: center; margin-bottom: 15px; }
         .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
         .dot.active { width: 12px; background-color: var(--purp); border-radius: 3px; }
-        
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
         .val { font-size: 22px; font-weight: 700; }
         .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; margin-top: 6px; overflow: hidden; }
         .bar-fill { height: 100%; transition: width 1s ease; }
-        
         input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; outline:none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -37,13 +34,11 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <div class="journal-title"><span class="live-dot"></span>LIVE PORTFOLIO</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
-
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
             <div class="slide"><div class="yield-label">Trend (3M)</div><div style="height:180px"><canvas id="monthChart"></canvas></div></div>
@@ -64,7 +59,7 @@
                     <div style="text-align:right;"><div id="sui-weekly-yield" style="font-size:22px; font-weight:bold; color:var(--sui);">0.0 SUI</div><div style="font-size:10px; color:#848e9c;">Zuwachs SUI</div></div>
                 </div>
                 <div style="margin-top:20px; font-size:11px; color:#848e9c; background: rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-                    SOL Alliance: <span id="st-alliance" style="color:#fff">0.0</span> | Trust: <span id="st-trust" style="color:#fff">0.0</span><br>
+                    Alliance: <span id="st-alliance" style="color:#fff">0.0</span> | Trust: <span id="st-trust" style="color:#fff">0.0</span><br>
                     SUI Staked: <span id="st-sui" style="color:#fff">0.0</span>
                 </div>
             </div>
@@ -87,21 +82,18 @@
         </div>
     </div>
     <div class="dots" id="dotBox"></div>
-
     <div class="card" style="border-left: 4px solid var(--sol)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div><div class="yield-label" style="color:var(--sol)">SOLANA</div><div id="sol-qty" class="val">-- SOL</div></div>
             <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div></div>
         </div>
     </div>
-
     <div class="card" style="border-left: 4px solid var(--sui)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div><div class="yield-label" style="color:var(--sui)">SUI</div><div id="sui-qty" class="val">-- SUI</div></div>
             <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div></div>
         </div>
     </div>
-
     <div class="card" style="border-top: 2px solid var(--purp)">
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
@@ -115,21 +107,17 @@
         </select>
         <button id="save-btn" onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
-
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-
     <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
         <button class="btn-backup" onclick="exportData()">💾 BACKUP</button>
         <button class="btn-backup" onclick="importData()">🔄 RESTORE</button>
     </div>
-
     <script>
         const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.0480, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, EUR: 0.94 };
         let editIdx = -1, startX = 0, currentSlide = 0;
-
         function initLivePrices() {
             const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade');
             ws.onmessage = (e) => {
@@ -140,73 +128,55 @@
             };
             ws.onclose = () => setTimeout(initLivePrices, 5000);
         }
-
         async function initData() {
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
                 const d = await res.json(); prices.EUR = d.EUR;
-                refreshCharts();
-                updateUI();
+                refreshCharts(); updateUI();
             } catch(e) {}
         }
-
         function updateUI() {
             if (prices.SOL === 0) return;
             let sQ = 0, suQ = 0, invE = 0, sW = 0, suW = 0, fSol = 0, fSui = 0;
             let sAl = 0, sTr = 0, sSu = 0;
-
             txs.forEach(t => {
                 invE += (parseFloat(t.eur) || 0);
                 let rate = APR[t.node] || 0;
                 let amount = parseFloat(t.amount) || 0;
                 if(t.asset === 'SOL') {
-                    sQ += amount;
-                    sW += (amount * rate / 52);
-                    fSol += (amount * Math.pow(1 + rate, 5));
-                    if(t.node === 'alliance') sAl += amount;
-                    if(t.node === 'trust') sTr += amount;
+                    sQ += amount; sW += (amount * rate / 52); fSol += (amount * Math.pow(1 + rate, 5));
+                    if(t.node === 'alliance') sAl += amount; if(t.node === 'trust') sTr += amount;
                 } else {
-                    suQ += amount;
-                    suW += (amount * rate / 52);
-                    fSui += (amount * Math.pow(1 + rate, 5));
+                    suQ += amount; suW += (amount * rate / 52); fSui += (amount * Math.pow(1 + rate, 5));
                     if(t.node === 'sui_staked') sSu += amount;
                 }
             });
-
-            if (fSol <= sQ) fSol = sQ; 
-
             let totalUsd = (sQ * prices.SOL) + (suQ * prices.SUI);
             document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
-            
             let diffE = (totalUsd * prices.EUR) - invE;
             let perf = document.getElementById('total-perf-eur');
             perf.innerText = (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString() + ' € Allzeit';
             perf.style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
             perf.style.backgroundColor = diffE >= 0 ? 'rgba(0,230,118,0.1)' : 'rgba(246,70,93,0.1)';
-
             document.getElementById('sol-qty').innerText = sQ.toFixed(4) + ' SOL';
             document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
             document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
             document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invE / prices.EUR) / sQ).toFixed(2) : '$ --';
             document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((invE / prices.EUR) / suQ).toFixed(2) : '$ --';
-
             document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
             document.getElementById('sui-weekly-yield').innerText = suW.toFixed(1) + ' SUI';
             document.getElementById('st-alliance').innerText = sAl.toFixed(1);
             document.getElementById('st-trust').innerText = sTr.toFixed(1);
             document.getElementById('st-sui').innerText = sSu.toFixed(1);
-
-            document.getElementById('prog-sol').innerText = fSol.toFixed(2) + ' SOL';
-            document.getElementById('prog-sui').innerText = Math.round(fSui).toLocaleString() + ' SUI';
-            document.getElementById('prog-value').innerText = '$ ' + (fSol * 260 + fSui * 5).toLocaleString(undefined, {maximumFractionDigits:0});
-
+            document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(2) + ' SOL';
+            document.getElementById('prog-sui').innerText = Math.round(fSui || suQ).toLocaleString() + ' SUI';
+            document.getElementById('prog-value').innerText = '$ ' + ((fSol || sQ) * 260 + (fSui || suQ) * 5).toLocaleString(undefined, {maximumFractionDigits:0});
             document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
             document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
             document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
             document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
         }
-
         function refreshCharts() {
             const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
             let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
@@ -216,7 +186,6 @@
             chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*93], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
             renderHist();
         }
-
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
@@ -225,7 +194,6 @@
                 b.innerHTML += `<tr><td><b>${t.asset}</b>${nL}<br><small>${t.date}</small></td><td>+${parseFloat(t.amount).toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
             });
         }
-
         function saveTx() {
             const q = parseFloat(document.getElementById('tx-qty').value) || 0;
             if(q > 0) {
@@ -236,31 +204,26 @@
                 refreshCharts(); updateUI();
             }
         }
-
         function editTx(i) {
             const t = txs[i]; editIdx = i;
             document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-qty').value = t.amount;
             document.getElementById('tx-node').value = t.node || 'none'; document.getElementById('tx-date').value = t.date;
             document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN"; window.scrollTo({ top: 400, behavior: 'smooth' });
         }
-
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); refreshCharts(); updateUI(); } }
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
-        
         function importData() { 
-            const raw = prompt("Daten einfügen:"); 
-            if(raw) { 
+            let c = prompt("Daten einfügen:"); 
+            if(c) { 
                 try {
-                    // Automatischer Fix für Sonderzeichen und Formatierung
-                    const clean = raw.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").trim();
-                    txs = JSON.parse(clean);
+                    // Radikaler Fix für Anführungszeichen & Zeichenmüll
+                    c = c.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, '"').replace(/[\u2013\u2014]/g, '-').trim();
+                    txs = JSON.parse(c);
                     localStorage.setItem(DB_KEY, JSON.stringify(txs)); 
-                    refreshCharts(); updateUI();
-                    alert("Historie erfolgreich geladen!");
-                } catch(e) { alert("Fehler beim Einlesen. Bitte den exakten Text kopieren!"); }
+                    refreshCharts(); updateUI(); alert("Historie geladen!");
+                } catch(e) { alert("Format-Fehler! Bitte den Text direkt aus der Nachricht kopieren."); }
             } 
         }
-
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let d = startX - e.changedTouches[0].clientX;
@@ -271,9 +234,7 @@
             }
         });
         const dBox = document.getElementById('dotBox'); for(let i=0; i<6; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
-        
-        initData();
-        initLivePrices();
+        initData(); initLivePrices();
     </script>
 </body>
 </html>
