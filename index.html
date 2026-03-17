@@ -3,89 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bochum Masterplan</title>
+    <title>Bochum Master-Journal</title>
     <style>
-        :root { --bg: #000; --card: #111; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system; margin: 0; padding: 20px; }
-        h1 { background: linear-gradient(90deg, var(--sol), var(--sui)); -webkit-background-clip: text; color: transparent; text-align: center; font-size: 24px; margin-bottom: 20px; }
+        :root { --bg: #000; --card: #111; --sol: #00e676; --purp: #8269d9; --txt: #fff; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; }
+        h1 { background: linear-gradient(90deg, var(--sol), var(--purp)); -webkit-background-clip: text; color: transparent; text-align: center; font-size: 24px; margin-bottom: 25px; font-weight: 800; }
         .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .val { font-size: 32px; font-weight: 800; color: var(--sol); margin: 5px 0; }
-        .live-price { font-size: 14px; color: #888; text-align: right; }
-        .bar-bg { background: #222; height: 12px; border-radius: 6px; width: 100%; margin: 15px 0; overflow: hidden; }
-        .bar-fill { background: var(--sol); height: 100%; width: 0%; transition: width 1.5s ease; box-shadow: 0 0 10px var(--sol); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .mini { text-align: center; border: 1px solid #222; border-radius: 15px; padding: 15px; }
-        input { background: #222; border: 1px solid var(--purp); color: #fff; padding: 10px; border-radius: 10px; width: 100%; margin-top: 10px; font-size: 16px; }
-        button { background: var(--purp); color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; margin-top: 10px; font-weight: bold; }
-        .history { font-size: 13px; width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .history td { padding: 8px 0; border-bottom: 1px solid #222; }
+        .bar-bg { background: #222; height: 10px; border-radius: 5px; width: 100%; margin: 15px 0; overflow: hidden; }
+        .bar-fill { background: var(--sol); height: 100%; width: 0%; transition: width 1s ease; box-shadow: 0 0 10px var(--sol); }
+        input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-top: 8px; font-size: 15px; box-sizing: border-box; }
+        button { background: var(--purp); color: #fff; border: none; padding: 14px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: bold; font-size: 16px; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        .history-table th { text-align: left; color: #555; padding-bottom: 10px; border-bottom: 1px solid #222; font-size: 11px; }
+        .history-table td { padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
+        .btn-clear { background: transparent; color: #444; font-size: 10px; border: none; margin-top: 20px; text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h1>BOCHUM MASTERPLAN 🏖️</h1>
+    <h1>BOCHUM JOURNAL 🏖️</h1>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between">
-            <div class="label">Gesamtbestand</div>
-            <div id="price" class="live-price">Suche Kurs...</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="label">Bestand</div>
+            <div id="price" style="color:#888; font-size:14px;">$ --</div>
         </div>
-        <div id="sol-display" class="val">-- SOL</div>
-        <div id="eur-display" style="font-size: 18px; color: #888;">-- €</div>
+        <div id="sol-total" class="val">-- SOL</div>
+        <div id="usd-total" style="font-size: 20px; font-weight: 600;">$ --</div>
         <div class="bar-bg"><div id="progress-bar" class="bar-fill"></div></div>
-        <div id="percent-display" style="text-align:right; font-size:14px; color:var(--sol)">0%</div>
+        <div id="percent-display" style="text-align:right; font-size:13px; color:var(--sol)">0%</div>
     </div>
 
-    <div class="grid">
-        <div class="mini" style="border-color: var(--sol)">
-            <div class="label">Ziel SOL</div>
-            <div style="font-size:18px; font-weight:bold">700</div>
-        </div>
-        <div class="mini" style="border-color: var(--sui)">
-            <div class="label">Ziel SUI</div>
-            <div style="font-size:18px; font-weight:bold">8.000</div>
-        </div>
+    <div class="card" style="border-color: #333;">
+        <div class="label" style="color:var(--purp)">Neuen Kauf erfassen</div>
+        <input type="date" id="date-input">
+        <input type="number" id="amount-input" placeholder="Menge (z.B. 6.636)" step="any">
+        <input type="number" id="price-input" placeholder="Kurs in $ (z.B. 95.30)" step="any">
+        <button onclick="addTransaction()">Kauf speichern</button>
     </div>
 
-    <div class="card" style="margin-top:20px; border-color: var(--purp)">
-        <div class="label" style="color:var(--purp)">Änderung eintragen</div>
-        <input type="number" id="new-amount" placeholder="Neue SOL Menge (z.B. 35.5)" step="any">
-        <button onclick="updateBalance()">Bestand Speichern</button>
+    <div class="card">
+        <div class="label">Transaktions-Historie</div>
+        <table class="history-table">
+            <thead>
+                <tr><th>Datum</th><th>Menge</th><th>Kurs</th></tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+        </table>
+        <button class="btn-clear" onclick="clearData()">Daten zurücksetzen</button>
     </div>
 
     <script>
-        // Daten laden oder Standardwerte setzen
-        let solAmount = localStorage.getItem('solAmount') || 28.9841;
-        document.getElementById('sol-display').innerText = parseFloat(solAmount).toFixed(4) + ' SOL';
+        let transactions = JSON.parse(localStorage.getItem('bochum_tx')) || [
+            {date: '2026-03-02', amount: 6.636, price: 95.30},
+            {date: 'Start', amount: 22.3481, price: 0}
+        ];
 
-        async function getLivePrice() {
-            try {
-                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=eur');
-                const d = await r.json();
-                const p = d.solana.eur;
-                const totalEur = solAmount * p;
-                const progress = (solAmount / 700) * 100;
+        function updateUI() {
+            let totalSol = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+            document.getElementById('sol-total').innerText = totalSol.toFixed(4) + ' SOL';
+            
+            const historyBody = document.getElementById('history-body');
+            historyBody.innerHTML = '';
+            transactions.forEach(tx => {
+                const row = `<tr>
+                    <td>${tx.date}</td>
+                    <td style="color:var(--sol)">+${tx.amount}</td>
+                    <td>$${tx.price > 0 ? tx.price.toFixed(2) : '--'}</td>
+                </tr>`;
+                historyBody.insertAdjacentHTML('afterbegin', row);
+            });
 
-                document.getElementById('price').innerText = 'Live: ' + p.toFixed(2) + ' €';
-                document.getElementById('eur-display').innerText = totalEur.toLocaleString('de-DE', {style:'currency', currency:'EUR'});
-                document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
-                document.getElementById('percent-display').innerText = progress.toFixed(2) + '% erreicht';
-            } catch(e) { document.getElementById('price').innerText = 'Offline'; }
+            getLivePrice(totalSol);
         }
 
-        function updateBalance() {
-            const val = document.getElementById('new-amount').value;
-            if(val) {
-                solAmount = val;
-                localStorage.setItem('solAmount', val);
-                document.getElementById('sol-display').innerText = parseFloat(val).toFixed(4) + ' SOL';
-                getLivePrice();
-                alert("Bestand aktualisiert!");
+        async function getLivePrice(totalSol) {
+            try {
+                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+                const d = await r.json();
+                const p = d.solana.usd;
+                const totalUsd = totalSol * p;
+                const progress = (totalSol / 700) * 100;
+
+                document.getElementById('price').innerText = '$ ' + p.toFixed(2);
+                document.getElementById('usd-total').innerText = totalUsd.toLocaleString('en-US', {style:'currency', currency:'USD'});
+                document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+                document.getElementById('percent-display').innerText = progress.toFixed(2) + '% zum Strandhaus';
+            } catch(e) { console.log("Fehler beim Kurs-Laden"); }
+        }
+
+        function addTransaction() {
+            const date = document.getElementById('date-input').value;
+            const amount = document.getElementById('amount-input').value;
+            const price = document.getElementById('price-input').value;
+
+            if(date && amount) {
+                transactions.push({date, amount: parseFloat(amount), price: parseFloat(price) || 0});
+                localStorage.setItem('bochum_tx', JSON.stringify(transactions));
+                updateUI();
+                document.getElementById('amount-input').value = '';
+                document.getElementById('price-input').value = '';
             }
         }
 
-        getLivePrice();
-        setInterval(getLivePrice, 30000);
+        function clearData() {
+            if(confirm("Alle Daten löschen?")) {
+                localStorage.removeItem('bochum_tx');
+                location.reload();
+            }
+        }
+
+        updateUI();
+        setInterval(() => updateUI(), 30000);
     </script>
 </body>
 </html>
