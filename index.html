@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal Swipe</title>
+    <title>Krypto Journal Break-Even</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -13,21 +13,21 @@
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
         
         /* Slider Styles */
-        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 15px; }
-        .slider-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 200%; }
-        .slide { width: 50%; padding: 18px; box-sizing: border-box; min-height: 220px; }
+        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
+        .slider-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 300%; }
+        .slide { width: 33.333%; padding: 18px; box-sizing: border-box; min-height: 220px; }
         .dots { text-align: center; margin-bottom: 15px; }
         .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 4px; transition: 0.3s; }
         .dot.active { width: 15px; background-color: var(--purp); border-radius: 3px; }
 
-        /* Goal View Styles */
-        .goal-item { margin-bottom: 15px; }
-        .goal-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: #848e9c; }
-        .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 4px; }
-        .bar-fill { height: 100%; transition: width 1s ease; border-radius: 5px; }
+        /* Break-Even UI */
+        .be-box { background: #2b2f36; padding: 12px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .be-price { font-size: 18px; font-weight: 800; color: var(--purp); }
 
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
-        .chart-container { height: 160px; }
+        .val { font-size: 22px; font-weight: 700; }
+        .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; overflow: hidden; margin: 5px 0; }
+        .bar-fill { height: 100%; transition: width 1s ease; border-radius: 5px; }
         input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -45,22 +45,31 @@
         <div class="slider-track" id="track">
             <div class="slide">
                 <div style="font-size: 11px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">RECOVERY CHART</div>
-                <div class="chart-container"><canvas id="recoveryChart"></canvas></div>
+                <div style="height: 160px;"><canvas id="recoveryChart"></canvas></div>
             </div>
             <div class="slide">
-                <div style="font-size: 11px; color: #848e9c; margin-bottom: 15px; letter-spacing: 1px;">ZIELE & FORTSCHRITT</div>
-                
-                <div class="goal-item">
-                    <div class="goal-label"><span>SOL Ziel (700)</span><span id="sol-pct" style="color:var(--sol)">0%</span></div>
-                    <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol); box-shadow: 0 0 10px var(--sol);"></div></div>
-                    <div id="sol-left" style="font-size: 10px; color: #555; text-align: right;">Noch -- SOL</div>
+                <div style="font-size: 11px; color: #848e9c; margin-bottom: 15px; letter-spacing: 1px;">STRANDHAUS ZIELE</div>
+                <div style="margin-bottom:15px">
+                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (700)</span><span id="sol-pct" style="color:var(--sol)">0%</span></div>
+                    <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol)"></div></div>
                 </div>
-
-                <div class="goal-item">
-                    <div class="goal-label"><span>SUI Ziel (8.000)</span><span id="sui-pct" style="color:var(--sui)">0%</span></div>
-                    <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui); box-shadow: 0 0 10px var(--sui);"></div></div>
-                    <div id="sui-left" style="font-size: 10px; color: #555; text-align: right;">Noch -- SUI</div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SUI (8000)</span><span id="sui-pct" style="color:var(--sui)">0%</span></div>
+                    <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui)"></div></div>
                 </div>
+            </div>
+            <div class="slide">
+                <div style="font-size: 11px; color: #848e9c; margin-bottom: 10px; letter-spacing: 1px;">BREAK-EVEN ANALYSE</div>
+                <p style="font-size: 12px; color: #848e9c; margin: 0;">Benötigter Kurs, um die 10.000€ Investition (Allzeit) auszugleichen:</p>
+                <div class="be-box">
+                    <span style="font-size:12px; font-weight:bold;">SOL Kurs</span>
+                    <span id="sol-be" class="be-price">$ --</span>
+                </div>
+                <div class="be-box">
+                    <span style="font-size:12px; font-weight:bold;">SUI Kurs</span>
+                    <span id="sui-be" class="be-price">$ --</span>
+                </div>
+                <div style="font-size: 10px; color: #555; margin-top: 10px; text-align: center;">(Berechnet auf Basis deiner aktuellen Bestände)</div>
             </div>
         </div>
     </div>
@@ -68,54 +77,52 @@
     <div class="dots">
         <span class="dot active" id="dot0"></span>
         <span class="dot" id="dot1"></span>
+        <span class="dot" id="dot2"></span>
     </div>
 
     <div class="card" style="border-left: 4px solid var(--sol)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><div style="font-size:11px; color:var(--sol); font-weight:800;">SOLANA</div><div id="sol-qty" class="val" style="font-size:22px">-- SOL</div></div>
-            <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div><div id="sol-usd-val" style="color:#848e9c; font-size:14px;">$--</div></div>
+            <div><div style="font-size:11px; color:var(--sol); font-weight:800;">SOLANA</div><div id="sol-qty" class="val">-- SOL</div></div>
+            <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div><div id="sol-be-small" style="color:#555; font-size:10px;">BE: $--</div></div>
         </div>
     </div>
 
     <div class="card" style="border-left: 4px solid var(--sui)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><div style="font-size:11px; color:var(--sui); font-weight:800;">SUI</div><div id="sui-qty" class="val" style="font-size:22px">-- SUI</div></div>
-            <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div><div id="sui-usd-val" style="color:#848e9c; font-size:14px;">$--</div></div>
+            <div><div style="font-size:11px; color:var(--sui); font-weight:800;">SUI</div><div id="sui-qty" class="val">-- SUI</div></div>
+            <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div><div id="sui-be-small" style="color:#555; font-size:10px;">BE: $--</div></div>
         </div>
     </div>
 
     <div class="card" style="border-top: 2px solid var(--purp)">
-        <div style="font-size: 11px; color: var(--purp); font-weight: bold;">NEUER KAUF</div>
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
         <input type="number" id="tx-eur" placeholder="Investiert €">
         <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"><input type="number" id="tx-price" placeholder="Kurs $"></div>
-        <button onclick="saveTx()">JOURNAL AKTUALISIEREN</button>
+        <button onclick="saveTx()">DATEN SPEICHERN</button>
     </div>
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
 
     <script>
-        let txs = JSON.parse(localStorage.getItem('krypto_v20')) || [
+        let txs = JSON.parse(localStorage.getItem('krypto_v21')) || [
             {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500, price: 95.30},
             {asset: 'SOL', date: '2021-Start', amount: 22.3481, eur: 9500, price: 425.00}
         ];
 
         let myChart;
+        let startX = 0, currentSlide = 0;
 
-        // Swipe Logic
-        let startX = 0;
-        let currentSlide = 0;
+        // Swipe Logic for 3 Slides
         const track = document.getElementById('track');
-
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let diff = startX - e.changedTouches[0].clientX;
             if(Math.abs(diff) > 50) {
-                currentSlide = diff > 0 ? 1 : 0;
-                track.style.transform = `translateX(-${currentSlide * 50}%)`;
-                document.getElementById('dot0').classList.toggle('active', currentSlide === 0);
-                document.getElementById('dot1').classList.toggle('active', currentSlide === 1);
+                if(diff > 0 && currentSlide < 2) currentSlide++;
+                else if(diff < 0 && currentSlide > 0) currentSlide--;
+                track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
+                for(let i=0; i<3; i++) document.getElementById('dot'+i).classList.toggle('active', i === currentSlide);
             }
         });
 
@@ -123,40 +130,44 @@
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
                 const p = await res.json();
-                const solP = p.SOL.USD, suiP = p.SUI.USD, eurR = p.SOL.EUR / p.SOL.USD;
+                const solP = p.SOL.USD, suiP = p.SUI.USD, eurRate = p.SOL.USD / p.SOL.EUR;
 
                 let sQ = txs.filter(t => t.asset === 'SOL').reduce((s,t) => s + t.amount, 0);
                 let suQ = txs.filter(t => t.asset === 'SUI').reduce((s,t) => s + t.amount, 0);
-                let invest = txs.reduce((s,t) => s + (t.eur || 0), 0);
+                let totalInvEur = txs.reduce((s,t) => s + (t.eur || 0), 0);
+                let totalInvUsd = totalInvEur * eurRate;
 
-                let totalUsd = (sQ * solP) + (suQ * suiP);
-                let totalEur = totalUsd * eurR;
+                let totalUsdVal = (sQ * solP) + (suQ * suiP);
+                
+                // Break-Even Rechnung: Invest / Menge
+                let solBE = totalInvUsd / sQ;
+                let suiBE = suQ > 0 ? totalInvUsd / suQ : 0;
 
-                document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                document.getElementById('sol-qty').innerText = sQ.toLocaleString(undefined, {minimumFractionDigits: 4}) + ' SOL';
+                document.getElementById('total-val-usd').innerText = '$ ' + totalUsdVal.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('sol-qty').innerText = sQ.toFixed(4) + ' SOL';
                 document.getElementById('sui-qty').innerText = suQ.toLocaleString() + ' SUI';
                 document.getElementById('sol-p-live').innerText = '$' + solP.toFixed(2);
                 document.getElementById('sui-p-live').innerText = '$' + suiP.toFixed(2);
-                document.getElementById('sol-usd-val').innerText = '$ ' + (sQ*solP).toLocaleString();
-                document.getElementById('sui-usd-val').innerText = '$ ' + (suQ*suiP).toLocaleString();
+                
+                document.getElementById('sol-be').innerText = '$ ' + solBE.toFixed(2);
+                document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + suiBE.toFixed(2) : 'N/A';
+                document.getElementById('sol-be-small').innerText = 'BE: $' + solBE.toFixed(2);
+                document.getElementById('sui-be-small').innerText = 'BE: $' + suiBE.toFixed(2);
 
-                let diff = totalEur - invest;
+                // Allzeit Performance
+                let diffEur = (totalUsdVal / eurRate) - totalInvEur;
                 let perf = document.getElementById('total-perf-eur');
-                perf.innerText = (diff >= 0 ? '+' : '-') + Math.abs(diff).toLocaleString() + ' € Allzeit';
-                perf.style.backgroundColor = diff >= 0 ? 'rgba(0, 230, 118, 0.2)' : 'rgba(246, 70, 93, 0.2)';
-                perf.style.color = diff >= 0 ? 'var(--sol)' : 'var(--red)';
+                perf.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString() + ' € Allzeit';
+                perf.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
+                perf.style.backgroundColor = diffEur >= 0 ? 'rgba(0,230,118,0.1)' : 'rgba(246,70,93,0.1)';
 
-                // Goal Updates
-                let solPct = (sQ / 700) * 100;
-                let suiPct = (suQ / 8000) * 100;
-                document.getElementById('sol-bar').style.width = Math.min(solPct, 100) + '%';
-                document.getElementById('sol-pct').innerText = solPct.toFixed(1) + '%';
-                document.getElementById('sol-left').innerText = `Noch ${(700-sQ).toFixed(2)} SOL`;
-                document.getElementById('sui-bar').style.width = Math.min(suiPct, 100) + '%';
-                document.getElementById('sui-pct').innerText = suiPct.toFixed(1) + '%';
-                document.getElementById('sui-left').innerText = `Noch ${(8000-suQ).toLocaleString()} SUI`;
+                // Progress Bars
+                document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
+                document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
+                document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
+                document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
 
-                updateChart(totalUsd);
+                updateChart(totalUsdVal);
                 renderHist();
             } catch(e) {}
         }
@@ -200,12 +211,12 @@
                   d = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
             if(q > 0) {
                 txs.push({asset: a, date: d, amount: q, eur: e, price: p});
-                localStorage.setItem('krypto_v20', JSON.stringify(txs));
+                localStorage.setItem('krypto_v21', JSON.stringify(txs));
                 refresh();
             }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v20', JSON.stringify(txs)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v21', JSON.stringify(txs)); refresh(); } }
 
         refresh();
         setInterval(refresh, 25000);
