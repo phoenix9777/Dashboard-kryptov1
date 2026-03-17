@@ -3,63 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V30</title>
+    <title>Krypto Journal Final V32</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
         body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; overflow-x: hidden; }
         .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 15px; }
-        .alltime-val { font-size: 32px; font-weight: 800; }
+        .alltime-val { font-size: 30px; font-weight: 800; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
         .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
-        .slider-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 400%; }
-        .slide { width: 25%; padding: 15px; box-sizing: border-box; min-height: 250px; }
+        .slider-track { display: flex; transition: transform 0.4s ease-out; width: 500%; }
+        .slide { width: 20%; padding: 18px; box-sizing: border-box; min-height: 250px; }
         .dots { text-align: center; margin-bottom: 15px; }
         .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
         .dot.active { width: 12px; background-color: var(--purp); border-radius: 3px; }
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
         .val { font-size: 22px; font-weight: 700; }
+        .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .bar-bg { background: #2b2f36; height: 10px; border-radius: 5px; margin-top: 6px; overflow: hidden; }
         .bar-fill { height: 100%; transition: width 1s ease; }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; outline: none; box-sizing: border-box; }
-        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .history-table td { padding: 10px 0; border-bottom: 1px solid #2b2f36; }
+        .btn-backup { background: #2b2f36; color: #848e9c; padding: 10px; font-size: 11px; border-radius: 8px; border: none; width: 48%; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
-        <div id="total-perf-eur" class="perf-badge">-- € Allzeit</div>
+        <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
 
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
+            <div class="slide"><div class="yield-label">Trend (3M)</div><div style="height:180px"><canvas id="monthChart"></canvas></div></div>
+            <div class="slide"><div class="yield-label">Recovery</div><div style="height:180px"><canvas id="alltimeChart"></canvas></div></div>
             <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">TREND (USD)</div>
-                <div style="height: 180px;"><canvas id="monthChart"></canvas></div>
-            </div>
-            <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">RECOVERY (ALLZEIT)</div>
-                <div style="height: 180px;"><canvas id="alltimeChart"></canvas></div>
-            </div>
-            <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 15px;">ZIELE & FORTSCHRITT</div>
-                <div style="margin-bottom:20px">
-                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (700)</span><span id="sol-pct" style="color:var(--sol)">0%</span></div>
+                <div class="yield-label">Strandhaus Ziele</div>
+                <div style="margin-top:20px">
+                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SOL (700)</span><span id="sol-pct">0%</span></div>
                     <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol)"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px"><span>SUI (8.000)</span><span id="sui-pct" style="color:var(--sui)">0%</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:20px"><span>SUI (8k)</span><span id="sui-pct">0%</span></div>
                     <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui)"></div></div>
                 </div>
-                <div id="weekly-info" style="margin-top:15px; font-size:11px; color:#848e9c; text-align:center;">Wöchentliche Ernte: <span id="yield-sum" style="color:var(--sol)">0.00 SOL</span></div>
             </div>
             <div class="slide">
-                <div style="font-size: 10px; color: #848e9c; margin-bottom: 10px;">BREAK-EVEN</div>
-                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL BE:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$ --</span></div>
-                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;"><span>SUI BE:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$ --</span></div>
+                <div class="yield-label">Staking Ernte</div>
+                <div id="sol-weekly-yield" style="font-size:26px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
+                <div style="font-size:12px; color:#848e9c;">Zuwachs pro Woche</div>
+                <div style="margin-top:20px; font-size:12px; opacity:0.8">
+                    Trust Nodes (5.63%): <span id="st-trust">0.00</span><br>
+                    Alliance (6.29%): <span id="st-alliance">0.00</span>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="yield-label">Break-Even</div>
+                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$--</span></div>
+                <div style="background:#2b2f36; padding:12px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;"><span>SUI:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$--</span></div>
             </div>
         </div>
     </div>
@@ -67,15 +69,15 @@
 
     <div class="card" style="border-left: 4px solid var(--sol)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><div style="font-size:11px; color:var(--sol); font-weight:800;">SOLANA TOTAL</div><div id="sol-qty" class="val">-- SOL</div></div>
-            <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div><div id="sol-be-s" style="color:#555; font-size:10px;">BE: $--</div></div>
+            <div><div class="yield-label" style="color:var(--sol)">SOLANA</div><div id="sol-qty" class="val">-- SOL</div></div>
+            <div style="text-align:right"><div id="sol-p-live" style="font-weight:bold;">$--</div></div>
         </div>
     </div>
 
     <div class="card" style="border-left: 4px solid var(--sui)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><div style="font-size:11px; color:var(--sui); font-weight:800;">SUI TOTAL</div><div id="sui-qty" class="val">-- SUI</div></div>
-            <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div><div id="sui-be-s" style="color:#555; font-size:10px;">BE: $--</div></div>
+            <div><div class="yield-label" style="color:var(--sui)">SUI</div><div id="sui-qty" class="val">-- SUI</div></div>
+            <div style="text-align:right"><div id="sui-p-live" style="font-weight:bold;">$--</div></div>
         </div>
     </div>
 
@@ -94,14 +96,14 @@
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
 
-    <div style="display:flex; justify-content:space-between; margin-bottom: 30px; gap:10px;">
-        <button onclick="exportData()" style="flex:1; background:#2b2f36; color:#848e9c; border-radius:8px; padding:10px; border:none; font-size:11px;">💾 BACKUP</button>
-        <button onclick="importData()" style="flex:1; background:#2b2f36; color:#848e9c; border-radius:8px; padding:10px; border:none; font-size:11px;">🔄 RESTORE</button>
+    <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
+        <button class="btn-backup" onclick="exportData()">💾 BACKUP</button>
+        <button class="btn-backup" onclick="importData()">🔄 RESTORE</button>
     </div>
 
     <script>
         const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
-        let txs = JSON.parse(localStorage.getItem('krypto_v30')) || [];
+        let txs = JSON.parse(localStorage.getItem('krypto_v1')) || [];
         let chartM, chartA, currentSlide = 0;
 
         async function refresh() {
@@ -127,30 +129,28 @@
                 perf.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
                 perf.style.backgroundColor = diffEur >= 0 ? 'rgba(0,230,118,0.1)' : 'rgba(246,70,93,0.1)';
 
-                let solBE = (invEur * eurR) / sQ;
-                document.getElementById('sol-be').innerText = '$ ' + solBE.toFixed(2);
-                document.getElementById('sol-be-s').innerText = 'BE: $' + solBE.toFixed(2);
-
+                document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invEur * eurR) / sQ).toFixed(2) : '$ --';
                 document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
                 document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
                 document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
                 document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
 
                 let weekly = txs.reduce((s,t) => s + (t.amount * (APR[t.node] || 0) / 52), 0);
-                document.getElementById('yield-sum').innerText = weekly.toFixed(4) + ' SOL';
+                document.getElementById('sol-weekly-yield').innerText = weekly.toFixed(4) + ' SOL';
+                document.getElementById('st-trust').innerText = txs.filter(t=>t.node==='trust').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
+                document.getElementById('st-alliance').innerText = txs.filter(t=>t.node==='alliance').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
 
-                updateCharts(totalUsd, solP, suiP);
+                updateCharts(totalUsd);
                 renderHist();
             } catch(e) {}
         }
 
-        function updateCharts(cur, solP, suiP) {
-            const opt = { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { position: 'left', ticks: { color: '#848e9c', font: { size: 9 }, callback: v => '$'+v.toLocaleString() } } } };
-            const mData = [cur*0.8, cur*0.9, cur];
+        function updateCharts(cur) {
+            const opt = { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { ticks: { color: '#848e9c', font: { size: 9 } } } } };
             if(chartM) chartM.destroy();
-            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: mData, borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [cur*0.8, cur*0.9, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
             if(chartA) chartA.destroy();
-            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','25','Jetzt'], datasets: [{ data: [10000, 1500, 2400, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, cur], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         function renderHist() {
@@ -168,29 +168,28 @@
                     asset: document.getElementById('tx-asset').value,
                     eur: parseFloat(document.getElementById('tx-eur').value) || 0,
                     amount: q,
-                    price: parseFloat(document.getElementById('tx-price').value) || 0,
                     node: document.getElementById('tx-node').value,
                     date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]
                 });
-                localStorage.setItem('krypto_v30', JSON.stringify(txs));
+                localStorage.setItem('krypto_v1', JSON.stringify(txs));
                 refresh();
             }
         }
 
-        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v30', JSON.stringify(txs)); refresh(); } }
-        function exportData() { const dummy = document.createElement("textarea"); document.body.appendChild(dummy); dummy.value = JSON.stringify(txs); dummy.select(); document.execCommand("copy"); document.body.removeChild(dummy); alert("Backup kopiert!"); }
-        function importData() { const code = prompt("Backup einfügen:"); if(code) { txs = JSON.parse(code); localStorage.setItem('krypto_v30', JSON.stringify(txs)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem('krypto_v1', JSON.stringify(txs)); refresh(); } }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)); alert("Code kopiert!"); }
+        function importData() { const code = prompt("Code einfügen:"); if(code) { txs = JSON.parse(code); localStorage.setItem('krypto_v1', JSON.stringify(txs)); refresh(); } }
 
         let startX = 0; document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let diff = startX - e.changedTouches[0].clientX;
             if(Math.abs(diff) > 60) {
-                if(diff > 0 && currentSlide < 3) currentSlide++; else if(diff < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 25}%)`;
-                for(let i=0; i<4; i++) document.getElementById('dot'+i).classList.toggle('active', i === currentSlide);
+                if(diff > 0 && currentSlide < 4) currentSlide++; else if(diff < 0 && currentSlide > 0) currentSlide--;
+                document.getElementById('track').style.transform = `translateX(-${currentSlide * 20}%)`;
+                for(let i=0; i<5; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
             }
         });
-        const dotBox = document.getElementById('dotBox'); for(let i=0; i<4; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}" id="dot${i}"></span>`;
+        const dotBox = document.getElementById('dotBox'); for(let i=0; i<5; i++) dotBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
         refresh(); setInterval(refresh, 25000);
     </script>
 </body>
