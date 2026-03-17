@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal Real</title>
+    <title>Krypto Journal Final</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
         body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; }
         .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 20px; }
-        .alltime-val { font-size: 36px; font-weight: 800; color: #fff; }
+        .alltime-val { font-size: 32px; font-weight: 800; color: #fff; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
         .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
         .chart-container { height: 180px; margin-top: 10px; }
         .asset-row { display: flex; justify-content: space-between; align-items: center; }
         .qty { font-size: 22px; font-weight: 700; }
         .usd-val { color: #848e9c; font-size: 14px; }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; box-sizing: border-box; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
         button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
         .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2b2f36; font-size: 13px; }
     </style>
@@ -38,7 +38,7 @@
         <div class="asset-row">
             <div>
                 <div style="font-size: 12px; color: var(--sol); font-weight: 800;">SOLANA</div>
-                <div id="sol-qty-display" class="qty">28.9841 SOL</div>
+                <div id="sol-qty-display" class="qty">-- SOL</div>
             </div>
             <div style="text-align: right">
                 <div id="sol-price-live" style="font-weight: bold;">$--</div>
@@ -51,7 +51,7 @@
         <div class="asset-row">
             <div>
                 <div style="font-size: 12px; color: var(--sui); font-weight: 800;">SUI</div>
-                <div id="sui-qty-display" class="qty">0 SUI</div>
+                <div id="sui-qty-display" class="qty">-- SUI</div>
             </div>
             <div style="text-align: right">
                 <div id="sui-price-live" style="font-weight: bold;">$--</div>
@@ -61,11 +61,13 @@
     </div>
 
     <div class="card" style="border-top: 2px solid var(--purp)">
+        <div style="font-size: 11px; color: var(--purp); font-weight: bold;">NEUER KAUF</div>
         <input type="date" id="tx-date">
         <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
+        <input type="number" id="tx-eur" placeholder="Investiert in €">
         <div style="display:flex; gap:10px;">
-            <input type="number" id="tx-eur" placeholder="Invest €">
-            <input type="number" id="tx-qty" placeholder="Menge">
+            <input type="number" id="tx-qty" placeholder="Menge Coins">
+            <input type="number" id="tx-price" placeholder="Kurs in $">
         </div>
         <button onclick="saveTx()">JOURNAL AKTUALISIEREN</button>
     </div>
@@ -73,10 +75,9 @@
     <div id="history-box" class="card"></div>
 
     <script>
-        // Deine EXAKTEN Daten
-        let transactions = JSON.parse(localStorage.getItem('krypto_v17_real')) || [
-            {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500},
-            {asset: 'SOL', date: '2021-Start', amount: 22.3481, eur: 9500}
+        let transactions = JSON.parse(localStorage.getItem('krypto_v18')) || [
+            {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500, price: 95.30},
+            {asset: 'SOL', date: '2021-Start', amount: 22.3481, eur: 9500, price: 425.00}
         ];
 
         let myChart;
@@ -85,30 +86,27 @@
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
                 const prices = await res.json();
-                
                 const sP = prices.SOL.USD;
                 const suP = prices.SUI.USD;
                 const eurRate = prices.SOL.EUR / prices.SOL.USD;
 
                 let solSum = transactions.filter(t => t.asset === 'SOL').reduce((s, t) => s + t.amount, 0);
                 let suiSum = transactions.filter(t => t.asset === 'SUI').reduce((s, t) => s + t.amount, 0);
-                let totalInvestEur = transactions.reduce((s, t) => s + t.eur, 0);
+                let totalInvestEur = transactions.reduce((s, t) => s + (t.eur || 0), 0);
 
                 let solUsd = solSum * sP;
                 let suiUsd = suiSum * suP;
                 let totalUsd = solUsd + suiUsd;
                 let totalEur = totalUsd * eurRate;
 
-                // UI Fixes
-                document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 document.getElementById('sol-qty-display').innerText = solSum.toLocaleString(undefined, {minimumFractionDigits: 4}) + ' SOL';
                 document.getElementById('sui-qty-display').innerText = suiSum.toLocaleString() + ' SUI';
                 document.getElementById('sol-price-live').innerText = '$' + sP.toFixed(2);
                 document.getElementById('sui-price-live').innerText = '$' + suP.toFixed(2);
-                document.getElementById('sol-usd-total').innerText = '$ ' + solUsd.toLocaleString();
-                document.getElementById('sui-usd-total').innerText = '$ ' + suiUsd.toLocaleString();
+                document.getElementById('sol-usd-total').innerText = '$ ' + solUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('sui-usd-total').innerText = '$ ' + suiUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
 
-                // Allzeit Kalkulation (Die ehrlichen 10k)
                 let diffEur = totalEur - totalInvestEur;
                 let perfEl = document.getElementById('total-perf-eur');
                 perfEl.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' € Allzeit';
@@ -117,7 +115,7 @@
 
                 updateChart(totalUsd);
                 showHistory();
-            } catch(e) { console.log("API Fehler"); }
+            } catch(e) {}
         }
 
         function updateChart(current) {
@@ -159,17 +157,19 @@
             const asset = document.getElementById('tx-asset').value;
             const eur = parseFloat(document.getElementById('tx-eur').value) || 0;
             const amount = parseFloat(document.getElementById('tx-qty').value) || 0;
-            const date = document.getElementById('tx-date').value || '01.04.';
+            const price = parseFloat(document.getElementById('tx-price').value) || 0;
+            const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
             if(amount > 0) {
-                transactions.push({asset, date, amount, eur});
-                localStorage.setItem('krypto_v17_real', JSON.stringify(transactions));
+                transactions.push({asset, date, amount, eur, price});
+                localStorage.setItem('krypto_v18', JSON.stringify(transactions));
                 refresh();
                 document.getElementById('tx-eur').value = '';
                 document.getElementById('tx-qty').value = '';
+                document.getElementById('tx-price').value = '';
             }
         }
 
-        function delTx(i) { if(confirm('Eintrag löschen?')) { transactions.splice(i,1); localStorage.setItem('krypto_v17_real', JSON.stringify(transactions)); refresh(); } }
+        function delTx(i) { if(confirm('Löschen?')) { transactions.splice(i,1); localStorage.setItem('krypto_v18', JSON.stringify(transactions)); refresh(); } }
 
         refresh();
         setInterval(refresh, 25000);
