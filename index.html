@@ -3,166 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal Pro</title>
+    <title>Krypto Journal Real</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #000; --card: #111; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #ff3b30; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; }
-        h1 { background: linear-gradient(90deg, var(--sol), var(--sui)); -webkit-background-clip: text; color: transparent; text-align: center; font-size: 26px; margin-bottom: 25px; font-weight: 800; text-transform: uppercase; }
-        .card { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid #222; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        .val { font-size: 28px; font-weight: 800; margin: 5px 0; }
-        .sub-val { font-size: 14px; color: #888; margin-bottom: 10px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #222; }
-        .stat-box { font-size: 12px; }
-        .stat-label { color: #555; display: block; margin-bottom: 2px; }
-        .bar-bg { background: #222; height: 8px; border-radius: 4px; width: 100%; margin: 10px 0; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; transition: width 1s ease; }
-        select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-top: 8px; font-size: 16px; outline: none; }
-        button { background: var(--purp); color: #fff; border: none; padding: 14px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: bold; }
-        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
-        .history-table td { padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
-        .tag { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 20px; }
+        .alltime-val { font-size: 36px; font-weight: 800; color: #fff; }
+        .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
+        .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
+        .chart-container { height: 180px; margin-top: 10px; }
+        .asset-row { display: flex; justify-content: space-between; align-items: center; }
+        .qty { font-size: 22px; font-weight: 700; }
+        .usd-val { color: #848e9c; font-size: 14px; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; box-sizing: border-box; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; font-size: 16px; }
+        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2b2f36; font-size: 13px; }
     </style>
 </head>
 <body>
-    <h1>Krypto Journal Pro 📈</h1>
 
-    <div id="sol-card" class="card" style="border-left: 4px solid var(--sol)">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="label">Solana Portfolio</div>
-            <div id="sol-price" style="color:#888; font-size:13px;">$ --</div>
-        </div>
-        <div id="sol-total" class="val" style="color:var(--sol)">-- SOL</div>
-        <div id="sol-usd" style="font-size: 20px; font-weight: bold;">$ --</div>
-        <div id="sol-profit" style="font-size: 13px; margin-bottom: 10px;">--</div>
-        
-        <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol);"></div></div>
-        
-        <div class="stats-grid">
-            <div class="stat-box"><span class="stat-label">Ø-Kurs</span><span id="sol-avg">$ --</span></div>
-            <div class="stat-box"><span class="stat-label">Noch offen</span><span id="sol-left">-- SOL</span></div>
+    <div class="header">
+        <div class="alltime-label" style="font-size: 11px; color: #848e9c; letter-spacing: 1px;">GESAMTWERT (USD)</div>
+        <div id="total-val-usd" class="alltime-val">$ 0.00</div>
+        <div id="total-perf-eur" class="perf-badge">-- €</div>
+    </div>
+
+    <div class="card">
+        <div style="font-size: 12px; color: #848e9c; margin-bottom: 10px;">RECOVERY CHART (ALLZEIT)</div>
+        <div class="chart-container"><canvas id="recoveryChart"></canvas></div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--sol)">
+        <div class="asset-row">
+            <div>
+                <div style="font-size: 12px; color: var(--sol); font-weight: 800;">SOLANA</div>
+                <div id="sol-qty-display" class="qty">28.9841 SOL</div>
+            </div>
+            <div style="text-align: right">
+                <div id="sol-price-live" style="font-weight: bold;">$--</div>
+                <div id="sol-usd-total" class="usd-val">$--</div>
+            </div>
         </div>
     </div>
 
-    <div id="sui-card" class="card" style="border-left: 4px solid var(--sui)">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="label">Sui Portfolio</div>
-            <div id="sui-price" style="color:#888; font-size:13px;">$ --</div>
-        </div>
-        <div id="sui-total" class="val" style="color:var(--sui)">-- SUI</div>
-        <div id="sui-usd" style="font-size: 20px; font-weight: bold;">$ --</div>
-        <div id="sui-profit" style="font-size: 13px; margin-bottom: 10px;">--</div>
-
-        <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui);"></div></div>
-        
-        <div class="stats-grid">
-            <div class="stat-box"><span class="stat-label">Ø-Kurs</span><span id="sui-avg">$ --</span></div>
-            <div class="stat-box"><span class="stat-label">Noch offen</span><span id="sui-left">-- SUI</span></div>
+    <div class="card" style="border-left: 4px solid var(--sui)">
+        <div class="asset-row">
+            <div>
+                <div style="font-size: 12px; color: var(--sui); font-weight: 800;">SUI</div>
+                <div id="sui-qty-display" class="qty">0 SUI</div>
+            </div>
+            <div style="text-align: right">
+                <div id="sui-price-live" style="font-weight: bold;">$--</div>
+                <div id="sui-usd-total" class="usd-val">$--</div>
+            </div>
         </div>
     </div>
 
-    <div class="card" style="border-color: var(--purp);">
-        <input type="date" id="date-input">
-        <select id="asset-input">
-            <option value="SOL">Solana (SOL)</option>
-            <option value="SUI">Sui (SUI)</option>
-        </select>
+    <div class="card" style="border-top: 2px solid var(--purp)">
+        <input type="date" id="tx-date">
+        <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
         <div style="display:flex; gap:10px;">
-            <input type="number" id="amount-input" placeholder="Menge" step="any">
-            <input type="number" id="price-input" placeholder="Kurs $" step="any">
+            <input type="number" id="tx-eur" placeholder="Invest €">
+            <input type="number" id="tx-qty" placeholder="Menge">
         </div>
-        <button onclick="addTransaction()">Kauf speichern</button>
+        <button onclick="saveTx()">JOURNAL AKTUALISIEREN</button>
     </div>
 
-    <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
+    <div id="history-box" class="card"></div>
 
     <script>
-        let txs = JSON.parse(localStorage.getItem('krypto_journal_v10')) || [
-            {asset: 'SOL', date: '2026-03-02', amount: 6.636, price: 95.30},
-            {asset: 'SOL', date: 'Start', amount: 22.3481, price: 0}
+        // Deine EXAKTEN Daten
+        let transactions = JSON.parse(localStorage.getItem('krypto_v17_real')) || [
+            {asset: 'SOL', date: '2026-03-02', amount: 6.636, eur: 500},
+            {asset: 'SOL', date: '2021-Start', amount: 22.3481, eur: 9500}
         ];
 
-        async function update() {
-            // Berechnungen für SOL
-            let solTxs = txs.filter(t => t.asset === 'SOL');
-            let solQty = solTxs.reduce((s, t) => s + parseFloat(t.amount), 0);
-            let solInvest = solTxs.reduce((s, t) => s + (parseFloat(t.amount) * parseFloat(t.price)), 0);
-            let solAvg = solInvest / solQty;
+        let myChart;
 
-            // Berechnungen für SUI
-            let suiTxs = txs.filter(t => t.asset === 'SUI');
-            let suiQty = suiTxs.reduce((s, t) => s + parseFloat(t.amount), 0);
-            let suiInvest = suiTxs.reduce((s, t) => s + (parseFloat(t.amount) * parseFloat(t.price)), 0);
-            let suiAvg = suiQty > 0 ? suiInvest / suiQty : 0;
-
-            document.getElementById('sol-total').innerText = solQty.toLocaleString('de-DE', {minimumFractionDigits: 3}) + ' SOL';
-            document.getElementById('sui-total').innerText = suiQty.toLocaleString('de-DE') + ' SUI';
-            document.getElementById('sol-avg').innerText = '$ ' + solAvg.toFixed(2);
-            document.getElementById('sui-avg').innerText = suiQty > 0 ? '$ ' + suiAvg.toFixed(2) : '$ --';
-            document.getElementById('sol-left').innerText = Math.max(0, (700 - solQty)).toFixed(2) + ' SOL';
-            document.getElementById('sui-left').innerText = Math.max(0, (8000 - suiQty)).toLocaleString('de-DE') + ' SUI';
-
-            const hb = document.getElementById('history-body');
-            hb.innerHTML = '';
-            txs.slice().reverse().forEach((t, index) => {
-                let realIndex = txs.length - 1 - index;
-                hb.insertAdjacentHTML('beforeend', `<tr>
-                    <td><span class="tag" style="color:${t.asset==='SOL'? 'var(--sol)':'var(--sui)'}">${t.asset}</span><br><small style="color:#444">${t.date}</small></td>
-                    <td style="font-weight:bold;">+${t.amount}</td>
-                    <td style="color:#666">$${t.price > 0 ? t.price.toFixed(2) : '--'}</td>
-                    <td style="text-align:right; color:#ff3b30" onclick="deleteTx(${realIndex})">✕</td>
-                </tr>`);
-            });
-
+        async function refresh() {
             try {
-                const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD');
-                const data = await res.json();
-                const sP = data.SOL.USD;
-                const suP = data.SUI.USD;
-
-                document.getElementById('sol-price').innerText = 'Live: $' + sP.toFixed(2);
-                document.getElementById('sui-price').innerText = 'Live: $' + suP.toFixed(2);
+                const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD,EUR');
+                const prices = await res.json();
                 
-                let sVal = solQty * sP;
-                let suVal = suiQty * suP;
-                document.getElementById('sol-usd').innerText = '$ ' + sVal.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('sui-usd').innerText = '$ ' + suVal.toLocaleString('en-US', {minimumFractionDigits: 2});
+                const sP = prices.SOL.USD;
+                const suP = prices.SUI.USD;
+                const eurRate = prices.SOL.EUR / prices.SOL.USD;
 
-                // Profit Anzeige
-                let sProf = sVal - (solQty * solAvg);
-                let pEl = document.getElementById('sol-profit');
-                pEl.innerText = (sProf >= 0 ? '+$' : '-$') + Math.abs(sProf).toFixed(2) + ' (Profit)';
-                pEl.style.color = sProf >= 0 ? 'var(--sol)' : 'var(--red)';
+                let solSum = transactions.filter(t => t.asset === 'SOL').reduce((s, t) => s + t.amount, 0);
+                let suiSum = transactions.filter(t => t.asset === 'SUI').reduce((s, t) => s + t.amount, 0);
+                let totalInvestEur = transactions.reduce((s, t) => s + t.eur, 0);
 
-                document.getElementById('sol-bar').style.width = Math.min((solQty/700)*100, 100) + '%';
-                document.getElementById('sui-bar').style.width = Math.min((suiQty/8000)*100, 100) + '%';
-            } catch(e) {}
+                let solUsd = solSum * sP;
+                let suiUsd = suiSum * suP;
+                let totalUsd = solUsd + suiUsd;
+                let totalEur = totalUsd * eurRate;
+
+                // UI Fixes
+                document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('sol-qty-display').innerText = solSum.toLocaleString(undefined, {minimumFractionDigits: 4}) + ' SOL';
+                document.getElementById('sui-qty-display').innerText = suiSum.toLocaleString() + ' SUI';
+                document.getElementById('sol-price-live').innerText = '$' + sP.toFixed(2);
+                document.getElementById('sui-price-live').innerText = '$' + suP.toFixed(2);
+                document.getElementById('sol-usd-total').innerText = '$ ' + solUsd.toLocaleString();
+                document.getElementById('sui-usd-total').innerText = '$ ' + suiUsd.toLocaleString();
+
+                // Allzeit Kalkulation (Die ehrlichen 10k)
+                let diffEur = totalEur - totalInvestEur;
+                let perfEl = document.getElementById('total-perf-eur');
+                perfEl.innerText = (diffEur >= 0 ? '+' : '-') + Math.abs(diffEur).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' € Allzeit';
+                perfEl.style.backgroundColor = diffEur >= 0 ? 'rgba(0, 230, 118, 0.2)' : 'rgba(246, 70, 93, 0.2)';
+                perfEl.style.color = diffEur >= 0 ? 'var(--sol)' : 'var(--red)';
+
+                updateChart(totalUsd);
+                showHistory();
+            } catch(e) { console.log("API Fehler"); }
         }
 
-        function addTransaction() {
-            const asset = document.getElementById('asset-input').value;
-            const amount = document.getElementById('amount-input').value;
-            const price = document.getElementById('price-input').value;
-            const date = document.getElementById('date-input').value || new Date().toISOString().split('T')[0];
-            if(amount) {
-                txs.push({asset, date, amount: parseFloat(amount), price: parseFloat(price) || 0});
-                localStorage.setItem('krypto_journal_v10', JSON.stringify(txs));
-                update();
-                document.getElementById('amount-input').value = '';
-                document.getElementById('price-input').value = '';
+        function updateChart(current) {
+            const ctx = document.getElementById('recoveryChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2021', '2023', '2025', 'Jetzt'],
+                    datasets: [{
+                        data: [10000, 1200, 2400, current],
+                        borderColor: '#8269d9',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(130, 105, 217, 0.1)',
+                        pointRadius: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { display: true, ticks: { color: '#848e9c' } }, y: { display: false } }
+                }
+            });
+        }
+
+        function showHistory() {
+            const box = document.getElementById('history-box');
+            box.innerHTML = '<div style="font-size: 11px; color: #848e9c; margin-bottom: 10px;">HISTORIE</div>';
+            transactions.slice().reverse().forEach((t, i) => {
+                let idx = transactions.length - 1 - i;
+                box.innerHTML += `<div class="history-item">
+                    <span><b>${t.asset}</b> <small style="color:#555">${t.date}</small></span>
+                    <span>+${t.amount.toFixed(2)} <span style="color:var(--red); margin-left:10px" onclick="delTx(${idx})">✕</span></span>
+                </div>`;
+            });
+        }
+
+        function saveTx() {
+            const asset = document.getElementById('tx-asset').value;
+            const eur = parseFloat(document.getElementById('tx-eur').value) || 0;
+            const amount = parseFloat(document.getElementById('tx-qty').value) || 0;
+            const date = document.getElementById('tx-date').value || '01.04.';
+            if(amount > 0) {
+                transactions.push({asset, date, amount, eur});
+                localStorage.setItem('krypto_v17_real', JSON.stringify(transactions));
+                refresh();
+                document.getElementById('tx-eur').value = '';
+                document.getElementById('tx-qty').value = '';
             }
         }
 
-        function deleteTx(index) {
-            if(confirm("Löschen?")) {
-                txs.splice(index, 1);
-                localStorage.setItem('krypto_journal_v10', JSON.stringify(txs));
-                update();
-            }
-        }
+        function delTx(i) { if(confirm('Eintrag löschen?')) { transactions.splice(i,1); localStorage.setItem('krypto_v17_real', JSON.stringify(transactions)); refresh(); } }
 
-        update();
-        setInterval(update, 20000);
+        refresh();
+        setInterval(refresh, 25000);
     </script>
 </body>
 </html>
