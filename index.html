@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V51</title>
+    <title>Krypto Journal Pro V53</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; overflow-x: hidden; }
-        .header { text-align: center; padding: 10px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 15px; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 10px; padding-bottom: 60px; overflow-x: hidden; }
+        .header { text-align: center; padding: 10px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; }
         .journal-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--purp); font-weight: 800; margin-bottom: 4px; }
-        .alltime-val { font-size: 30px; font-weight: 800; }
-        .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
-        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
-        .slider-track { display: flex; transition: transform 0.4s ease-out; width: 600%; }
-        .slide { width: 16.66%; padding: 18px; box-sizing: border-box; min-height: 250px; }
-        .dots { text-align: center; margin-bottom: 15px; }
-        .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
-        .dot.active { width: 12px; background-color: var(--purp); border-radius: 3px; }
-        .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #2b2f36; }
-        .val { font-size: 22px; font-weight: 700; }
-        .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 16px; box-sizing: border-box; outline:none; }
-        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 12px; width: 100%; margin-top: 15px; font-weight: 800; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .history-table td { padding: 12px 0; border-bottom: 1px solid #2b2f36; }
-        .btn-fix { background: var(--sol); color: #000; font-weight: bold; margin-bottom: 20px; width:100%; padding:15px; border-radius:12px; border:none;}
+        .alltime-val { font-size: 28px; font-weight: 800; }
+        .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 13px; margin-top: 5px; }
+        
+        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; height: 320px; }
+        .slider-track { display: flex; transition: transform 0.4s ease-out; width: 700%; height: 100%; }
+        .slide { width: 14.285%; box-sizing: border-box; height: 100%; position: relative; padding: 15px; }
+        .slide-chart { padding: 0 !important; }
+        
+        .dots { text-align: center; margin-bottom: 10px; }
+        .dot { height: 4px; width: 4px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 2px; }
+        .dot.active { width: 10px; background-color: var(--purp); border-radius: 2px; }
+        
+        .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #2b2f36; }
+        .val { font-size: 20px; font-weight: 700; }
+        .yield-label { font-size: 10px; color: #848e9c; margin-bottom: 8px; text-transform: uppercase; }
+        
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-top: 5px; font-size: 16px; box-sizing: border-box; outline:none; }
+        button { background: var(--purp); color: #fff; border: none; padding: 14px; border-radius: 12px; width: 100%; margin-top: 10px; font-weight: 800; font-size: 14px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .history-table td { padding: 10px 0; border-bottom: 1px solid #2b2f36; }
     </style>
 </head>
 <body>
@@ -35,14 +39,12 @@
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
 
-    <div id="fix-area" style="padding: 0 10px; display: none;">
-        <button class="btn-fix" onclick="autoFixData()">⚠️ ALLES REPARIEREN (SOL & SUI)</button>
-    </div>
-
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
-            <div class="slide"><div class="yield-label">Trend (3M)</div><div style="height:180px"><canvas id="monthChart"></canvas></div></div>
-            <div class="slide"><div class="yield-label">Recovery</div><div style="height:180px"><canvas id="alltimeChart"></canvas></div></div>
+            <div class="slide"><div class="yield-label">Trend (3M)</div><div style="height:220px"><canvas id="monthChart"></canvas></div></div>
+            
+            <div class="slide"><div class="yield-label">Recovery</div><div style="height:220px"><canvas id="alltimeChart"></canvas></div></div>
+            
             <div class="slide">
                 <div class="yield-label">Ziele</div>
                 <div style="margin-top:20px; font-size:12px">
@@ -52,6 +54,7 @@
                     <div style="background:#2b2f36;height:8px;border-radius:4px;margin:5px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:4px;"></div></div>
                 </div>
             </div>
+            
             <div class="slide">
                 <div class="yield-label">Ernte/Woche</div>
                 <div style="margin-top:10px;">
@@ -61,17 +64,23 @@
                     <div style="font-size:10px; color:#848e9c;">Zuwachs SUI</div>
                 </div>
             </div>
+            
             <div class="slide">
                 <div class="yield-label">Break-Even</div>
                 <div style="background:#2b2f36; padding:15px; border-radius:12px; margin-top:10px; display:flex; justify-content:space-between;"><span>SOL:</span><span id="sol-be" style="color:var(--purp); font-weight:800;">$--</span></div>
                 <div style="background:#2b2f36; padding:15px; border-radius:12px; margin-top:8px; display:flex; justify-content:space-between;"><span>SUI:</span><span id="sui-be" style="color:var(--purp); font-weight:800;">$--</span></div>
             </div>
+            
             <div class="slide">
                 <div class="yield-label">Prognose 2031</div>
                 <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:20px; margin-top:10px;">0.00 SOL</div>
                 <div id="prog-sui" style="color:var(--sui); font-weight:bold; font-size:20px;">0 SUI</div>
                 <div id="prog-value" style="font-size:26px; font-weight:800; color:var(--purp); margin-top:15px;">$ 0.00</div>
-                <div style="font-size:10px; color:#848e9c;">Portfolio-Wert bei SOL ATH</div>
+                <div style="font-size:10px; color:#848e9c;">Portfolio bei SOL ATH</div>
+            </div>
+
+            <div class="slide slide-chart">
+                <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
             </div>
         </div>
     </div>
@@ -96,16 +105,34 @@
 
     <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
     <div style="display:flex; justify-content:space-between; margin-bottom: 30px;">
-        <button onclick="exportData()" style="background:#2b2f36; width:48%; padding:15px; border-radius:12px; border:none; color:#fff;">💾 BACKUP</button>
-        <button onclick="importData()" style="background:#2b2f36; width:48%; padding:15px; border-radius:12px; border:none; color:#fff;">🔄 RESTORE</button>
+        <button onclick="exportData()" style="background:#2b2f36; width:48%; padding:12px; border-radius:12px; border:none; color:#fff; font-size:11px;">💾 BACKUP</button>
+        <button onclick="importData()" style="background:#2b2f36; width:48%; padding:12px; border-radius:12px; border:none; color:#fff; font-size:11px;">🔄 RESTORE</button>
     </div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.048, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, EUR: 0.94 };
         let startX = 0, currentSlide = 0, chartM, chartA;
+
+        function initTV() {
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": "BINANCE:SOLUSDT",
+                "interval": "60",
+                "timezone": "Europe/Berlin",
+                "theme": "dark",
+                "style": "1",
+                "locale": "de",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_top_toolbar": true,
+                "save_image": false,
+                "container_id": "tradingview_chart"
+            });
+        }
 
         function initLivePrices() {
             const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade');
@@ -143,7 +170,6 @@
             document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$ ' + ((invE / prices.EUR) / sQ).toFixed(2) : '$ --';
             document.getElementById('sui-be').innerText = suQ > 0 ? '$ ' + ((invE / prices.EUR) / suQ).toFixed(2) : '$ --';
-            
             document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
             document.getElementById('sui-weekly-yield').innerText = suW.toFixed(2) + ' SUI';
             
@@ -155,19 +181,15 @@
             document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
             document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
             document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
-            
-            document.getElementById('fix-area').style.display = txs.length === 0 ? 'block' : 'none';
         }
 
-        function autoFixData() {
-            localStorage.clear();
-            txs = [
-                {asset:"SOL", date:"2021-01-01", amount:22.3481, eur:9500, node:"trust"},
-                {asset:"SOL", date:"2026-03-02", amount:6.636, eur:500, node:"alliance"},
-                {asset:"SOL", date:"2026-03-17", amount:0.5493, eur:0, node:"none"}
-            ];
-            localStorage.setItem(DB_KEY, JSON.stringify(txs));
-            location.reload();
+        function refreshCharts() {
+            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
+            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+            if(chartM) chartM.destroy();
+            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*93], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
+            if(chartA) chartA.destroy();
+            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         function renderHist() {
@@ -189,32 +211,23 @@
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); refreshCharts(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Code kopiert!")); }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
         function importData() { 
             let c = prompt("Backup einfügen:"); 
             if(c) { try { c = c.replace(/[\u201C\u201D\u2018\u2019]/g, '"').trim(); txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
-        }
-
-        function refreshCharts() {
-            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
-            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-            if(chartM) chartM.destroy();
-            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
-            if(chartA) chartA.destroy();
-            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2700], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
         }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => {
             let d = startX - e.changedTouches[0].clientX;
             if(Math.abs(d) > 60) {
-                if(d > 0 && currentSlide < 5) currentSlide++; else if(d < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 16.66}%)`;
-                for(let i=0; i<6; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
+                if(d > 0 && currentSlide < 6) currentSlide++; else if(d < 0 && currentSlide > 0) currentSlide--;
+                document.getElementById('track').style.transform = `translateX(-${currentSlide * 14.285}%)`;
+                for(let i=0; i<7; i++) document.getElementById('dotBox').children[i].classList.toggle('active', i === currentSlide);
             }
         });
-        const dBox = document.getElementById('dotBox'); for(let i=0; i<6; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
-        initLivePrices(); renderHist(); setTimeout(refreshCharts, 1000);
+        const dBox = document.getElementById('dotBox'); for(let i=0; i<7; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
+        initLivePrices(); renderHist(); initTV(); setTimeout(refreshCharts, 1000);
     </script>
 </body>
 </html>
