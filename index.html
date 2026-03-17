@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal FINAL V42</title>
+    <title>Krypto Journal V43 FIX</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -146,6 +146,7 @@
                 const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
                 const d = await res.json(); prices.EUR = d.EUR;
                 refreshCharts();
+                updateUI(); // Sofort nach dem Laden berechnen
             } catch(e) {}
         }
 
@@ -155,22 +156,25 @@
             let sAl = 0, sTr = 0, sSu = 0;
 
             txs.forEach(t => {
-                invE += (t.eur || 0);
+                invE += (parseFloat(t.eur) || 0);
                 let rate = APR[t.node] || 0;
+                let amount = parseFloat(t.amount) || 0;
                 if(t.asset === 'SOL') {
-                    sQ += t.amount;
-                    sW += (t.amount * rate / 52);
-                    // Zinseszins Rechnung für 5 Jahre
-                    fSol += (t.amount * Math.pow(1 + rate, 5));
-                    if(t.node === 'alliance') sAl += t.amount;
-                    if(t.node === 'trust') sTr += t.amount;
+                    sQ += amount;
+                    sW += (amount * rate / 52);
+                    fSol += (amount * Math.pow(1 + rate, 5));
+                    if(t.node === 'alliance') sAl += amount;
+                    if(t.node === 'trust') sTr += amount;
                 } else {
-                    suQ += t.amount;
-                    suW += (t.amount * rate / 52);
-                    fSui += (t.amount * Math.pow(1 + rate, 5));
-                    if(t.node === 'sui_staked') sSu += t.amount;
+                    suQ += amount;
+                    suW += (amount * rate / 52);
+                    fSui += (amount * Math.pow(1 + rate, 5));
+                    if(t.node === 'sui_staked') sSu += amount;
                 }
             });
+
+            // Wenn fSol noch immer sQ entspricht (kein Staking ausgewählt), nutzen wir sQ als Fallback
+            if (fSol <= sQ) fSol = sQ; 
 
             let totalUsd = (sQ * prices.SOL) + (suQ * prices.SUI);
             document.getElementById('total-val-usd').innerText = '$ ' + totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -194,7 +198,6 @@
             document.getElementById('st-trust').innerText = sTr.toFixed(1);
             document.getElementById('st-sui').innerText = sSu.toFixed(1);
 
-            // Prognose Felder fixen
             document.getElementById('prog-sol').innerText = fSol.toFixed(2) + ' SOL';
             document.getElementById('prog-sui').innerText = Math.round(fSui).toLocaleString() + ' SUI';
             document.getElementById('prog-value').innerText = '$ ' + (fSol * 260 + fSui * 5).toLocaleString(undefined, {maximumFractionDigits:0});
@@ -207,7 +210,7 @@
 
         function refreshCharts() {
             const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c' } }, y: { display: false } } };
-            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+t.amount,0);
+            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
             if(chartM) chartM.destroy();
             chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*93], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
             if(chartA) chartA.destroy();
@@ -217,10 +220,11 @@
 
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
+            if(!txs || txs.length === 0) { b.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#848e9c;padding:20px;">Keine Historie gefunden. Klick auf Restore!</td></tr>'; return; }
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
                 let nL = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : (t.node === 'sui_staked' ? ' (S)' : ''));
-                b.innerHTML += `<tr><td><b>${t.asset}</b>${nL}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
+                b.innerHTML += `<tr><td><b>${t.asset}</b>${nL}<br><small>${t.date}</small></td><td>+${parseFloat(t.amount).toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
             });
         }
 
