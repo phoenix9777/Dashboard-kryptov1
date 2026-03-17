@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal V33</title>
+    <title>Krypto Journal V35</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
         body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 15px; padding-bottom: 60px; overflow-x: hidden; }
-        .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 15px; }
+        .header { text-align: center; padding: 10px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 15px; }
+        .journal-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--purp); font-weight: 800; margin-bottom: 4px; }
         .alltime-val { font-size: 30px; font-weight: 800; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-top: 8px; }
         .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 16px; background: var(--card); border: 1px solid #2b2f36; margin-bottom: 10px; }
@@ -32,6 +33,7 @@
 <body>
 
     <div class="header">
+        <div class="journal-title">Krypto Journal</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
@@ -54,8 +56,8 @@
                 <div id="sol-weekly-yield" style="font-size:26px; font-weight:bold; color:var(--sol); margin-top:10px;">0.0000 SOL</div>
                 <div style="font-size:12px; color:#848e9c;">Zuwachs pro Woche</div>
                 <div style="margin-top:20px; font-size:12px; opacity:0.8; color:#848e9c;">
-                    Trust (5.63%): <span id="st-trust" style="color:#fff">0.00</span><br>
-                    Alliance (6.29%): <span id="st-alliance" style="color:#fff">0.00</span>
+                    Alliance (6.29%): <span id="st-alliance" style="color:#fff">0.00</span><br>
+                    Trust (5.63%): <span id="st-trust" style="color:#fff">0.00</span>
                 </div>
             </div>
             <div class="slide">
@@ -88,8 +90,8 @@
         <div style="display:flex; gap:10px;"><input type="number" id="tx-qty" placeholder="Menge"><input type="number" id="tx-price" placeholder="Kurs in $"></div>
         <select id="tx-node">
             <option value="none">Kein Staking</option>
-            <option value="trust">Trust Nodes (5.63%)</option>
             <option value="alliance">Capital Alliance (6.29%)</option>
+            <option value="trust">Trust Nodes (5.63%)</option>
         </select>
         <button onclick="saveTx()">JOURNAL SPEICHERN</button>
     </div>
@@ -103,7 +105,7 @@
 
     <script>
         const APR = { trust: 0.0563, alliance: 0.0629, none: 0 };
-        const DB_KEY = 'krypto_v1'; // Zurück auf Standard-Key für dein Backup
+        const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let chartM, chartA, currentSlide = 0;
 
@@ -138,8 +140,8 @@
 
                 let weekly = txs.reduce((s,t) => s + (t.amount * (APR[t.node] || 0) / 52), 0);
                 document.getElementById('sol-weekly-yield').innerText = weekly.toFixed(4) + ' SOL';
-                document.getElementById('st-trust').innerText = txs.filter(t=>t.node==='trust').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
                 document.getElementById('st-alliance').innerText = txs.filter(t=>t.node==='alliance').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
+                document.getElementById('st-trust').innerText = txs.filter(t=>t.node==='trust').reduce((s,t)=>s+t.amount,0).toFixed(2) + ' SOL';
 
                 updateCharts(totalUsd);
                 renderHist();
@@ -158,7 +160,7 @@
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
-                let nLabel = t.node === 'trust' ? ' (T)' : (t.node === 'alliance' ? ' (A)' : '');
+                let nLabel = t.node === 'alliance' ? ' (A)' : (t.node === 'trust' ? ' (T)' : '');
                 b.innerHTML += `<tr><td><b>${t.asset}</b>${nLabel}<br><small>${t.date}</small></td><td>+${t.amount.toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;color:var(--red);font-weight:bold;" onclick="delTx(${idx})">✕</td></tr>`;
             });
         }
@@ -182,15 +184,14 @@
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
         
         function importData() { 
-            const code = prompt("Backup einfügen:"); 
+            const code = prompt("Daten einfügen:"); 
             if(code) { 
                 try {
-                    const parsed = JSON.parse(code);
-                    txs = parsed;
+                    txs = JSON.parse(code);
                     localStorage.setItem(DB_KEY, JSON.stringify(txs)); 
                     refresh();
-                    alert("Wiederhergestellt!");
-                } catch(e) { alert("Ungültiger Code!"); }
+                    alert("Historie geladen!");
+                } catch(e) { alert("Format-Fehler!"); }
             } 
         }
 
