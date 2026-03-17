@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal</title>
+    <title>Krypto Journal Pro</title>
     <style>
-        :root { --bg: #000; --card: #111; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; }
+        :root { --bg: #000; --card: #111; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #ff3b30; }
         body { background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; }
         h1 { background: linear-gradient(90deg, var(--sol), var(--sui)); -webkit-background-clip: text; color: transparent; text-align: center; font-size: 26px; margin-bottom: 25px; font-weight: 800; text-transform: uppercase; }
-        .card { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid #222; margin-bottom: 15px; }
-        .label { color: #888; font-size: 11px; text-transform: uppercase; }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid #222; margin-bottom: 15px; position: relative; overflow: hidden; }
+        .label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .val { font-size: 28px; font-weight: 800; margin: 5px 0; }
+        .sub-val { font-size: 14px; color: #888; margin-bottom: 10px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #222; }
+        .stat-box { font-size: 12px; }
+        .stat-label { color: #555; display: block; margin-bottom: 2px; }
         .bar-bg { background: #222; height: 8px; border-radius: 4px; width: 100%; margin: 10px 0; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; transition: width 1s ease; }
         select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-top: 8px; font-size: 16px; outline: none; }
@@ -21,28 +25,40 @@
     </style>
 </head>
 <body>
-    <h1>Krypto Journal 📈</h1>
+    <h1>Krypto Journal Pro 📈</h1>
 
-    <div class="card" style="border-left: 4px solid var(--sol)">
+    <div id="sol-card" class="card" style="border-left: 4px solid var(--sol)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="label">Solana (SOL)</div>
+            <div class="label">Solana Portfolio</div>
             <div id="sol-price" style="color:#888; font-size:13px;">$ --</div>
         </div>
         <div id="sol-total" class="val" style="color:var(--sol)">-- SOL</div>
-        <div id="sol-usd" style="font-size: 16px; color: #aaa;">$ --</div>
+        <div id="sol-usd" style="font-size: 20px; font-weight: bold;">$ --</div>
+        <div id="sol-profit" style="font-size: 13px; margin-bottom: 10px;">--</div>
+        
         <div class="bar-bg"><div id="sol-bar" class="bar-fill" style="background:var(--sol);"></div></div>
-        <div id="sol-percent" style="text-align:right; font-size:12px; color:var(--sol)">0%</div>
+        
+        <div class="stats-grid">
+            <div class="stat-box"><span class="stat-label">Ø-Kurs</span><span id="sol-avg">$ --</span></div>
+            <div class="stat-box"><span class="stat-label">Noch offen</span><span id="sol-left">-- SOL</span></div>
+        </div>
     </div>
 
-    <div class="card" style="border-left: 4px solid var(--sui)">
+    <div id="sui-card" class="card" style="border-left: 4px solid var(--sui)">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="label">Sui (SUI)</div>
+            <div class="label">Sui Portfolio</div>
             <div id="sui-price" style="color:#888; font-size:13px;">$ --</div>
         </div>
         <div id="sui-total" class="val" style="color:var(--sui)">-- SUI</div>
-        <div id="sui-usd" style="font-size: 16px; color: #aaa;">$ --</div>
+        <div id="sui-usd" style="font-size: 20px; font-weight: bold;">$ --</div>
+        <div id="sui-profit" style="font-size: 13px; margin-bottom: 10px;">--</div>
+
         <div class="bar-bg"><div id="sui-bar" class="bar-fill" style="background:var(--sui);"></div></div>
-        <div id="sui-percent" style="text-align:right; font-size:12px; color:var(--sui)">0%</div>
+        
+        <div class="stats-grid">
+            <div class="stat-box"><span class="stat-label">Ø-Kurs</span><span id="sui-avg">$ --</span></div>
+            <div class="stat-box"><span class="stat-label">Noch offen</span><span id="sui-left">-- SUI</span></div>
+        </div>
     </div>
 
     <div class="card" style="border-color: var(--purp);">
@@ -55,14 +71,10 @@
             <input type="number" id="amount-input" placeholder="Menge" step="any">
             <input type="number" id="price-input" placeholder="Kurs $" step="any">
         </div>
-        <button onclick="addTransaction()">Speichern</button>
+        <button onclick="addTransaction()">Kauf speichern</button>
     </div>
 
-    <div class="card">
-        <table class="history-table">
-            <tbody id="history-body"></tbody>
-        </table>
-    </div>
+    <div class="card"><table class="history-table"><tbody id="history-body"></tbody></table></div>
 
     <script>
         let txs = JSON.parse(localStorage.getItem('krypto_journal_v10')) || [
@@ -71,11 +83,24 @@
         ];
 
         async function update() {
-            let sol = txs.filter(t => t.asset === 'SOL').reduce((s, t) => s + parseFloat(t.amount), 0);
-            let sui = txs.filter(t => t.asset === 'SUI').reduce((s, t) => s + parseFloat(t.amount), 0);
+            // Berechnungen für SOL
+            let solTxs = txs.filter(t => t.asset === 'SOL');
+            let solQty = solTxs.reduce((s, t) => s + parseFloat(t.amount), 0);
+            let solInvest = solTxs.reduce((s, t) => s + (parseFloat(t.amount) * parseFloat(t.price)), 0);
+            let solAvg = solInvest / solQty;
 
-            document.getElementById('sol-total').innerText = sol.toLocaleString('de-DE', {minimumFractionDigits: 3}) + ' SOL';
-            document.getElementById('sui-total').innerText = sui.toLocaleString('de-DE') + ' SUI';
+            // Berechnungen für SUI
+            let suiTxs = txs.filter(t => t.asset === 'SUI');
+            let suiQty = suiTxs.reduce((s, t) => s + parseFloat(t.amount), 0);
+            let suiInvest = suiTxs.reduce((s, t) => s + (parseFloat(t.amount) * parseFloat(t.price)), 0);
+            let suiAvg = suiQty > 0 ? suiInvest / suiQty : 0;
+
+            document.getElementById('sol-total').innerText = solQty.toLocaleString('de-DE', {minimumFractionDigits: 3}) + ' SOL';
+            document.getElementById('sui-total').innerText = suiQty.toLocaleString('de-DE') + ' SUI';
+            document.getElementById('sol-avg').innerText = '$ ' + solAvg.toFixed(2);
+            document.getElementById('sui-avg').innerText = suiQty > 0 ? '$ ' + suiAvg.toFixed(2) : '$ --';
+            document.getElementById('sol-left').innerText = Math.max(0, (700 - solQty)).toFixed(2) + ' SOL';
+            document.getElementById('sui-left').innerText = Math.max(0, (8000 - suiQty)).toLocaleString('de-DE') + ' SUI';
 
             const hb = document.getElementById('history-body');
             hb.innerHTML = '';
@@ -90,25 +115,28 @@
             });
 
             try {
-                // Stabilere API ohne Rate Limits
                 const res = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=SOL,SUI&tsyms=USD');
                 const data = await res.json();
+                const sP = data.SOL.USD;
+                const suP = data.SUI.USD;
+
+                document.getElementById('sol-price').innerText = 'Live: $' + sP.toFixed(2);
+                document.getElementById('sui-price').innerText = 'Live: $' + suP.toFixed(2);
                 
-                const solP = data.SOL.USD;
-                const suiP = data.SUI.USD;
+                let sVal = solQty * sP;
+                let suVal = suiQty * suP;
+                document.getElementById('sol-usd').innerText = '$ ' + sVal.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('sui-usd').innerText = '$ ' + suVal.toLocaleString('en-US', {minimumFractionDigits: 2});
 
-                document.getElementById('sol-price').innerText = 'Live: $' + solP.toFixed(2);
-                document.getElementById('sui-price').innerText = 'Live: $' + suiP.toFixed(2);
-                document.getElementById('sol-usd').innerText = '$ ' + (sol * solP).toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('sui-usd').innerText = '$ ' + (sui * suiP).toLocaleString('en-US', {minimumFractionDigits: 2});
+                // Profit Anzeige
+                let sProf = sVal - (solQty * solAvg);
+                let pEl = document.getElementById('sol-profit');
+                pEl.innerText = (sProf >= 0 ? '+$' : '-$') + Math.abs(sProf).toFixed(2) + ' (Profit)';
+                pEl.style.color = sProf >= 0 ? 'var(--sol)' : 'var(--red)';
 
-                document.getElementById('sol-bar').style.width = Math.min((sol/700)*100, 100) + '%';
-                document.getElementById('sol-percent').innerText = ((sol/700)*100).toFixed(1) + '% von 700';
-                document.getElementById('sui-bar').style.width = Math.min((sui/8000)*100, 100) + '%';
-                document.getElementById('sui-percent').innerText = ((sui/8000)*100).toFixed(1) + '% von 8.000';
-            } catch(e) { 
-                console.log("Fehler");
-            }
+                document.getElementById('sol-bar').style.width = Math.min((solQty/700)*100, 100) + '%';
+                document.getElementById('sui-bar').style.width = Math.min((suiQty/8000)*100, 100) + '%';
+            } catch(e) {}
         }
 
         function addTransaction() {
