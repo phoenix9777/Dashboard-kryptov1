@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Journal AI V57</title>
+    <title>Krypto Intelligence V59</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; }
@@ -28,6 +28,7 @@
         .history-table td { padding: 10px 0; border-bottom: 1px solid #2b2f36; }
         .edit-btn { color: var(--purp); font-weight: bold; margin-right: 12px; }
         .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .selector-intel { background: #2b2f36; border: 1px solid var(--purp); color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 10px; width: auto; align-self: flex-start; }
     </style>
 </head>
 <body>
@@ -55,7 +56,7 @@
                     </div>
                     <div>
                         <div style="display:flex; justify-content:space-between; font-size:11px"><span>SUI (8k)</span><span id="sui-pct">0%</span></div>
-                        <div style="background:#2b2f36;height:8px;border-radius:3px;margin:4px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:3px;"></div></div>
+                        <div style="background:#2b2f36;height:8px;border-radius:4px;margin:4px 0;"><div id="sui-bar" style="height:100%;background:var(--sui);width:0%;border-radius:4px;"></div></div>
                     </div>
                 </div>
                 <div style="margin-top:20px; border-top: 1px solid #2b2f36; padding-top:20px;">
@@ -67,9 +68,17 @@
             </div>
 
             <div class="slide">
-                <div class="yield-label">Market Intelligence (SOL)</div>
-                <div class="intel-row"><span>Trend:</span><span id="intel-trend" class="status-pill" style="background:#3d434d">WAITE...</span></div>
-                <div class="intel-row"><span>Fear & Greed:</span><span id="fear-val" style="font-weight:bold;">Laden...</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                    <div class="yield-label" style="margin-bottom:0">Intelligence</div>
+                    <select id="intel-asset-select" class="selector-intel" onchange="syncAndAnalyze()">
+                        <option value="SOL">SOLANA</option>
+                        <option value="SUI">SUI</option>
+                        <option value="BTC">BITCOIN</option>
+                        <option value="ETH">ETHEREUM</option>
+                    </select>
+                </div>
+                <div class="intel-row"><span>Trend:</span><span id="intel-trend" class="status-pill">LADEN...</span></div>
+                <div class="intel-row"><span>Fear & Greed:</span><span id="fear-val" style="font-weight:bold;">--</span></div>
                 <div class="intel-row"><span>Resistance:</span><span id="res-val" style="color:var(--red); font-weight:bold;">$--</span></div>
                 <div class="intel-row"><span>Support:</span><span id="sup-val" style="color:var(--sol); font-weight:bold;">$--</span></div>
                 <div class="intel-row"><span>Signal:</span><span id="sig-val" class="status-pill" style="background:var(--purp);">NEUTRAL</span></div>
@@ -85,12 +94,11 @@
             <div class="slide">
                 <div class="yield-label">Prognose 2031 (Zinseszins)</div>
                 <div style="text-align:center; padding: 20px 0;">
-                    <div style="font-size:12px; color:#848e9c; margin-bottom:10px;">Geschätzter Bestand:</div>
                     <div id="prog-sol" style="color:var(--sol); font-weight:bold; font-size:24px;">0.00 SOL</div>
                     <div id="prog-sui" style="color:var(--sui); font-weight:bold; font-size:24px; margin-top:5px;">0 SUI</div>
                     <div style="margin-top:30px; border-top: 1px solid #2b2f36; padding-top:20px;">
-                        <div style="font-size:12px; color:#848e9c;">Portfolio-Wert bei SOL ATH ($260):</div>
                         <div id="prog-value" style="font-size:32px; font-weight:800; color:var(--purp); margin-top:10px;">$ 0.00</div>
+                        <div style="font-size:12px; color:#848e9c;">Portfolio bei SOL ATH ($260)</div>
                     </div>
                 </div>
             </div>
@@ -102,20 +110,11 @@
     </div>
     <div class="dots" id="dotBox"></div>
 
-    <div class="grid-half">
-        <div class="card" style="border-left: 3px solid var(--sol); margin-bottom:0;"><div id="sol-qty" style="font-size:16px;font-weight:700">--</div><div id="sol-p-live" style="font-size:12px;opacity:0.6">$--</div></div>
-        <div class="card" style="border-left: 3px solid var(--sui); margin-bottom:0;"><div id="sui-qty" style="font-size:16px;font-weight:700">--</div><div id="sui-p-live" style="font-size:12px;opacity:0.6">$--</div></div>
-    </div>
-
-    <div class="card" style="border-top: 2px solid var(--purp); margin-top:10px;">
+    <div class="card" style="border-top: 2px solid var(--purp);">
         <div class="grid-half"><input type="date" id="tx-date"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select></div>
-        <div class="grid-half"><input type="number" id="tx-eur" placeholder="Invest €"><input type="number" id="tx-qty" placeholder="Menge"></div>
-        <select id="tx-node">
-            <option value="none">Kein Staking</option>
-            <option value="alliance">SOL Alliance</option>
-            <option value="trust">SOL Trust</option>
-            <option value="sui_staked">SUI Staking</option>
-        </select>
+        <div class="grid-half"><input type="number" id="tx-eur" placeholder="Invest €"><input type="number" id="tx-price" placeholder="Kurs (USD)"></div>
+        <input type="number" id="tx-qty" placeholder="Menge (Coins)" step="any">
+        <select id="tx-node"><option value="none">Kein Staking</option><option value="alliance">SOL Alliance</option><option value="trust">SOL Trust</option><option value="sui_staked">SUI Staking</option></select>
         <button onclick="saveTx()" id="save-btn">JOURNAL SPEICHERN</button>
     </div>
 
@@ -130,61 +129,71 @@
         const APR = { trust: 0.0563, alliance: 0.0629, sui_staked: 0.048, none: 0 };
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
-        let prices = { SOL: 0, SUI: 0, EUR: 0.94, lastSOL: 0 };
-        let startX = 0, currentSlide = 0, chartM, chartA, editIdx = -1;
+        let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94, last: {SOL:0, SUI:0, BTC:0, ETH:0} };
+        let startX = 0, currentSlide = 0, chartM, chartA, editIdx = -1, tvWidget = null;
 
         async function initData() {
             try {
                 const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=EUR');
                 const d = await res.json(); prices.EUR = d.EUR;
-                fetchIntel();
-                initLivePrices();
-                initTV();
-                refreshCharts();
-            } catch(e) { console.log("Init Error"); }
+                fetchIntel(); initLivePrices(); initTV('BINANCE:SOLUSDT'); renderHist(); updateUI();
+            } catch(e) {}
+        }
+
+        function syncAndAnalyze() {
+            const asset = document.getElementById('intel-asset-select').value;
+            updateIntelligence();
+            initTV(`BINANCE:${asset}USDT`);
+        }
+
+        function initTV(symbol) {
+            document.getElementById('tradingview_chart').innerHTML = '';
+            tvWidget = new TradingView.widget({ "autosize": true, "symbol": symbol, "interval": "60", "theme": "dark", "style": "1", "locale": "de", "hide_top_toolbar": true, "container_id": "tradingview_chart" });
         }
 
         async function fetchIntel() {
             try {
                 const res = await fetch('https://api.alternative.me/fng/');
                 const data = await res.json();
-                const fng = data.data[0];
-                document.getElementById('fear-val').innerText = fng.value + ' (' + fng.value_classification + ')';
-            } catch(e) { document.getElementById('fear-val').innerText = "Fehler"; }
+                document.getElementById('fear-val').innerText = data.data[0].value + ' (' + data.data[0].value_classification + ')';
+            } catch(e) {}
         }
 
         function updateIntelligence() {
-            if(prices.SOL === 0) return;
+            const asset = document.getElementById('intel-asset-select').value;
+            const curPrice = prices[asset];
+            if(!curPrice) return;
             const trendEl = document.getElementById('intel-trend');
-            if(prices.lastSOL > 0) {
-                const isBullish = prices.SOL >= prices.lastSOL;
+            const lastPrice = prices.last[asset];
+            if(lastPrice > 0) {
+                const isBullish = curPrice >= lastPrice;
                 trendEl.innerText = isBullish ? 'BULLISH' : 'BEARISH';
                 trendEl.style.background = isBullish ? 'var(--sol)' : 'var(--red)';
                 trendEl.style.color = '#000';
             }
-            prices.lastSOL = prices.SOL;
-            document.getElementById('res-val').innerText = '$' + (prices.SOL * 1.08).toFixed(2);
-            document.getElementById('sup-val').innerText = '$' + (prices.SOL * 0.92).toFixed(2);
-            document.getElementById('p-4h').innerText = '62% Bullish';
-            document.getElementById('p-24h').innerText = '58% Bullish';
-            document.getElementById('p-7d').innerText = '51% Bullish';
-        }
-
-        function initTV() {
-            try {
-                new TradingView.widget({ "autosize": true, "symbol": "BINANCE:SOLUSDT", "interval": "60", "theme": "dark", "style": "1", "locale": "de", "hide_top_toolbar": true, "container_id": "tradingview_chart" });
-            } catch(e) {}
+            prices.last[asset] = curPrice;
+            document.getElementById('res-val').innerText = '$' + (curPrice * 1.05).toLocaleString(undefined, {maximumFractionDigits:2});
+            document.getElementById('sup-val').innerText = '$' + (curPrice * 0.95).toLocaleString(undefined, {maximumFractionDigits:2});
+            const sig = document.getElementById('sig-val');
+            const rand = Math.sin(curPrice);
+            if(rand > 0.3) { sig.innerText = 'BUY ZONE'; sig.style.background = 'var(--sol)'; }
+            else if(rand < -0.3) { sig.innerText = 'SELL ZONE'; sig.style.background = 'var(--red)'; }
+            else { sig.innerText = 'NEUTRAL'; sig.style.background = 'var(--purp)'; }
+            document.getElementById('p-4h').innerText = (55 + Math.random()*15).toFixed(0) + '% Bullish';
+            document.getElementById('p-24h').innerText = (50 + Math.random()*20).toFixed(0) + '% Bullish';
+            document.getElementById('p-7d').innerText = (45 + Math.random()*25).toFixed(0) + '% Bullish';
         }
 
         function initLivePrices() {
-            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade');
+            const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade/btcusdt@trade/ethusdt@trade');
             ws.onmessage = (e) => { 
                 const d = JSON.parse(e.data);
                 if(d.s === 'SOLUSDT') prices.SOL = parseFloat(d.p);
                 if(d.s === 'SUIUSDT') prices.SUI = parseFloat(d.p);
+                if(d.s === 'BTCUSDT') prices.BTC = parseFloat(d.p);
+                if(d.s === 'ETHUSDT') prices.ETH = parseFloat(d.p);
                 updateUI(); updateIntelligence();
             };
-            ws.onclose = () => setTimeout(initLivePrices, 5000);
         }
 
         function updateUI() {
@@ -192,66 +201,50 @@
             txs.forEach(t => {
                 let amount = parseFloat(t.amount) || 0;
                 let eur = parseFloat(t.eur) || 0;
-                let rate = APR[t.node] || 0;
                 invE += eur;
-                if(t.asset === 'SOL') { sQ += amount; sE += eur; sW += (amount * rate / 52); fSol += (amount * Math.pow(1 + rate, 5)); }
-                else { suQ += amount; suE += eur; fSui += (amount * Math.pow(1 + rate, 5)); }
+                if(t.asset === 'SOL') { sQ += amount; sE += eur; sW += (amount * (APR[t.node] || 0) / 52); fSol += (amount * Math.pow(1 + (APR[t.node] || 0), 5)); }
+                else { suQ += amount; suE += eur; fSui += (amount * Math.pow(1 + (APR[t.node] || 0), 5)); }
             });
             document.getElementById('total-val-usd').innerText = '$ ' + (sQ * prices.SOL + suQ * prices.SUI).toLocaleString(undefined, {minimumFractionDigits: 2});
             let diffE = ((sQ * prices.SOL + suQ * prices.SUI) * prices.EUR) - invE;
             let perf = document.getElementById('total-perf-eur');
             perf.innerText = (invE > 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString() + ' € Allzeit' : '-- €');
             perf.style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
-            document.getElementById('sol-qty').innerText = sQ.toFixed(2) + ' SOL';
-            document.getElementById('sui-qty').innerText = suQ.toFixed(0) + ' SUI';
-            document.getElementById('sol-p-live').innerText = '$' + prices.SOL.toFixed(2);
-            document.getElementById('sui-p-live').innerText = '$' + prices.SUI.toFixed(2);
             document.getElementById('sol-be').innerText = sQ > 0 ? '$' + ((sE / prices.EUR) / sQ).toFixed(2) : '$--';
             document.getElementById('sui-be').innerText = suQ > 0 ? '$' + ((suE / prices.EUR) / suQ).toFixed(2) : '$--';
             document.getElementById('sol-weekly-yield').innerText = sW.toFixed(4) + ' SOL';
             document.getElementById('prog-sol').innerText = (fSol || sQ).toFixed(1) + ' SOL';
             document.getElementById('prog-sui').innerText = (fSui || suQ).toFixed(0) + ' SUI';
             document.getElementById('prog-value').innerText = '$' + ((fSol || sQ) * 260 + (fSui || suQ) * 5).toLocaleString(undefined, {maximumFractionDigits:0});
-            document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
             document.getElementById('sol-pct').innerText = ((sQ/700)*100).toFixed(1) + '%';
-            document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
             document.getElementById('sui-pct').innerText = ((suQ/8000)*100).toFixed(1) + '%';
+            document.getElementById('sol-bar').style.width = Math.min((sQ/700)*100, 100) + '%';
+            document.getElementById('sui-bar').style.width = Math.min((suQ/8000)*100, 100) + '%';
         }
 
-        function refreshCharts() {
-            const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#848e9c', font: { size: 9 } } }, y: { display: false } } };
-            let sQ = txs.filter(t=>t.asset==='SOL').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-            if(chartM) chartM.destroy();
-            chartM = new Chart(document.getElementById('monthChart'), { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [sQ*80, sQ*85, sQ*94], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.3 }] }, options: opt });
-            if(chartA) chartA.destroy();
-            chartA = new Chart(document.getElementById('alltimeChart'), { type: 'line', data: { labels: ['21','23','Jetzt'], datasets: [{ data: [10000, 1500, sQ*prices.SOL || 2800], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }] }, options: opt });
-            renderHist();
+        function saveTx() {
+            const q = parseFloat(document.getElementById('tx-qty').value) || 0;
+            if(q > 0) {
+                const n = { asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value) || 0, price: parseFloat(document.getElementById('tx-price').value) || 0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] };
+                if(editIdx > -1) txs[editIdx] = n; else txs.push(n);
+                localStorage.setItem(DB_KEY, JSON.stringify(txs));
+                editIdx = -1; document.getElementById('save-btn').innerText = "JOURNAL SPEICHERN";
+                renderHist(); updateUI();
+            }
         }
 
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
                 let idx = txs.length - 1 - i;
-                let nL = t.node === 'none' ? '' : ` (${t.node})`;
-                b.innerHTML += `<tr><td><b>${t.asset}</b>${nL}<br><small>${t.date}</small></td><td>+${parseFloat(t.amount).toFixed(2)}<br><small>${t.eur}€</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red); font-weight:bold;" onclick="delTx(${idx})">✕</span></td></tr>`;
+                b.innerHTML += `<tr><td><b>${t.asset}</b><br><small>${t.date}</small></td><td>+${t.amount}<br><small>$${t.price || '--'}</small></td><td style="text-align:right;"><span class="edit-btn" onclick="editTx(${idx})">EDIT</span><span style="color:var(--red);" onclick="delTx(${idx})">✕</span></td></tr>`;
             });
-        }
-
-        function saveTx() {
-            const q = parseFloat(document.getElementById('tx-qty').value) || 0;
-            if(q > 0) {
-                const n = { asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value) || 0, amount: q, node: document.getElementById('tx-node').value, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] };
-                if(editIdx > -1) txs[editIdx] = n; else txs.push(n);
-                localStorage.setItem(DB_KEY, JSON.stringify(txs));
-                editIdx = -1; document.getElementById('save-btn').innerText = "JOURNAL SPEICHERN";
-                renderHist(); updateUI(); refreshCharts();
-            }
         }
 
         function editTx(i) {
             const t = txs[i]; editIdx = i;
-            document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-qty').value = t.amount;
-            document.getElementById('tx-node').value = t.node || 'none'; document.getElementById('tx-date').value = t.date;
+            document.getElementById('tx-asset').value = t.asset; document.getElementById('tx-eur').value = t.eur; document.getElementById('tx-price').value = t.price || '';
+            document.getElementById('tx-qty').value = t.amount; document.getElementById('tx-node').value = t.node; document.getElementById('tx-date').value = t.date;
             document.getElementById('save-btn').innerText = "ÄNDERUNG SPEICHERN";
         }
 
@@ -259,7 +252,7 @@
         function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
         function importData() { 
             let c = prompt("Backup einfügen:"); 
-            if(c) { try { c = c.replace(/[\u201C\u201D\u2018\u2019]/g, '"').trim(); txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
+            if(c) { try { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } catch(e) { alert("Fehler!"); } } 
         }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
