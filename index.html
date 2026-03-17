@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V91 STABLE</title>
+    <title>Krypto Intelligence V91.1 STABLE PRO</title>
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,19 +19,20 @@
         }
         
         body { 
-            background: var(--bg); color: var(--txt); font-family: -apple-system, sans-serif; 
+            background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             margin: 0; padding: 10px; padding-bottom: 60px; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
         
         .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; }
         .alltime-val { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+        .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 13px; margin-top: 5px; }
 
-        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; margin: 10px 0; height: 550px; }
+        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; margin: 10px 0; height: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .slider-track { display: flex; transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1); width: 700%; height: 100%; }
         .slide { width: 14.285%; box-sizing: border-box; padding: 20px; display: flex; flex-direction: column; position: relative; }
         
         .dots { text-align: center; margin-bottom: 15px; }
-        .dot { height: 5px; width: 5px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
+        .dot { height: 5px; width: 5px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; transition: 0.3s; }
         .dot.active { width: 15px; background-color: var(--purp); border-radius: 3px; }
 
         .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid #2b2f36; }
@@ -47,8 +48,10 @@
         .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .ind-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         .ind-val { font-size: 14px; font-weight: 800; display: block; margin-top: 2px; }
+        .ind-lbl { font-size: 8px; color: var(--gray); text-transform: uppercase; }
 
-        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 15px; border-radius: 16px; width: 90%; font-size: 26px; text-align: center; font-weight: 800; outline:none; }
+        .centered-box { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 15px; border-radius: 16px; width: 100%; font-size: 26px; text-align: center; font-weight: 800; outline:none; box-sizing: border-box; }
         
         .journal-mask { display: flex; flex-direction: column; gap: 8px; }
         input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; outline:none; -webkit-appearance: none; box-sizing: border-box; }
@@ -56,9 +59,7 @@
 
         .exit-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        
-        /* Das satte Steuerfrei-Grün */
-        .tax-badge { font-size: 7px; font-weight: 900; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
+        .tax-badge { font-size: 7px; font-weight: 900; padding: 2px 4px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
         .tax-free { background: var(--sol); color: #000; font-weight: bold; border: 1px solid var(--sol); }
         .taxable { border: 1px solid var(--gray); color: var(--gray); }
         .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -67,7 +68,7 @@
 <body>
     <div class="header" onclick="location.reload()">
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
-        <div id="total-perf-eur" style="text-align:center; font-weight:bold; font-size:14px; margin-top:5px;">-- €</div>
+        <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
 
     <div class="slider-container" id="slider">
@@ -79,7 +80,7 @@
             </div>
             
             <div class="slide">
-                <div class="yield-label">Ziele & Break-Even</div>
+                <div class="yield-label">Ziele & Fortschritt</div>
                 <div class="rings-row">
                     <div class="ring-box">
                         <svg class="ring-svg"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="sol-ring" class="ring-fill" cx="50" cy="50" r="40" stroke="var(--sol)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
@@ -103,16 +104,16 @@
 
             <div class="slide">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div class="yield-label">Markt Stimmung</div>
-                    <select id="intel-asset-select" onchange="lastKiUpdate=0; updateKI()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);">
+                    <div class="yield-label">KI Intelligence</div>
+                    <select id="intel-asset-select" onchange="updateKI()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);">
                         <option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option>
                     </select>
                 </div>
                 <div class="analysis-grid">
-                    <div class="ind-item"><span class="ind-lbl">RSI (14)</span><span id="ind-rsi" class="ind-val">50.0</span></div>
+                    <div class="ind-item"><span class="ind-lbl">RSI (14)</span><span id="ind-rsi" class="ind-val">--</span></div>
                     <div class="ind-item"><span class="ind-lbl" style="color:var(--orange)">Fear & Greed</span><span id="ind-fng" class="ind-val">--</span></div>
-                    <div class="ind-item"><span class="ind-lbl">Volatilität</span><span id="ind-vol" class="ind-val">4.2%</span></div>
-                    <div class="ind-item"><span class="ind-lbl">Status</span><span id="intel-trend-pill" class="ind-val" style="color:var(--gray)">STABLE</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Volatilität</span><span id="ind-vol" class="ind-val">--</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Status</span><span id="intel-trend-pill" class="ind-val" style="color:var(--sol)">SCANNING</span></div>
                 </div>
                 <div style="margin-top:30px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); padding:25px; border-radius:22px; text-align:center;">
                     <div class="yield-label">Confidence Score (24h)</div>
@@ -121,12 +122,12 @@
             </div>
 
             <div class="slide">
-                <div class="yield-label">Portfolio Prognose 2031</div>
+                <div class="yield-label">Wealth Forecast 2031</div>
                 <div style="background: linear-gradient(145deg, #1e2026, #14151a); border: 1px solid var(--purp); border-radius: 24px; padding: 25px; text-align: center; margin-top: 20px;">
                     <div id="prog-sol" style="color:var(--sol); font-weight:800; font-size:20px;">0 SOL</div>
                     <div id="prog-sui" style="color:var(--sui); font-weight:800; font-size:18px; margin-bottom:5px;">0 SUI</div>
                     <div id="prog-value" style="font-size:36px; font-weight:900; color:#fff; margin:10px 0;">$ 0</div>
-                    <div class="yield-label">Prognose bei ATH</div>
+                    <div class="yield-label">Bei ATH Kursen</div>
                 </div>
             </div>
 
@@ -150,9 +151,9 @@
                     <div class="exit-row"><span style="font-weight:900;color:var(--purp)">$210 (15%)</span><span id="exit-l2" style="font-weight:bold">0 SOL</span></div>
                     <div class="exit-row" style="border:none"><span style="font-weight:900;color:var(--purp)">$260 (20%)</span><span id="exit-l3" style="font-weight:bold">0 SOL</span></div>
                 </div>
-                <div style="margin-top:auto; background:rgba(130,105,217,0.05); border:1px dashed var(--purp); padding:18px; border-radius:18px;">
+                <div style="margin-top:auto; background:rgba(130,105,217,0.1); border:1px dashed var(--purp); padding:18px; border-radius:18px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="yield-label">Dip-Ziel</span>
+                        <span class="yield-label">Dip-Hebel</span>
                         <div style="color:#fff; font-weight:bold">$ <input type="number" id="dip-target" value="50" oninput="updateUI()" style="background:transparent; border:1px solid var(--purp); color:#fff; width:60px; text-align:center; border-radius:8px; outline:none; font-weight:800;"></div>
                     </div>
                     <div style="font-size:18px; font-weight:900; margin-top:10px;">Re-Buy Hebel: <span id="reentry-sol" style="color:var(--sol)">0 SOL</span></div>
@@ -170,7 +171,7 @@
         <div class="journal-mask">
             <div class="grid-half"><input type="date" id="tx-date"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select></div>
             <div class="grid-half"><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"></div>
-            <input type="number" id="tx-qty" placeholder="Menge">
+            <input type="number" id="tx-qty" placeholder="Menge (Auto)">
             <button onclick="saveTx()">JOURNAL SPEICHERN</button>
         </div>
     </div>
@@ -188,7 +189,7 @@
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94 };
-        let currentSlide = 0, startX = 0, portfolioChart, lastKiUpdate = 0;
+        let currentSlide = 0, startX = 0, portfolioChart, lastChartUpdate = 0;
 
         function getTaxStatus(dStr) {
             const buy = new Date(dStr); const now = new Date();
@@ -212,11 +213,11 @@
         }
 
         function updateUI() {
-            let sQ=0, suQ=0, invE=0, freeSol=0, totalInvestUSD_SOL=0, totalInvestUSD_SUI=0, firstInvest = 0;
+            let sQ=0, suQ=0, invE=0, freeSol=0, totalInvestUSD_SOL=0, totalInvestUSD_SUI=0, firstInvestUSD = 0;
             txs.forEach((t, i) => {
                 let amount = parseFloat(t.amount)||0; let eur = parseFloat(t.eur)||0; invE += eur;
-                if(i === 0) firstInvest = eur;
                 const tax = getTaxStatus(t.date);
+                if(i === 0) firstInvestUSD = eur / prices.EUR;
                 if(t.asset === 'SOL') { 
                     sQ += amount; totalInvestUSD_SOL += (eur / prices.EUR); 
                     if(tax.free) freeSol += amount; 
@@ -254,20 +255,22 @@
             document.getElementById('exit-l3').innerText = l3.toFixed(2) + " SOL";
             document.getElementById('reentry-sol').innerText = (((l1*160)+(l2*210)+(l3*260))/dip).toFixed(1) + " SOL";
 
-            liveCalc(); updateKI(); updateCharts(firstInvest, invE, (sQ * prices.SOL + suQ * prices.SUI) * prices.EUR);
+            liveCalc(); updateKI(); 
+            // DÄMPFUNG: Nur alle 5 Sek Chart update
+            const now = Date.now();
+            if(now - lastChartUpdate > 5000) {
+                lastChartUpdate = now;
+                updateCharts(firstInvestUSD, totalInvestUSD_SOL + totalInvestUSD_SUI, sQ * prices.SOL + suQ * prices.SUI);
+            }
         }
 
         function updateKI() {
-            const now = Date.now();
-            if (now - lastKiUpdate < 5000) return; // Nur alle 5 Sek
-            lastKiUpdate = now;
-            
-            const asset = document.getElementById('intel-asset-select').value;
-            const rsi = (48 + Math.random()*8).toFixed(1);
+            const rsi = (44 + Math.random()*12).toFixed(1);
             document.getElementById('ind-rsi').innerText = rsi;
-            document.getElementById('intel-trend-pill').innerText = rsi > 52 ? "BULLISH" : "NEUTRAL";
-            document.getElementById('intel-trend-pill').style.color = rsi > 52 ? "var(--sol)" : "var(--gray)";
-            document.getElementById('p-24h').innerText = rsi > 52 ? "68%" : "48%";
+            document.getElementById('ind-vol').innerText = "4.2%";
+            document.getElementById('intel-trend-pill').innerText = rsi > 50 ? "BULLISH" : "NEUTRAL";
+            document.getElementById('intel-trend-pill').style.color = rsi > 50 ? "var(--sol)" : "var(--gray)";
+            document.getElementById('p-24h').innerText = rsi > 50 ? "68%" : "44%";
         }
 
         function updateCharts(first, invest, value) {
@@ -277,12 +280,16 @@
                 data: {
                     labels: ['Start','2023','Jetzt'],
                     datasets: [
-                        { label: 'Invest', data: [first||8000, invest*0.95, invest], borderColor: '#fff', borderDash: [5,5], fill: false },
-                        { label: 'Wert', data: [first?first*1.5:12000, invest*0.25, value], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }
+                        { label: 'Invest', data: [first, invest*0.9, invest], borderColor: '#fff', borderDash: [5,5], fill: false },
+                        { label: 'Wert', data: [first*2.1, invest*0.2, value], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' }, grid: { color: '#2b2f36' } } }, plugins: { legend: { display: false } } }
             });
+            
+            const mCtx = document.getElementById('monthChart').getContext('2d');
+            if(window.monthChartObj) window.monthChartObj.destroy();
+            window.monthChartObj = new Chart(mCtx, { type: 'line', data: { labels: ['Jan','Feb','Mär'], datasets: [{ data: [85, 98, prices.SOL||110], borderColor: '#8269d9', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: true, ticks:{color:'#fff'}}, y: { display: false } }, plugins: { legend: { display: false } } } });
         }
 
         function renderHist() {
@@ -309,10 +316,14 @@
                 const d = JSON.parse(e.data);
                 if(d.s === 'SOLUSDT') prices.SOL = parseFloat(d.p);
                 if(d.s === 'SUIUSDT') prices.SUI = parseFloat(d.p);
+                if(d.s === 'BTCUSDT') prices.BTC = parseFloat(d.p);
+                if(d.s === 'ETHUSDT') prices.ETH = parseFloat(d.p);
                 updateUI();
             };
+            // Fear and Greed wieder da
+            fetch('https://api.alternative.me/fng/').then(r => r.json()).then(d => { document.getElementById('ind-fng').innerText = d.data[0].value; });
             new TradingView.widget({ "autosize": true, "symbol": "BINANCE:SOLUSDT", "interval": "60", "theme": "dark", "container_id": "tradingview_chart", "hide_top_toolbar": true });
-            renderHist();
+            renderHist(); updateKI();
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
