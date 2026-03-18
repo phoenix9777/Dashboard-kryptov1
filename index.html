@@ -3,84 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V110 MASTER</title>
+    <title>Krypto Intelligence V111 ULTIMATE</title>
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-
     <style>
-        :root { 
-            --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; 
-            --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; --side: #1e2026;
-        }
+        :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; --side: #1e2026; }
         body { background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-
-        /* SIDEBAR */
-        .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 260px; background: var(--side); border-right: 1px solid #2b2f36; z-index: 2000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-sizing: border-box; }
+        .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 260px; background: var(--side); border-right: 1px solid #2b2f36; z-index: 2000; transition: 0.3s; padding: 20px; box-sizing: border-box; }
         .sidebar.open { left: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1999; display: none; }
         .sidebar-overlay.active { display: block; }
-        .nav-item { padding: 14px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--gray); transition: 0.2s; font-size: 14px; }
+        .nav-item { padding: 12px; border-radius: 12px; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--gray); transition: 0.2s; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: rgba(130, 105, 217, 0.1); color: var(--purp); }
         .menu-btn { position: absolute; left: 15px; top: 22px; z-index: 1000; cursor: pointer; background: var(--card); padding: 8px; border-radius: 8px; border: 1px solid #2b2f36; }
-
-        /* HEADER */
         .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; padding-left: 50px; }
-        .alltime-val { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
+        .alltime-val { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
         .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 10px; font-weight: bold; font-size: 13px; margin-top: 5px; }
-
-        /* SLIDER */
-        .slider-container { width: 95%; margin: 10px auto; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; height: 580px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .slider-container { width: 95%; margin: 10px auto; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; height: 580px; }
         .slider-track { display: flex; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1); width: 900%; height: 100%; }
-        .slide { width: 11.111%; box-sizing: border-box; height: 100%; padding: 25px; display: flex; flex-direction: column; position: relative; }
-        
-        /* CARD & LABELS */
+        .slide { width: 11.111%; box-sizing: border-box; height: 100%; padding: 20px; display: flex; flex-direction: column; position: relative; }
         .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 0 10px 12px 10px; border: 1px solid #2b2f36; }
-        .yield-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; font-weight: 700; }
-        
-        /* THE BEAUTIFUL MATRIX RE-DESIGN */
-        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .ind-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .ind-val { font-size: 16px; font-weight: 800; display: block; margin-top: 4px; }
-        .ind-lbl { font-size: 9px; color: var(--gray); text-transform: uppercase; font-weight: 600; }
-
-        .liquidity-banner { background: rgba(130,105,217,0.1); border: 1px dashed var(--purp); border-radius: 14px; padding: 12px; margin-top: 20px; font-size: 11px; text-align: center; color: #fff; }
-
-        /* PROGRESS RINGS */
-        .rings-container { display: flex; justify-content: space-around; align-items: center; margin-top: 20px; }
-        .ring-box { text-align: center; position: relative; width: 100px; height: 100px; }
-        .ring-svg { transform: rotate(-90deg); width: 100px; height: 100px; }
+        .yield-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .ind-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.04); }
+        .ind-val { font-size: 14px; font-weight: 800; display: block; margin-top: 2px; }
+        .ind-lbl { font-size: 8px; color: var(--gray); text-transform: uppercase; }
+        .rings-container { display: flex; justify-content: space-around; align-items: center; margin-top: 15px; }
+        .ring-box { text-align: center; position: relative; width: 90px; height: 90px; }
+        .ring-svg { transform: rotate(-90deg); width: 90px; height: 90px; }
         .ring-bg { fill: none; stroke: #2b2f36; stroke-width: 9; }
-        .ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease-in-out; }
-        .ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15px; font-weight: 900; }
-
-        /* KAUFKRAFT GRID */
-        .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .calc-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .calc-res-val { font-size: 18px; font-weight: 900; display: block; }
-
-        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 15px; border-radius: 16px; width: 100%; font-size: 28px; text-align: center; font-weight: 900; outline:none; box-sizing: border-box; }
-        
-        /* JOURNAL & TABLES */
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 14px; border-radius: 14px; width: 100%; font-size: 16px; outline:none; box-sizing: border-box; }
-        button { background: var(--purp); color: #fff; border: none; padding: 18px; border-radius: 16px; width: 100%; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.98); }
-        
-        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .history-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .tax-badge { font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 5px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
-        .tax-free { background: var(--sol); color: #000; border: 1px solid var(--sol); }
+        .ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1.5s; }
+        .ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px; font-weight: 900; }
+        .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .calc-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; text-align: center; }
+        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 15px; border-radius: 16px; width: 100%; font-size: 26px; text-align: center; font-weight: 900; outline:none; box-sizing: border-box; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 12px; width: 100%; font-size: 15px; outline:none; box-sizing: border-box; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 800; cursor: pointer; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .tax-badge { font-size: 7px; font-weight: 900; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
+        .tax-free { background: var(--sol); color: #000; font-weight: bold; border: 1px solid var(--sol); }
         .taxable { background: rgba(255,255,255,0.05); color: var(--gray); border: 1px solid var(--gray); }
-        
-        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .sim-input { background: rgba(255,255,255,0.05); border: 1px solid var(--purp); color: #fff; border-radius: 8px; width: 60px; padding: 5px; text-align: center; font-weight: 800; outline: none; }
-        .dots { text-align: center; margin-bottom: 15px; }
-        .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 4px; }
-        .dot.active { width: 20px; background-color: var(--purp); border-radius: 4px; }
+        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .sim-input { background: rgba(255,255,255,0.05); border: 1px solid var(--purp); color: #fff; border-radius: 8px; width: 55px; padding: 5px; text-align: center; font-weight: 800; outline: none; }
+        .dots { text-align: center; margin-bottom: 10px; }
+        .dot { height: 5px; width: 5px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
+        .dot.active { width: 15px; background-color: var(--purp); border-radius: 3px; }
+        .liquidity-banner { background: rgba(130,105,217,0.1); border: 1px dashed var(--purp); border-radius: 12px; padding: 10px; margin-top: 15px; font-size: 10px; text-align: center; color: #fff; }
     </style>
 </head>
 <body>
@@ -88,7 +60,7 @@
     <div class="menu-btn" onclick="toggleSide()"><img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" width="20"></div>
     <div class="sidebar-overlay" id="overlay" onclick="toggleSide()"></div>
     <div class="sidebar" id="sidebar">
-        <div class="yield-label" style="margin-bottom: 30px; color:var(--purp)">Intelligence Menu</div>
+        <div class="yield-label" style="margin-bottom: 25px; color:var(--purp)">Intelligence Menu</div>
         <div class="nav-item active" onclick="goToSlide(0)">Dashboard</div>
         <div class="nav-item" onclick="goToSlide(1)">Ziele & BE</div>
         <div class="nav-item" onclick="goToSlide(2)">Top 15 Krypto</div>
@@ -107,40 +79,35 @@
 
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
-            
             <div class="slide">
                 <div><div class="yield-label">Markttrend (3M)</div><div style="height:150px"><canvas id="monthChart"></canvas></div></div>
                 <div style="margin-top:25px; border-top: 1px solid #2b2f36; padding-top:20px;"><div class="yield-label">Portfolio Recovery</div><div style="height:150px"><canvas id="alltimeChart"></canvas></div></div>
             </div>
-            
             <div class="slide">
                 <div class="yield-label">Investitions-Ziele</div>
                 <div class="rings-container">
-                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="sol-ring" class="ring-fill" cx="50" cy="50" r="40" stroke="var(--sol)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sol-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SOL</div></div>
-                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="sui-ring" class="ring-fill" cx="50" cy="50" r="40" stroke="var(--sui)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sui-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SUI</div></div>
+                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sol-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sol)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sol-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SOL</div></div>
+                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sui-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sui)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sui-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SUI</div></div>
                 </div>
                 <div style="margin-top:auto; border-top: 1px solid #2b2f36; padding-top:20px;"><div class="yield-label" style="color:var(--sol)">Target Break-Even ($)</div><div class="grid-half"><div class="ind-item"><span class="ind-lbl">SOL BE</span><span id="sol-be-usd" class="ind-val">-- $</span></div><div class="ind-item"><span class="ind-lbl">SUI BE</span><span id="sui-be-usd" class="ind-val">-- $</span></div></div></div>
             </div>
-
             <div class="slide">
                 <div class="yield-label">Top 15 Market Live</div>
                 <div style="overflow-y: auto; height: 100%;"><table class="top15-table" id="top15-body"></table></div>
             </div>
-
             <div class="slide">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><div class="yield-label">Intelligence Matrix</div><select id="intel-asset-select" onchange="forceKIUpdate()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><div class="yield-label">Matrix Intelligence</div><select id="intel-asset-select" onchange="forceKIUpdate()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select></div>
                 <div class="analysis-grid">
                     <div class="ind-item"><span class="ind-lbl">RSI (14)</span><span id="ind-rsi" class="ind-val">--</span></div>
                     <div class="ind-item"><span class="ind-lbl" style="color:var(--orange)">Fear & Greed</span><span id="ind-fng" class="ind-val">--</span></div>
                     <div class="ind-item"><span class="ind-lbl">Funding Rate</span><span id="ind-fund" class="ind-val">--</span></div>
-                    <div class="ind-item"><span class="ind-lbl">Trend Strength</span><span id="ind-adx" class="ind-val">--</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Trend Power</span><span id="ind-adx" class="ind-val">--</span></div>
                     <div class="ind-item"><span class="ind-lbl">Smart Money</span><span id="ind-flow" class="ind-val">--</span></div>
                     <div class="ind-item"><span class="ind-lbl">7D Accuracy</span><span id="ind-acc" class="ind-val">--</span></div>
                 </div>
                 <div class="liquidity-banner" id="liq-zone">Warte auf Marktdaten...</div>
-                <div style="margin-top:15px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); padding:15px; border-radius:22px; text-align:center;"><div class="yield-label">Alpha Confidence Score</div><div id="p-24h" style="font-size:32px; font-weight:900; color:var(--sol);">-- %</div></div>
+                <div style="margin-top:10px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); padding:12px; border-radius:20px; text-align:center;"><div class="yield-label">Confidence Score</div><div id="p-24h" style="font-size:24px; font-weight:900; color:var(--sol);">-- %</div></div>
             </div>
-
             <div class="slide">
                 <div class="yield-label">Wealth Scenarios 2031</div>
                 <div class="prog-grid">
@@ -149,32 +116,25 @@
                     <div class="prog-row" style="border-left: 4px solid var(--sol);"><div><span class="prog-label" style="font-size:8px;color:var(--sol)">Best Case</span><br><small style="color:var(--gray)">SOL $500 / SUI $12</small></div><div style="text-align:right;"><div id="prog-best-val" style="font-size:18px; font-weight:900;">$ 0</div><span id="prog-best-coins" style="font-size:9px; color:var(--purp)">0 SOL</span></div></div>
                 </div>
             </div>
-
             <div class="slide">
-                <div class="yield-label">Multi-Kaufkraft Rechner</div>
+                <div class="yield-label">Kaufkraft Rechner (Live)</div>
                 <div style="margin-top:10px; text-align:center;"><input type="number" id="calc-euro" class="calc-input" value="500" oninput="liveCalc()"></div>
                 <div class="calc-grid">
-                    <div class="calc-box"><span id="calc-sol-res" style="font-size:20px; font-weight:900; color:var(--sol)">0.00</span><br><small style="font-size:9px">SOL</small></div>
-                    <div class="calc-box"><span id="calc-sui-res" style="font-size:20px; font-weight:900; color:var(--sui)">0</span><br><small style="font-size:9px">SUI</small></div>
-                    <div class="calc-box"><span id="calc-btc-res" style="font-size:16px; font-weight:900; color:var(--orange)">0.0000</span><br><small style="font-size:9px">BTC</small></div>
-                    <div class="calc-box"><span id="calc-eth-res" style="font-size:16px; font-weight:900; color:#627EEA">0.000</span><br><small style="font-size:9px">ETH</small></div>
+                    <div class="calc-box"><span id="calc-sol-res" style="font-size:18px; font-weight:900; color:var(--sol)">0.00</span><br><small style="font-size:8px">SOL</small></div>
+                    <div class="calc-box"><span id="calc-sui-res" style="font-size:18px; font-weight:900; color:var(--sui)">0</span><br><small style="font-size:8px">SUI</small></div>
+                    <div class="calc-box"><span id="calc-btc-res" style="font-size:15px; font-weight:900; color:var(--orange)">0.0000</span><br><small style="font-size:8px">BTC</small></div>
+                    <div class="calc-box"><span id="calc-eth-res" style="font-size:17px; font-weight:900; color:#627EEA">0.000</span><br><small style="font-size:8px">ETH</small></div>
                 </div>
-                <div style="margin-top:20px; background:rgba(255,255,255,0.03); border-radius:15px; padding:10px; text-align:center; font-size:10px; color:var(--gray);">Live-Kurse synchronisiert via Binance.</div>
             </div>
-
             <div class="slide">
-                <div class="yield-label">Staking Rewards (6.29%)</div>
-                <div style="background:rgba(0,230,118,0.1); border:1px solid var(--sol); padding:25px; border-radius:24px; text-align:center; margin-top:10px;">
-                    <span class="yield-label" style="color:var(--txt)">Staked Balance</span>
-                    <span id="stake-total" style="font-size:32px; font-weight:900; color:var(--sol); display:block; margin:10px 0;">0.00 SOL</span>
-                </div>
+                <div class="yield-label">Staking (6.29% APY)</div>
+                <div class="card" style="margin:10px 0; text-align:center; background:rgba(0,230,118,0.05); border:1px solid var(--sol);"><span class="yield-label">Staked Solana</span><span id="stake-total" style="font-size:26px; font-weight:900; color:var(--sol); display:block; margin:5px 0;">0.00 SOL</span></div>
                 <div class="analysis-grid">
-                    <div class="ind-item"><span class="ind-lbl">Pro Tag</span><span id="stake-day" class="ind-val">0.00</span></div>
-                    <div class="ind-item"><span class="ind-lbl">Pro Monat</span><span id="stake-month" class="ind-val">0.00</span></div>
-                    <div class="ind-item" style="grid-column: span 2; background:rgba(130,105,217,0.05);"><span class="ind-lbl">Pro Jahr</span><span id="stake-year" class="ind-val" style="color:var(--purp)">0.00 SOL</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Tag</span><span id="stake-day" class="ind-val">0.00</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Monat</span><span id="stake-month" class="ind-val">0.00</span></div>
+                    <div class="ind-item" style="grid-column: span 2; background:rgba(130,105,217,0.05);"><span class="ind-lbl">Jahr</span><span id="stake-year" class="ind-val" style="color:var(--purp)">0.00 SOL</span></div>
                 </div>
             </div>
-
             <div class="slide">
                 <div class="yield-label">Exit Simulator Pro</div>
                 <div class="card" style="margin: 10px 0; padding:12px;">
@@ -187,56 +147,40 @@
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:center;">
                         <div><small>Sell Qty</small><br><input type="number" id="sim-qty" value="2.5" oninput="updateUI()" class="sim-input"></div>
                         <div><small>Price $</small><br><input type="number" id="sim-price" value="116" oninput="updateUI()" class="sim-input"></div>
-                        <div><small>Dip Target $</small><br><input type="number" id="dip-target" value="80" oninput="updateUI()" class="sim-input" style="border-color:var(--sol)"></div>
+                        <div><small>Dip $</small><br><input type="number" id="dip-target" value="80" oninput="updateUI()" class="sim-input" style="border-color:var(--sol)"></div>
                         <div style="text-align:right;"><div id="sim-res" style="font-size:18px; font-weight:900; color:var(--sol)">0 SOL</div><small id="sim-profit" style="color:var(--sol)">+0 Profit</small></div>
                     </div>
                 </div>
             </div>
-
             <div class="slide" style="padding:0"><div id="tradingview_chart" style="height: 100%; width: 100%;"></div></div>
         </div>
     </div>
-    
     <div class="dots" id="dotBox"></div>
-
-    <div class="card" style="border-top: 2px solid var(--purp);">
-        <div class="journal-mask">
-            <div class="grid-half"><input type="date" id="tx-date"><select id="tx-type" style="color:var(--sol); font-weight:bold;"><option value="buy">KAUF</option><option value="sell">VERKAUF</option></select></div>
-            <div class="grid-half"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"></div>
-            <div class="grid-half"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"><input type="number" id="tx-qty" placeholder="Menge" step="any"></div>
-            <button onclick="saveTx()">JOURNAL SPEICHERN</button>
-        </div>
-    </div>
-
+    <div class="card" style="border-top: 2px solid var(--purp);"><div class="journal-mask"><div class="grid-half"><input type="date" id="tx-date"><select id="tx-type" style="color:var(--sol); font-weight:bold;"><option value="buy">KAUF</option><option value="sell">VERKAUF</option></select></div><div class="grid-half"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"></div><div class="grid-half"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"><input type="number" id="tx-qty" placeholder="Menge" step="any"></div><button onclick="saveTx()">JOURNAL SPEICHERN</button></div></div>
     <div class="card" style="padding:5px 15px;"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-    <div style="padding: 0 10px; margin-bottom: 10px;"><button onclick="generateSteuerPDF()" id="pdf-btn" style="background:#181a20; color:var(--sol); border:1px solid var(--sol); width:100%;">📄 STEUER-REPORT GENERIEREN (PDF)</button></div>
-    <div style="display:flex; justify-content:space-between; margin: 0 10px 40px 10px;"><button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">💾 BACKUP</button><button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">🔄 RESTORE</button></div>
+    <div style="padding: 0 10px; margin-bottom: 10px;"><button onclick="generateSteuerPDF()" style="background:#181a20; color:var(--sol); border:1px solid var(--sol);">📄 STEUER-REPORT GENERIEREN (PDF)</button></div>
+    <div style="display:flex; justify-content:space-between; margin: 0 10px 40px 10px;"><button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px;">💾 BACKUP</button><button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px;">🔄 RESTORE</button></div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const DB_KEY = 'krypto_v1';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94 };
-        let currentSlide = 0, startX = 0, portfolioChart, monthChart, lastUpdate = 0;
+        let currentSlide = 0, portfolioChart, monthChart, lastUpdate = 0;
         let kiData = { rsi: "50.0", score: "50%", trend: "NEUTRAL", color: "var(--gray)", accuracy: "Learning.." };
 
         function toggleSide() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
         function goToSlide(i) { currentSlide = i; document.getElementById('track').style.transform = `translateX(-${i * 11.111}%)`; const dots = document.getElementById('dotBox').children; for(let j=0; j<9; j++) if(dots[j]) dots[j].classList.toggle('active', j === i); if(i === 8) updateTVChart(); if(window.innerWidth < 800) toggleSide(); }
 
-        function getTaxStatus(dStr) {
-            const buy = new Date(dStr); const yearAgo = new Date(); yearAgo.setFullYear(new Date().getFullYear() - 1);
-            return buy <= yearAgo ? { free: true, label: 'Steuerfrei ✅', class: 'tax-free' } : { free: false, label: 'Steuerbar', class: 'taxable' };
-        }
+        function getTaxStatus(dStr) { const buy = new Date(dStr); const yearAgo = new Date(); yearAgo.setFullYear(new Date().getFullYear() - 1); return buy <= yearAgo ? { free: true, label: 'Steuerfrei ✅', class: 'tax-free' } : { free: false, label: 'Steuerbar', class: 'taxable' }; }
 
         function generateSteuerPDF() {
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 doc.setFontSize(18); doc.text("Portfolio Steuer-Report", 14, 20);
-                doc.setFontSize(10); doc.text("Generiert am: " + new Date().toLocaleString(), 14, 28);
-                const rows = txs.map(t => [t.date, t.asset, t.type.toUpperCase(), t.amount, t.price + "$", getTaxStatus(t.date).label]);
-                doc.autoTable({ head: [['Datum', 'Asset', 'Typ', 'Menge', 'Kurs $', 'Status']], body: rows, startY: 35, theme: 'grid' });
-                doc.save("Steuer_Report_Portfolio.pdf");
+                const rows = txs.map(t => [t.date, t.asset, (t.type || 'buy').toUpperCase(), t.amount, t.price + "$", getTaxStatus(t.date).label]);
+                doc.autoTable({ head: [['Datum', 'Asset', 'Typ', 'Menge', 'Kurs $', 'Status']], body: rows, startY: 30 });
+                doc.save("Steuer_Report.pdf");
             } catch (e) { alert("PDF-Fehler: " + e.message); }
         }
 
@@ -273,13 +217,12 @@
 
             document.getElementById('sol-be-usd').innerText = sQ > 0 ? (invUSD_SOL / sQ).toFixed(2) + " $" : "-- $";
             document.getElementById('sui-be-usd').innerText = suQ > 0 ? (invUSD_SUI / suQ).toFixed(2) + " $" : "-- $";
-            
             document.getElementById('sol-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((sQ/700)*100, 100) / 100);
             document.getElementById('sol-pct-text').innerText = Math.min((sQ/700)*100, 100).toFixed(1) + "%";
             document.getElementById('sui-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((suQ/8000)*100, 100) / 100);
             document.getElementById('sui-pct-text').innerText = Math.min((suQ/8000)*100, 100).toFixed(1) + "%";
 
-            // Staking Rewards calculation (6.29% APY)
+            // Staking
             const yearRewards = sQ * 0.0629;
             document.getElementById('stake-total').innerText = sQ.toFixed(2) + " SOL";
             document.getElementById('stake-day').innerText = (yearRewards / 365).toFixed(4);
@@ -357,10 +300,7 @@
 
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
-            txs.slice().reverse().forEach((t, i) => {
-                const tax = getTaxStatus(t.date); const isSell = t.type === 'sell';
-                b.innerHTML += `<tr><td><b style="color:${isSell?'var(--red)':'var(--txt)'}">${t.asset} (${isSell?'V':'K'})</b><br><small>${t.date}</small><br><span class="tax-badge ${tax.class}">${tax.label}</span></td><td style="text-align:right;">${isSell?'-':'+'}${t.amount}<br><small>$${t.price||'--'}</small></td><td style="text-align:right;"><span style="color:var(--red); font-size:18px;" onclick="delTx(${txs.length-1-i})">✕</span></td></tr>`;
-            });
+            txs.slice().reverse().forEach((t, i) => { const tax = getTaxStatus(t.date); const isSell = t.type === 'sell'; b.innerHTML += `<tr><td><b style="color:${isSell?'var(--red)':'var(--txt)'}">${t.asset} (${isSell?'V':'K'})</b><br><small>${t.date}</small><br><span class="tax-badge ${tax.class}">${tax.label}</span></td><td style="text-align:right;">${isSell?'-':'+'}${t.amount}<br><small>$${t.price||'--'}</small></td><td style="text-align:right;"><span style="color:var(--red); font-size:18px;" onclick="delTx(${txs.length-1-i})">✕</span></td></tr>`; });
         }
 
         function saveTx() { const q = parseFloat(document.getElementById('tx-qty').value)||0; if(q > 0){ txs.push({ type: document.getElementById('tx-type').value, asset: document.getElementById('tx-asset').value, eur: parseFloat(document.getElementById('tx-eur').value)||0, price: parseFloat(document.getElementById('tx-price').value)||0, amount: q, date: document.getElementById('tx-date').value || new Date().toISOString().split('T')[0] }); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
@@ -373,12 +313,12 @@
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Kopiert!")); }
         function importData() { let c = prompt("Backup:"); if(c) { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
         document.getElementById('slider').addEventListener('touchend', e => { let d = startX - e.changedTouches[0].clientX; if(Math.abs(d) > 50) { if(d > 0 && currentSlide < 8) goToSlide(currentSlide + 1); else if(d < 0 && currentSlide > 0) goToSlide(currentSlide - 1); } });
-        const dBox = document.getElementById('dotBox'); for(let i=0; i<9; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
+        const dBox = document.getElementById('dotBox'); for(let i=0; i<9; i++) if(dBox.children.length < 9) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
         init();
     </script>
 </body>
