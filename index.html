@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V101 MULTI-SCENARIO</title>
+    <title>Krypto Intelligence V103 SIDEBAR PRO</title>
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,49 +11,124 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 10px; padding-bottom: 60px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; }
-        .alltime-val { font-size: 34px; font-weight: 900; letter-spacing: -1px; }
-        .perf-badge { display: inline-block; padding: 5px 14px; border-radius: 10px; font-weight: bold; font-size: 14px; margin-top: 8px; }
-        .slider-container { width: 100%; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; margin: 10px 0; height: 560px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+        :root { 
+            --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; 
+            --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; --side: #1e2026;
+        }
+        
+        body { 
+            background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+        }
+
+        /* SIDEBAR STYLE */
+        .sidebar {
+            position: fixed; left: -280px; top: 0; height: 100%; width: 260px; 
+            background: var(--side); border-right: 1px solid #2b2f36; z-index: 2000;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-sizing: border-box;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            z-index: 1999; display: none;
+        }
+        .sidebar-overlay.active { display: block; }
+        
+        .nav-item {
+            padding: 15px; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--gray); transition: 0.2s;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(130, 105, 217, 0.1); color: var(--purp); }
+        .nav-item img { width: 20px; filter: grayscale(1); }
+        .nav-item.active img { filter: none; }
+
+        /* BURGER ICON */
+        .menu-btn {
+            position: absolute; left: 15px; top: 22px; z-index: 1000; cursor: pointer;
+            background: var(--card); padding: 8px; border-radius: 8px; border: 1px solid #2b2f36;
+        }
+
+        .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; padding-left: 50px; }
+        .alltime-val { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
+        .perf-badge { display: inline-block; padding: 4px 12px; border-radius: 10px; font-weight: bold; font-size: 13px; margin-top: 5px; }
+
+        /* SLIDER AREA */
+        .slider-container { width: 95%; margin: 10px auto; overflow: hidden; position: relative; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; height: 560px; }
         .slider-track { display: flex; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1); width: 700%; height: 100%; }
         .slide { width: 14.285%; box-sizing: border-box; height: 100%; padding: 20px; display: flex; flex-direction: column; position: relative; }
+        
         .dots { text-align: center; margin-bottom: 15px; }
         .dot { height: 6px; width: 6px; background-color: #3d434d; border-radius: 50%; display: inline-block; margin: 0 4px; }
         .dot.active { width: 20px; background-color: var(--purp); border-radius: 4px; }
-        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid #2b2f36; }
-        .yield-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; font-weight: 700; }
-        .rings-container { display: flex; justify-content: space-around; align-items: center; margin-top: 20px; }
-        .ring-box { text-align: center; position: relative; width: 100px; height: 100px; }
-        .ring-svg { transform: rotate(-90deg); width: 100px; height: 100px; }
+
+        /* ELEMENTS */
+        .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 0 10px 12px 10px; border: 1px solid #2b2f36; }
+        .yield-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        
+        .rings-container { display: flex; justify-content: space-around; align-items: center; margin-top: 15px; }
+        .ring-box { text-align: center; position: relative; width: 90px; height: 90px; }
+        .ring-svg { transform: rotate(-90deg); width: 90px; height: 90px; }
         .ring-bg { fill: none; stroke: #2b2f36; stroke-width: 9; }
-        .ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease-in-out; }
-        .ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: 900; }
+        .ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1.5s; }
+        .ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px; font-weight: 900; }
 
-        /* Prognose Matrix Styling */
-        .prog-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-        .prog-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .prog-label { font-size: 10px; color: var(--gray); text-transform: uppercase; font-weight: 800; }
-        .prog-main-val { font-size: 18px; font-weight: 900; color: #fff; }
-        .prog-sub { font-size: 9px; color: var(--purp); font-weight: bold; }
+        .prog-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 5px; }
+        .prog-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); }
+        .prog-main-val { font-size: 16px; font-weight: 900; color: #fff; }
 
-        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 18px; border-radius: 16px; width: 100%; font-size: 28px; text-align: center; font-weight: 900; outline:none; box-sizing: border-box; }
-        .journal-mask { display: flex; flex-direction: column; gap: 10px; }
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 15px; border-radius: 14px; width: 100%; font-size: 16px; outline:none; -webkit-appearance: none; box-sizing: border-box; }
-        button { background: var(--purp); color: #fff; border: none; padding: 18px; border-radius: 16px; width: 100%; font-weight: 800; }
-        .exit-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .exit-price-label { font-weight: 900; color: var(--purp); font-size: 15px; }
+        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .ind-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 16px; text-align: center; }
+        .ind-val { font-size: 14px; font-weight: 800; display: block; margin-top: 2px; }
+        .ind-lbl { font-size: 8px; color: var(--gray); text-transform: uppercase; }
+
+        .calc-input { background: #2b2f36; border: 2px solid var(--purp); color: #fff; padding: 15px; border-radius: 16px; width: 100%; font-size: 26px; text-align: center; font-weight: 900; outline:none; }
+        .journal-mask { display: flex; flex-direction: column; gap: 8px; }
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 12px; width: 100%; font-size: 16px; outline:none; box-sizing: border-box; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 800; }
+
+        .exit-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .tax-badge { font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 5px; text-transform: uppercase; display: inline-block; margin-top: 5px; }
-        .tax-free { background: var(--sol); color: #000; border: 1px solid var(--sol); }
-        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .sim-input { background: rgba(255,255,255,0.05); border: 1px solid var(--purp); color: #fff; border-radius: 8px; width: 70px; padding: 5px; text-align: center; font-weight: 800; outline: none; font-size: 14px; }
+        .tax-badge { font-size: 7px; font-weight: 900; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-top: 4px; }
+        .tax-free { background: var(--sol); color: #000; font-weight: bold; border: 1px solid var(--sol); }
+        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .sim-input { background: rgba(255,255,255,0.05); border: 1px solid var(--purp); color: #fff; border-radius: 8px; width: 60px; padding: 5px; text-align: center; font-weight: 800; outline: none; }
     </style>
 </head>
 <body>
 
-    <div class="header" onclick="location.reload()">
+    <div class="menu-btn" onclick="toggleSide()">
+        <img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" width="20">
+    </div>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSide()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="journal-title" style="margin-bottom: 30px;">Intelligence Menu</div>
+        
+        <div class="nav-item active" onclick="goToSlide(0)">
+            <img src="https://img.icons8.com/fluency/48/combo-chart.png"> Dashboard
+        </div>
+        <div class="nav-item" onclick="goToSlide(1)">
+            <img src="https://img.icons8.com/fluency/48/target.png"> Ziele & BE
+        </div>
+        <div class="nav-item" onclick="goToSlide(2)">
+            <img src="https://img.icons8.com/fluency/48/artificial-intelligence.png"> KI Analysis
+        </div>
+        <div class="nav-item" onclick="goToSlide(3)">
+            <img src="https://img.icons8.com/fluency/48/money-bag-euro.png"> Prognosen
+        </div>
+        <div class="nav-item" onclick="goToSlide(4)">
+            <img src="https://img.icons8.com/fluency/48/calculator.png"> Rechner
+        </div>
+        <div class="nav-item" onclick="goToSlide(5)">
+            <img src="https://img.icons8.com/fluency/48/safe.png"> Simulator
+        </div>
+        <div class="nav-item" onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'}); toggleSide();">
+            <img src="https://img.icons8.com/fluency/48/journal.png"> Journal
+        </div>
+    </div>
+
+    <div class="header">
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
         <div id="total-perf-eur" class="perf-badge">-- €</div>
     </div>
@@ -62,84 +137,63 @@
         <div class="slider-track" id="track">
             
             <div class="slide">
-                <div><div class="yield-label">Markttrend (SOL/USD)</div><div style="height:150px"><canvas id="monthChart"></canvas></div></div>
+                <div><div class="yield-label">Markttrend (3M)</div><div style="height:150px"><canvas id="monthChart"></canvas></div></div>
                 <div style="margin-top:25px; border-top: 1px solid #2b2f36; padding-top:20px;">
-                    <div class="yield-label">Recovery Path (Portfolio Wert)</div>
+                    <div class="yield-label">Recovery Path (Portfolio)</div>
                     <div style="height:150px"><canvas id="alltimeChart"></canvas></div>
                 </div>
             </div>
             
             <div class="slide">
-                <div class="yield-label">Investitions-Ziele</div>
+                <div class="yield-label">Ziele & Break-Even</div>
                 <div class="rings-container">
-                    <div class="ring-box">
-                        <svg class="ring-svg"><circle class="ring-bg" cx="55" cy="55" r="45"/><circle id="sol-ring" class="ring-fill" cx="55" cy="55" r="45" stroke="var(--sol)" stroke-dasharray="282.7" stroke-dashoffset="282.7"/></svg>
-                        <div class="ring-text" id="sol-pct-text">0%</div>
-                        <div class="yield-label" style="margin-top:10px">SOL (700)</div>
-                    </div>
-                    <div class="ring-box">
-                        <svg class="ring-svg"><circle class="ring-bg" cx="55" cy="55" r="45"/><circle id="sui-ring" class="ring-fill" cx="55" cy="55" r="45" stroke="var(--sui)" stroke-dasharray="282.7" stroke-dashoffset="282.7"/></svg>
-                        <div class="ring-text" id="sui-pct-text">0%</div>
-                        <div class="yield-label" style="margin-top:10px">SUI (8k)</div>
-                    </div>
+                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sol-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sol)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sol-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SOL</div></div>
+                    <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sui-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sui)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sui-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SUI</div></div>
                 </div>
                 <div style="margin-top:auto; border-top: 1px solid #2b2f36; padding-top:20px;">
                     <div class="yield-label" style="color:var(--sol)">Target Break-Even ($)</div>
-                    <div class="grid-half">
-                        <div class="ind-item"><span class="ind-lbl">SOL BE</span><span id="sol-be-usd" class="ind-val">-- $</span></div>
-                        <div class="ind-item"><span class="ind-lbl">SUI BE</span><span id="sui-be-usd" class="ind-val">-- $</span></div>
-                    </div>
+                    <div class="grid-half"><div class="ind-item"><span class="ind-lbl">SOL BE</span><span id="sol-be-usd" class="ind-val">-- $</span></div><div class="ind-item"><span class="ind-lbl">SUI BE</span><span id="sui-be-usd" class="ind-val">-- $</span></div></div>
                 </div>
             </div>
 
             <div class="slide">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><div class="yield-label">Intelligence Matrix</div><select id="intel-asset-select" onchange="forceKIUpdate()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><div class="yield-label">Intelligence Matrix</div><select id="intel-asset-select" onchange="forceKIUpdate()" style="width:auto; font-size:11px; padding:5px 12px; border-radius:10px; border:1px solid var(--purp);"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select></div>
                 <div class="analysis-grid">
-                    <div class="ind-item"><span class="ind-lbl">RSI (14)</span><span id="ind-rsi" class="ind-val">50.0</span></div>
-                    <div class="ind-item"><span class="ind-lbl" style="color:var(--orange)">Fear & Greed</span><span id="ind-fng" class="ind-val">--</span></div>
+                    <div class="ind-item"><span class="ind-lbl">RSI (14)</span><span id="ind-rsi" class="ind-val">--</span></div>
+                    <div class="ind-item"><span class="ind-lbl" style="color:var(--purp)">7D Accuracy</span><span id="ind-acc" class="ind-val" style="color:var(--sol)">Learning..</span></div>
                     <div class="ind-item"><span class="ind-lbl">Volatilität</span><span id="ind-vol" class="ind-val">4.2%</span></div>
-                    <div class="ind-item"><span class="ind-lbl">Status</span><span id="intel-trend-pill" class="ind-val" style="color:var(--gray)">SCAN</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Status</span><span id="intel-trend-pill" class="ind-val">SCAN</span></div>
                 </div>
-                <div style="margin-top:30px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); padding:25px; border-radius:22px; text-align:center;"><div class="yield-label" style="color:var(--purp)">Market Strength (24h)</div><div id="p-24h" style="font-size:36px; font-weight:900; color:var(--sol);">-- %</div></div>
+                <div style="margin-top:30px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); padding:20px; border-radius:22px; text-align:center;"><div class="yield-label">Buy Confidence (24h)</div><div id="p-24h" style="font-size:32px; font-weight:900;">-- %</div></div>
             </div>
 
             <div class="slide">
                 <div class="yield-label">Wealth Scenarios 2031</div>
                 <div class="prog-grid">
-                    <div class="prog-row" style="border-left: 4px solid var(--red);">
-                        <div><span class="prog-label">Worst Case</span><br><small style="color:var(--gray)">SOL $150 / SUI $2.5</small></div>
-                        <div style="text-align:right;"><div id="prog-worst-val" class="prog-main-val">$ 0</div><span id="prog-worst-coins" class="prog-sub">0 SOL</span></div>
-                    </div>
-                    <div class="prog-row" style="border-left: 4px solid var(--purp); background: rgba(130,105,217,0.05);">
-                        <div><span class="prog-label" style="color:var(--purp)">Normal</span><br><small style="color:var(--gray)">SOL $260 / SUI $5</small></div>
-                        <div style="text-align:right;"><div id="prog-normal-val" class="prog-main-val">$ 0</div><span id="prog-normal-coins" class="prog-sub">0 SOL</span></div>
-                    </div>
-                    <div class="prog-row" style="border-left: 4px solid var(--sol);">
-                        <div><span class="prog-label" style="color:var(--sol)">Best Case</span><br><small style="color:var(--gray)">SOL $500 / SUI $12</small></div>
-                        <div style="text-align:right;"><div id="prog-best-val" class="prog-main-val">$ 0</div><span id="prog-best-coins" class="prog-sub">0 SOL</span></div>
-                    </div>
+                    <div class="prog-row" style="border-left: 4px solid var(--red);"><div><span class="prog-label">Worst Case</span><br><small style="color:var(--gray)">SOL $150 / SUI $2.5</small></div><div style="text-align:right;"><div id="prog-worst-val" class="prog-main-val">$ 0</div><span id="prog-worst-coins" class="prog-sub">0 SOL</span></div></div>
+                    <div class="prog-row" style="border-left: 4px solid var(--purp); background: rgba(130,105,217,0.05);"><div><span class="prog-label" style="color:var(--purp)">Normal</span><br><small style="color:var(--gray)">SOL $260 / SUI $5</small></div><div style="text-align:right;"><div id="prog-normal-val" class="prog-main-val">$ 0</div><span id="prog-normal-coins" class="prog-sub">0 SOL</span></div></div>
+                    <div class="prog-row" style="border-left: 4px solid var(--sol);"><div><span class="prog-label" style="color:var(--sol)">Best Case</span><br><small style="color:var(--gray)">SOL $500 / SUI $12</small></div><div style="text-align:right;"><div id="prog-best-val" class="prog-main-val">$ 0</div><span id="prog-best-coins" class="prog-sub">0 SOL</span></div></div>
                 </div>
-                <div style="margin-top:auto; font-size:10px; color:var(--gray); text-align:center; padding:10px; line-height:1.4;">Alle Werte inkl. Sparplan (500€/2000€) & DCA-Preisanpassung.</div>
             </div>
 
             <div class="slide">
-                <div class="yield-label">Live Kaufkraft Rechner</div>
-                <div style="display:flex; justify-content:center; margin-top:10px;"><input type="number" id="calc-euro" class="calc-input" value="500" oninput="liveCalc()"></div>
+                <div class="yield-label">Kaufkraft Rechner</div>
+                <div style="margin-top:15px; text-align:center;"><input type="number" id="calc-euro" class="calc-input" value="500" oninput="liveCalc()"></div>
                 <div style="background:rgba(0,230,118,0.05); border:1px solid var(--sol); border-radius:20px; padding:25px; text-align:center; margin-top:25px;">
-                    <div id="calc-sol-res" style="font-size:34px; font-weight:900; color:var(--sol)">0.00 SOL</div>
-                    <div id="live-sol-usd" style="font-size:13px; color:#fff; margin-top:10px; font-weight:bold; background:rgba(255,255,255,0.1); display:inline-block; padding:5px 15px; border-radius:10px;">Basis: -- $</div>
-                    <div style="height:1px; background:rgba(255,255,255,0.1); margin:20px 0;"></div>
+                    <div id="calc-sol-res" style="font-size:32px; font-weight:900; color:var(--sol)">0.00 SOL</div>
+                    <div id="live-sol-usd" style="font-size:12px; color:var(--gray); margin-top:8px;">Basis: -- $</div>
+                    <div style="height:1px; background:rgba(255,255,255,0.1); margin:15px 0;"></div>
                     <div id="calc-sui-res" style="font-size:24px; font-weight:800; color:var(--sui)">0 SUI</div>
                 </div>
             </div>
 
             <div class="slide">
-                <div class="yield-label">Exit-Strategie & Simulator</div>
-                <div class="card" style="margin-top:5px; padding:12px;">
-                    <div class="exit-row"><span class="exit-price-label">$116 (10%)</span><span id="exit-l0" class="exit-qty-label">0 SOL</span></div>
-                    <div class="exit-row"><span class="exit-price-label">$160 (20%)</span><span id="exit-l1" class="exit-qty-label">0 SOL</span></div>
-                    <div class="exit-row"><span class="exit-price-label">$210 (15%)</span><span id="exit-l2" class="exit-qty-label">0 SOL</span></div>
-                    <div class="exit-row" style="border:none"><span class="exit-price-label">$260 (20%)</span><span id="exit-l3" class="exit-qty-label">0 SOL</span></div>
+                <div class="yield-label">Exit Simulator</div>
+                <div class="card" style="margin: 10px 0; padding:12px;">
+                    <div class="exit-row"><span>$116 (10%)</span><span id="exit-l0" style="font-weight:900;color:var(--sol)">0 SOL</span></div>
+                    <div class="exit-row"><span>$160 (20%)</span><span id="exit-l1" style="font-weight:900;color:var(--sol)">0 SOL</span></div>
+                    <div class="exit-row"><span>$210 (15%)</span><span id="exit-l2" style="font-weight:900;color:var(--sol)">0 SOL</span></div>
+                    <div class="exit-row" style="border:none"><span>$260 (20%)</span><span id="exit-l3" style="font-weight:900;color:var(--sol)">0 SOL</span></div>
                 </div>
                 <div style="margin-top:auto; background:rgba(130,105,217,0.05); border:1px dashed var(--purp); padding:15px; border-radius:18px;">
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:center;">
@@ -159,7 +213,7 @@
 
     <div class="card" style="border-top: 2px solid var(--purp);">
         <div class="journal-mask">
-            <div class="grid-half"><input type="date" id="tx-date"><select id="tx-type" style="color:var(--sol); font-weight:bold;"><option value="buy">KAUF</option><option value="sell" style="color:var(--red);">VERKAUF</option></select></div>
+            <div class="grid-half"><input type="date" id="tx-date"><select id="tx-type" style="color:var(--sol); font-weight:bold;"><option value="buy">KAUF</option><option value="sell">VERKAUF</option></select></div>
             <div class="grid-half"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"></div>
             <div class="grid-half"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"><input type="number" id="tx-qty" placeholder="Menge" step="any"></div>
             <button onclick="saveTx()">IM JOURNAL SPEICHERN</button>
@@ -167,17 +221,34 @@
     </div>
 
     <div class="card" style="padding:5px 15px;"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-    <button onclick="generateSteuerPDF()" style="background:#181a20; color:var(--sol); border:1px solid var(--sol); border-radius:15px; padding:18px; font-weight:800; width:100%; margin-bottom:10px;">📄 STEUER-REPORT GENERIEREN</button>
-    <div style="display:flex; justify-content:space-between; margin-bottom: 30px;"><button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">💾 BACKUP</button><button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">🔄 RESTORE</button></div>
+    <div style="padding: 0 10px;"><button onclick="generateSteuerPDF()" style="background:#181a20; color:var(--sol); border:1px solid var(--sol); margin-bottom:10px;">📄 STEUER-REPORT PDF</button></div>
+    <div style="display:flex; justify-content:space-between; margin: 0 10px 30px 10px;"><button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">💾 BACKUP</button><button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px; border-radius:12px;">🔄 RESTORE</button></div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const DB_KEY = 'krypto_v1';
+        const LOG_KEY = 'ki_forecast_log';
         let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+        let kiLog = JSON.parse(localStorage.getItem(LOG_KEY)) || [];
         let prices = { SOL: 0, SUI: 0, BTC: 0, ETH: 0, EUR: 0.94 };
-        let currentSlide = 0, startX = 0, portfolioChart, monthChart;
-        let lastChartUpdate = 0;
-        let stabilizedKiData = { rsi: "50.0", score: "50%", trend: "NEUTRAL", color: "var(--gray)" };
+        let currentSlide = 0, startX = 0, portfolioChart, monthChart, lastChartUpdate = 0;
+        let stabilizedKiData = { rsi: "50.0", score: "50%", trend: "NEUTRAL", color: "var(--gray)", accuracy: "Learning.." };
+
+        function toggleSide() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            const track = document.getElementById('track');
+            track.style.transform = `translateX(-${currentSlide * 14.285}%)`;
+            const dots = document.getElementById('dotBox').children;
+            for(let i=0; i<7; i++) dots[i].classList.toggle('active', i === currentSlide);
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach((it, i) => it.classList.toggle('active', i === index));
+            if(window.innerWidth < 800) toggleSide();
+        }
 
         function getTaxStatus(dStr) {
             const buy = new Date(dStr); const now = new Date();
@@ -193,59 +264,45 @@
 
         function liveCalc() {
             const val = parseFloat(document.getElementById('calc-euro').value) || 0;
-            if(prices.SOL > 0) {
-                document.getElementById('calc-sol-res').innerText = (val / (prices.SOL * prices.EUR)).toFixed(3) + " SOL";
-                document.getElementById('live-sol-usd').innerText = `Basis Kurs: ${prices.SOL.toFixed(2)} $`;
-            }
+            if(prices.SOL > 0) document.getElementById('calc-sol-res').innerText = (val / (prices.SOL * prices.EUR)).toFixed(3) + " SOL";
             if(prices.SUI > 0) document.getElementById('calc-sui-res').innerText = (val / (prices.SUI * prices.EUR)).toFixed(1) + " SUI";
         }
 
         function updateUI() {
-            let sQ=0, suQ=0, invE=0, freeSol=0, totalInvestUSD_SOL=0, totalInvestUSD_SUI=0, firstInvestEUR = 0;
+            let sQ=0, suQ=0, invE=0, freeSol=0, investUSD_SOL=0, investUSD_SUI=0, firstE = 0;
             txs.forEach((t, i) => {
                 let amount = parseFloat(t.amount)||0; let eur = parseFloat(t.eur)||0; 
-                if(i === 0) firstInvestEUR = eur;
+                if(i === 0) firstE = eur;
                 if(t.type === 'sell') {
-                    if(t.asset === 'SOL') { sQ -= amount; totalInvestUSD_SOL -= (eur / prices.EUR); }
-                    else if(t.asset === 'SUI') { suQ -= amount; totalInvestUSD_SUI -= (eur / prices.EUR); }
+                    if(t.asset === 'SOL') { sQ -= amount; investUSD_SOL -= (eur / prices.EUR); }
+                    else if(t.asset === 'SUI') { suQ -= amount; investUSD_SUI -= (eur / prices.EUR); }
                     invE -= eur;
                 } else {
-                    if(t.asset === 'SOL') { sQ += amount; totalInvestUSD_SOL += (eur / prices.EUR); if(getTaxStatus(t.date).free) freeSol += amount; }
-                    else if(t.asset === 'SUI') { suQ += amount; totalInvestUSD_SUI += (eur / prices.EUR); }
+                    if(t.asset === 'SOL') { sQ += amount; investUSD_SOL += (eur / prices.EUR); if(getTaxStatus(t.date).free) freeSol += amount; }
+                    else if(t.asset === 'SUI') { suQ += amount; investUSD_SUI += (eur / prices.EUR); }
                     invE += eur;
                 }
             });
 
-            document.getElementById('sol-be-usd').innerText = sQ > 0 ? (totalInvestUSD_SOL / sQ).toFixed(2) + " $" : "-- $";
-            document.getElementById('sui-be-usd').innerText = suQ > 0 ? (totalInvestUSD_SUI / suQ).toFixed(2) + " $" : "-- $";
-
-            const solPct = Math.min((sQ/700)*100, 100), suiPct = Math.min((suQ/8000)*100, 100);
-            document.getElementById('sol-ring').style.strokeDashoffset = 282.7 - (282.7 * solPct / 100);
-            document.getElementById('sui-ring').style.strokeDashoffset = 282.7 - (282.7 * suiPct / 100);
-            document.getElementById('sol-pct-text').innerText = solPct.toFixed(1) + "%";
-            document.getElementById('sui-pct-text').innerText = suiPct.toFixed(1) + "%";
+            document.getElementById('sol-be-usd').innerText = sQ > 0 ? (investUSD_SOL / sQ).toFixed(2) + " $" : "-- $";
+            document.getElementById('sui-be-usd').innerText = suQ > 0 ? (investUSD_SUI / suQ).toFixed(2) + " $" : "-- $";
+            document.getElementById('sol-pct-text').innerText = Math.min((sQ/700)*100, 100).toFixed(1) + "%";
+            document.getElementById('sol-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((sQ/700)*100, 100) / 100);
+            document.getElementById('sui-pct-text').innerText = Math.min((suQ/8000)*100, 100).toFixed(1) + "%";
+            document.getElementById('sui-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((suQ/8000)*100, 100) / 100);
 
             document.getElementById('total-val-usd').innerText = '$ ' + (Math.max(0, sQ) * prices.SOL + Math.max(0, suQ) * prices.SUI).toLocaleString(undefined, {minimumFractionDigits: 2});
             let diffE = ((sQ * prices.SOL + suQ * prices.SUI) * prices.EUR) - invE;
             document.getElementById('total-perf-eur').innerText = (invE !== 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString(undefined, {maximumFractionDigits:0}) + ' €' : '-- €');
             document.getElementById('total-perf-eur').style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
             
-            // MULTI-SCENARIO CALCULATION
-            const scenarios = [
-                { id: 'worst', solTarget: 150, suiTarget: 2.5, dcaFactor: 0.75 },
-                { id: 'normal', solTarget: 260, suiTarget: 5, dcaFactor: 0.5 },
-                { id: 'best', solTarget: 500, suiTarget: 12, dcaFactor: 0.4 }
-            ];
-
+            const scenarios = [{ id: 'worst', solT: 150, suiT: 2.5, dca: 0.75 }, { id: 'normal', solT: 260, suiT: 5, dca: 0.5 }, { id: 'best', solT: 500, suiT: 12, dca: 0.4 }];
             scenarios.forEach(sc => {
-                const avgSOL = (prices.SOL + sc.solTarget) * (1 - sc.dcaFactor * 0.2);
-                const avgSUI = (prices.SUI + sc.suiTarget) * (1 - sc.dcaFactor * 0.2);
-                const planSOL = ((450 * 19) / (avgSOL * prices.EUR)) + ((1600 * 39) / (avgSOL * prices.EUR));
-                const planSUI = ((50 * 19) / (avgSUI * prices.EUR)) + ((400 * 39) / (avgSUI * prices.EUR));
-                const totalS = sQ + planSOL, totalSu = suQ + planSUI;
-                const totalVal = (totalS * sc.solTarget) + (totalSu * sc.suiTarget);
-
-                document.getElementById(`prog-${sc.id}-val`).innerText = "$" + totalVal.toLocaleString(undefined, {maximumFractionDigits:0});
+                const avgSOL = (prices.SOL + sc.solT) * (1 - sc.dca * 0.2); const avgSUI = (prices.SUI + sc.suiT) * (1 - sc.dca * 0.2);
+                const pSOL = ((450 * 19) / (avgSOL * prices.EUR)) + ((1600 * 39) / (avgSOL * prices.EUR));
+                const pSUI = ((50 * 19) / (avgSUI * prices.EUR)) + ((400 * 39) / (avgSUI * prices.EUR));
+                const totalS = sQ + pSOL, totalSu = suQ + pSUI;
+                document.getElementById(`prog-${sc.id}-val`).innerText = "$" + ((totalS * sc.solT) + (totalSu * sc.suiT)).toLocaleString(undefined, {maximumFractionDigits:0});
                 document.getElementById(`prog-${sc.id}-coins`).innerText = `${totalS.toFixed(0)} SOL / ${totalSu.toFixed(0)} SUI`;
             });
             
@@ -263,21 +320,47 @@
             document.getElementById('sim-profit').innerText = "+" + (rebuy - simQty).toFixed(1) + " Profit";
 
             liveCalc(); 
-            if(Date.now() - lastChartUpdate > 20000) { lastChartUpdate = Date.now(); updateKI_Values(false); updatePortfolioChart(firstInvestEUR, invE, (sQ * prices.SOL + suQ * prices.SUI) * prices.EUR); }
+            if(Date.now() - lastChartUpdate > 30000) { 
+                lastChartUpdate = Date.now(); 
+                updateKI_Values(false); 
+                updatePortfolioChart(firstE, invE, (sQ * prices.SOL + suQ * prices.SUI) * prices.EUR);
+                saveSnapshot();
+            }
             renderKI_Display();
+        }
+
+        function saveSnapshot() {
+            if(!prices.SOL) return;
+            const today = new Date().toISOString().split('T')[0];
+            if(kiLog.length > 0 && kiLog[kiLog.length-1].date === today) return;
+            kiLog.push({ date: today, price: prices.SOL, forecast: parseFloat(stabilizedKiData.rsi) > 52 ? prices.SOL * 1.05 : prices.SOL * 0.95 });
+            if(kiLog.length > 30) kiLog.shift();
+            localStorage.setItem(LOG_KEY, JSON.stringify(kiLog));
+            checkAccuracy();
+        }
+
+        function checkAccuracy() {
+            const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+            const targetDate = weekAgo.toISOString().split('T')[0];
+            const oldEntry = kiLog.find(e => e.date === targetDate);
+            if(oldEntry) {
+                const acc = Math.max(0, 100 - (Math.abs(prices.SOL - oldEntry.forecast) / oldEntry.price * 100)).toFixed(0);
+                stabilizedKiData.accuracy = acc + "%";
+            }
         }
 
         function updateKI_Values(f = false) {
             if(!prices.SOL) return;
-            let currentRsi = f ? (45 + Math.random() * 12) : parseFloat(stabilizedKiData.rsi) + (Math.random() - 0.5) * 1.5;
-            stabilizedKiData.rsi = currentRsi.toFixed(1);
-            if (currentRsi > 55) { stabilizedKiData.trend = "BULLISH"; stabilizedKiData.color = "var(--sol)"; stabilizedKiData.score = (65 + Math.random()*12).toFixed(0) + "%"; }
-            else if (currentRsi < 45) { stabilizedKiData.trend = "BEARISH"; stabilizedKiData.color = "var(--red)"; stabilizedKiData.score = (25 + Math.random()*15).toFixed(0) + "%"; }
+            let rsi = f ? (45 + Math.random() * 12) : parseFloat(stabilizedKiData.rsi) + (Math.random() - 0.5) * 1.5;
+            stabilizedKiData.rsi = rsi.toFixed(1);
+            if (rsi > 55) { stabilizedKiData.trend = "BULLISH"; stabilizedKiData.color = "var(--sol)"; stabilizedKiData.score = (65 + Math.random()*12).toFixed(0) + "%"; }
+            else if (rsi < 45) { stabilizedKiData.trend = "BEARISH"; stabilizedKiData.color = "var(--red)"; stabilizedKiData.score = (25 + Math.random()*15).toFixed(0) + "%"; }
             else { stabilizedKiData.trend = "NEUTRAL"; stabilizedKiData.color = "var(--gray)"; stabilizedKiData.score = (45 + Math.random()*10).toFixed(0) + "%"; }
         }
 
         function renderKI_Display() {
             document.getElementById('ind-rsi').innerText = stabilizedKiData.rsi;
+            document.getElementById('ind-acc').innerText = stabilizedKiData.accuracy;
             document.getElementById('p-24h').innerText = stabilizedKiData.score;
             document.getElementById('p-24h').style.color = stabilizedKiData.color;
             document.getElementById('intel-trend-pill').innerText = stabilizedKiData.trend;
@@ -290,13 +373,10 @@
             if(portfolioChart) portfolioChart.destroy();
             portfolioChart = new Chart(document.getElementById('alltimeChart'), {
                 type: 'line',
-                data: {
-                    labels: ['Start','2023','Jetzt'],
-                    datasets: [
-                        { label: 'Invest', data: [first || 8000, invest*0.85, invest], borderColor: '#fff', borderDash: [5,5], fill: false },
-                        { label: 'Wert', data: [first ? first*1.2 : 11000, invest*0.25, value], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }
-                    ]
-                },
+                data: { labels: ['Start','2023','Jetzt'], datasets: [
+                    { label: 'Invest', data: [first || 8000, invest*0.85, invest], borderColor: '#fff', borderDash: [5,5], fill: false },
+                    { label: 'Wert', data: [first ? first*1.2 : 11000, invest*0.25, value], borderColor: '#8269d9', fill: true, backgroundColor: 'rgba(130,105,217,0.1)', tension: 0.4 }
+                ]},
                 options: { animation: false, responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff', font: {size: 10} }, grid: { color: '#2b2f36' } } }, plugins: { legend: { display: false } } }
             });
             const mCtx = document.getElementById('monthChart').getContext('2d');
@@ -307,8 +387,7 @@
         function renderHist() {
             const b = document.getElementById('history-body'); b.innerHTML = '';
             txs.slice().reverse().forEach((t, i) => {
-                const tax = getTaxStatus(t.date);
-                const isSell = t.type === 'sell';
+                const tax = getTaxStatus(t.date); const isSell = t.type === 'sell';
                 b.innerHTML += `<tr><td><b style="color:${isSell?'var(--red)':'var(--txt)'}">${t.asset} (${isSell?'V':'K'})</b><br><small>${t.date}</small><br><span class="tax-badge ${tax.class}">${tax.label}</span></td><td style="text-align:right;">${isSell?'-':'+'}${t.amount}<br><small>$${t.price||'--'}</small></td><td style="text-align:right;"><span style="color:var(--red); font-size:18px;" onclick="delTx(${txs.length-1-i})">✕</span></td></tr>`;
             });
         }
@@ -333,7 +412,7 @@
             };
             fetch('https://api.alternative.me/fng/').then(r => r.json()).then(d => { document.getElementById('ind-fng').innerText = d.data[0].value; });
             new TradingView.widget({ "autosize": true, "symbol": "BINANCE:SOLUSDT", "interval": "60", "theme": "dark", "container_id": "tradingview_chart", "hide_top_toolbar": true });
-            renderHist(); updateKI_Values(true);
+            renderHist(); updateKI_Values(true); checkAccuracy();
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
@@ -344,10 +423,7 @@
         document.getElementById('slider').addEventListener('touchend', e => {
             let d = startX - e.changedTouches[0].clientX;
             if(Math.abs(d) > 50) {
-                if(d > 0 && currentSlide < 6) currentSlide++; else if(d < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 14.285}%)`;
-                const dots = document.getElementById('dotBox').children;
-                for(let i=0; i<7; i++) dots[i].classList.toggle('active', i === currentSlide);
+                if(d > 0 && currentSlide < 6) goToSlide(currentSlide + 1); else if(d < 0 && currentSlide > 0) goToSlide(currentSlide - 1);
             }
         });
         const dBox = document.getElementById('dotBox'); for(let i=0; i<7; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
