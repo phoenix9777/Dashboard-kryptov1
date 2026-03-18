@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V111 ULTIMATE</title>
+    <title>Krypto Intelligence V112 FINAL</title>
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -29,8 +29,8 @@
         .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 0 10px 12px 10px; border: 1px solid #2b2f36; }
         .yield-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
         .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .ind-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.04); }
-        .ind-val { font-size: 14px; font-weight: 800; display: block; margin-top: 2px; }
+        .ind-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.04); }
+        .ind-val { font-size: 13px; font-weight: 800; display: block; margin-top: 2px; }
         .ind-lbl { font-size: 8px; color: var(--gray); text-transform: uppercase; }
         .rings-container { display: flex; justify-content: space-around; align-items: center; margin-top: 15px; }
         .ring-box { text-align: center; position: relative; width: 90px; height: 90px; }
@@ -64,8 +64,8 @@
         <div class="nav-item active" onclick="goToSlide(0)">Dashboard</div>
         <div class="nav-item" onclick="goToSlide(1)">Ziele & BE</div>
         <div class="nav-item" onclick="goToSlide(2)">Top 15 Krypto</div>
-        <div class="nav-item" onclick="goToSlide(3)">Matrix Intelligence</div>
-        <div class="nav-item" onclick="goToSlide(4)">Multi-Prognosen</div>
+        <div class="nav-item" onclick="goToSlide(3)">Matrix Pro</div>
+        <div class="nav-item" onclick="goToSlide(4)">Prognosen</div>
         <div class="nav-item" onclick="goToSlide(5)">Kaufkraft Rechner</div>
         <div class="nav-item" onclick="goToSlide(6)">Staking Rewards</div>
         <div class="nav-item" onclick="goToSlide(7)">Simulator</div>
@@ -84,7 +84,7 @@
                 <div style="margin-top:25px; border-top: 1px solid #2b2f36; padding-top:20px;"><div class="yield-label">Portfolio Recovery</div><div style="height:150px"><canvas id="alltimeChart"></canvas></div></div>
             </div>
             <div class="slide">
-                <div class="yield-label">Investitions-Ziele</div>
+                <div class="yield-label">Ziele & Fortschritt</div>
                 <div class="rings-container">
                     <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sol-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sol)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sol-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SOL</div></div>
                     <div class="ring-box"><svg class="ring-svg"><circle class="ring-bg" cx="45" cy="45" r="40"/><circle id="sui-ring" class="ring-fill" cx="45" cy="45" r="40" stroke="var(--sui)" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg><div class="ring-text" id="sui-pct-text">0%</div><div class="yield-label" style="margin-top:5px">SUI</div></div>
@@ -158,7 +158,7 @@
     <div class="dots" id="dotBox"></div>
     <div class="card" style="border-top: 2px solid var(--purp);"><div class="journal-mask"><div class="grid-half"><input type="date" id="tx-date"><select id="tx-type" style="color:var(--sol); font-weight:bold;"><option value="buy">KAUF</option><option value="sell">VERKAUF</option></select></div><div class="grid-half"><select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option><option value="BTC">BTC</option><option value="ETH">ETH</option></select><input type="number" id="tx-eur" placeholder="Invest €" oninput="calcQty()"></div><div class="grid-half"><input type="number" id="tx-price" placeholder="Kurs $" oninput="calcQty()"><input type="number" id="tx-qty" placeholder="Menge" step="any"></div><button onclick="saveTx()">JOURNAL SPEICHERN</button></div></div>
     <div class="card" style="padding:5px 15px;"><table class="history-table"><tbody id="history-body"></tbody></table></div>
-    <div style="padding: 0 10px; margin-bottom: 10px;"><button onclick="generateSteuerPDF()" style="background:#181a20; color:var(--sol); border:1px solid var(--sol);">📄 STEUER-REPORT GENERIEREN (PDF)</button></div>
+    <div style="padding: 0 10px; margin-bottom: 10px;"><button onclick="generateSteuerPDF()" id="pdf-btn" style="background:#181a20; color:var(--sol); border:1px solid var(--sol); width:100%;">📄 STEUER-REPORT GENERIEREN (PDF)</button></div>
     <div style="display:flex; justify-content:space-between; margin: 0 10px 40px 10px;"><button onclick="exportData()" style="background:#2b2f36; width:48%; font-size:11px;">💾 BACKUP</button><button onclick="importData()" style="background:#2b2f36; width:48%; font-size:11px;">🔄 RESTORE</button></div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -214,27 +214,22 @@
                 else if(t.asset === 'ETH') { eQ += (amt * factor); }
                 invE += (eur * factor);
             });
-
             document.getElementById('sol-be-usd').innerText = sQ > 0 ? (invUSD_SOL / sQ).toFixed(2) + " $" : "-- $";
             document.getElementById('sui-be-usd').innerText = suQ > 0 ? (invUSD_SUI / suQ).toFixed(2) + " $" : "-- $";
             document.getElementById('sol-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((sQ/700)*100, 100) / 100);
             document.getElementById('sol-pct-text').innerText = Math.min((sQ/700)*100, 100).toFixed(1) + "%";
             document.getElementById('sui-ring').style.strokeDashoffset = 251.2 - (251.2 * Math.min((suQ/8000)*100, 100) / 100);
             document.getElementById('sui-pct-text').innerText = Math.min((suQ/8000)*100, 100).toFixed(1) + "%";
-
-            // Staking
             const yearRewards = sQ * 0.0629;
             document.getElementById('stake-total').innerText = sQ.toFixed(2) + " SOL";
             document.getElementById('stake-day').innerText = (yearRewards / 365).toFixed(4);
             document.getElementById('stake-month').innerText = (yearRewards / 12).toFixed(2);
             document.getElementById('stake-year').innerText = yearRewards.toFixed(2);
-
             const currentValUSD = (sQ * prices.SOL + suQ * prices.SUI + bQ * prices.BTC + eQ * prices.ETH);
             document.getElementById('total-val-usd').innerText = '$ ' + currentValUSD.toLocaleString(undefined, {minimumFractionDigits: 2});
             let diffE = (currentValUSD * prices.EUR) - invE;
             document.getElementById('total-perf-eur').innerText = (invE !== 0 ? (diffE >= 0 ? '+' : '-') + Math.abs(diffE).toLocaleString(undefined, {maximumFractionDigits:0}) + ' €' : '-- €');
             document.getElementById('total-perf-eur').style.color = diffE >= 0 ? 'var(--sol)' : 'var(--red)';
-            
             const scenarios = [{ id: 'worst', solT: 150, suiT: 2.5 }, { id: 'normal', solT: 260, suiT: 5 }, { id: 'best', solT: 500, suiT: 12 }];
             scenarios.forEach(sc => {
                 const avgS = (prices.SOL + sc.solT) / 2; const avgSu = (prices.SUI + sc.suiT) / 2;
@@ -243,19 +238,16 @@
                 document.getElementById(`prog-${sc.id}-val`).innerText = "$" + (pS * sc.solT + pSu * sc.suiT).toLocaleString(undefined, {maximumFractionDigits:0});
                 document.getElementById(`prog-${sc.id}-coins`).innerText = `${pS.toFixed(0)} SOL / ${pSu.toFixed(0)} SUI`;
             });
-            
             document.getElementById('exit-l0').innerText = (freeSol * 0.10).toFixed(2) + " SOL";
             document.getElementById('exit-l1').innerText = ((freeSol * 0.90) * 0.20).toFixed(2) + " SOL";
             document.getElementById('exit-l2').innerText = ((freeSol * 0.72) * 0.15).toFixed(2) + " SOL";
             document.getElementById('exit-l3').innerText = ((freeSol * 0.61) * 0.20).toFixed(2) + " SOL";
-
             const simQty = parseFloat(document.getElementById('sim-qty').value) || 0;
             const simPrice = parseFloat(document.getElementById('sim-price').value) || 0;
             const dipPrice = parseFloat(document.getElementById('dip-target').value) || 1;
             const rebuy = (simQty * simPrice) / dipPrice;
             document.getElementById('sim-res').innerText = rebuy.toFixed(1) + " SOL";
             document.getElementById('sim-profit').innerText = "+" + (rebuy - simQty).toFixed(1) + " Profit";
-
             if(Date.now() - lastUpdate > 30000) { lastUpdate = Date.now(); updateKI_Logic(); renderCharts(firstE, invE, currentValUSD * prices.EUR); fetchTop15(); }
             renderKI_Static(); liveCalc();
         }
@@ -313,7 +305,7 @@
         }
 
         function delTx(i) { if(confirm('Löschen?')) { txs.splice(i,1); localStorage.setItem(DB_KEY, JSON.stringify(txs)); renderHist(); updateUI(); } }
-        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Kopiert!")); }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
         function importData() { let c = prompt("Backup:"); if(c) { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } }
 
         document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
