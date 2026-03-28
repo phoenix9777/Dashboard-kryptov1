@@ -3,312 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Krypto Intelligence V120 NEURAL</title>
+    <title>Krypto Intelligence V125 HYBRID</title>
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/diamond.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
-        :root { 
-            --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; 
-            --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; --side: #1e2026;
-            --neural-glow: 0 0 15px rgba(130, 105, 217, 0.4);
-        }
-        body { background: var(--bg); color: var(--txt); font-family: 'Inter', -apple-system, sans-serif; margin: 0; overflow-x: hidden; }
+        :root { --bg: #0b0e11; --card: #181a20; --sol: #00e676; --sui: #00c4ff; --purp: #8269d9; --txt: #fff; --red: #f6465d; --gray: #848e9c; --orange: #f7931a; --side: #1e2026; }
+        body { background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
-        /* Glassmorphism Header */
-        .header { 
-            background: rgba(24, 26, 32, 0.8); backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100; padding: 15px; 
-            border-bottom: 1px solid #2b2f36; text-align: center;
-        }
+        /* Sidebar Styles */
+        .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 260px; background: var(--side); border-right: 1px solid #2b2f36; z-index: 2000; transition: 0.3s; padding: 20px; box-sizing: border-box; }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1999; display: none; }
+        .sidebar-overlay.active { display: block; }
+        .nav-item { padding: 12px; border-radius: 12px; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--gray); transition: 0.2s; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: rgba(130, 105, 217, 0.1); color: var(--purp); }
+        .menu-btn { position: absolute; left: 15px; top: 22px; z-index: 1000; cursor: pointer; background: var(--card); padding: 8px; border-radius: 8px; border: 1px solid #2b2f36; }
 
-        /* AI Signal Badge */
-        .ai-badge {
-            background: linear-gradient(90deg, var(--purp), #5a42b3);
-            padding: 5px 15px; border-radius: 20px; font-size: 10px;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 8px;
-            display: inline-block; box-shadow: var(--neural-glow);
-        }
+        .header { text-align: center; padding: 15px 0; border-bottom: 1px solid #2b2f36; margin-bottom: 10px; padding-left: 50px; }
+        .alltime-val { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+        .ai-badge { background: linear-gradient(90deg, var(--purp), #5a42b3); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
 
-        .alltime-val { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+        /* Slider */
+        .slider-container { width: 95%; margin: 10px auto; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; height: 580px; position: relative; overflow: hidden; }
+        .slider-track { display: flex; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1); width: 900%; height: 100%; }
+        .slide { width: 11.111%; box-sizing: border-box; height: 100%; padding: 20px; display: flex; flex-direction: column; }
 
-        /* Dashboard Slider */
-        .slider-container { width: 95%; margin: 10px auto; border-radius: 24px; background: var(--card); border: 1px solid #2b2f36; height: 600px; position: relative; overflow: hidden; }
-        .slider-track { display: flex; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); width: 900%; height: 100%; }
-        .slide { width: 11.111%; padding: 20px; box-sizing: border-box; }
-
-        /* Intelligence Grid */
-        .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .intel-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; text-align: center; }
-        .intel-val { font-size: 16px; font-weight: 800; display: block; color: var(--purp); }
-        .intel-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Signal Box */
-        .signal-box {
-            margin-top: 15px; padding: 20px; border-radius: 20px;
-            background: rgba(130, 105, 217, 0.1); border: 1px solid var(--purp);
-            text-align: center; position: relative;
-        }
-
-        /* Buttons & Inputs */
-        .main-btn { background: var(--purp); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; }
-        .main-btn:active { transform: scale(0.98); }
-        
-        input, select { background: #2b2f36; border: 1px solid #3d434d; color: white; padding: 12px; border-radius: 12px; width: 100%; box-sizing: border-box; outline: none; }
-
-        /* Journal & Table */
+        /* Tables & Lists */
+        .top15-table, .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .top15-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 10px; border: 1px solid #2b2f36; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .tax-tag { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         
-        /* Utilities */
-        .sol-txt { color: var(--sol); }
-        .sui-txt { color: var(--sui); }
-        .red-txt { color: var(--red); }
+        /* Grid Tools */
+        .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .ind-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.04); }
+        .ind-lbl { font-size: 8px; color: var(--gray); text-transform: uppercase; display: block; }
+        .ind-val { font-size: 13px; font-weight: 800; }
+
+        /* Inputs */
+        input, select { background: #2b2f36; border: 1px solid #3d434d; color: #fff; padding: 12px; border-radius: 12px; width: 100%; font-size: 14px; box-sizing: border-box; outline:none; }
+        button { background: var(--purp); color: #fff; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 800; cursor: pointer; }
+        
+        .dots { text-align: center; margin: 10px 0; }
+        .dot { height: 5px; width: 5px; background: #3d434d; border-radius: 50%; display: inline-block; margin: 0 3px; }
+        .dot.active { width: 15px; background: var(--purp); border-radius: 3px; }
     </style>
 </head>
 <body>
 
+    <div class="menu-btn" onclick="toggleSide()"><img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" width="20"></div>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSide()"></div>
+    
+    <div class="sidebar" id="sidebar">
+        <div style="color:var(--purp); font-weight:900; margin-bottom:20px;">NEURAL MENU</div>
+        <div class="nav-item active" onclick="goToSlide(0)">Dashboard</div>
+        <div class="nav-item" onclick="goToSlide(1)">Ziele & BE</div>
+        <div class="nav-item" onclick="goToSlide(2)">Top 15 Market</div>
+        <div class="nav-item" onclick="goToSlide(3)">AI Intelligence</div>
+        <div class="nav-item" onclick="goToSlide(4)">Prognosen 2031</div>
+        <div class="nav-item" onclick="goToSlide(5)">Kaufkraft Rechner</div>
+        <div class="nav-item" onclick="goToSlide(6)">Staking Rewards</div>
+        <div class="nav-item" onclick="goToSlide(7)">Exit Simulator</div>
+        <div class="nav-item" onclick="goToSlide(8)">TradingView</div>
+    </div>
+
     <div class="header">
-        <div class="ai-badge">Neural Intelligence Active</div>
+        <div class="ai-badge">Neural Intelligence V125</div>
         <div id="total-val-usd" class="alltime-val">$ 0.00</div>
-        <div id="total-perf-eur" style="font-weight: bold;">-- €</div>
+        <div id="total-perf-eur" style="font-weight:bold;">-- €</div>
     </div>
 
     <div class="slider-container" id="slider">
         <div class="slider-track" id="track">
             <div class="slide">
-                <div style="display:flex; justify-content:space-between;">
-                    <span class="intel-label">AI Market Sentiment</span>
-                    <select id="asset-selector" onchange="updateIntelligence()" style="width:70px; padding:2px; font-size:10px;">
-                        <option value="SOL">SOL</option>
-                        <option value="SUI">SUI</option>
-                        <option value="BTC">BTC</option>
-                    </select>
-                </div>
-                
-                <div class="intel-grid">
-                    <div class="intel-card"><span class="intel-label">Fear & Greed</span><span id="ai-fng" class="intel-val">--</span></div>
-                    <div class="intel-card"><span class="intel-label">Whale Flow</span><span id="ai-flow" class="intel-val">Neutral</span></div>
-                    <div class="intel-card"><span class="intel-label">Volatility</span><span id="ai-vol" class="intel-val">--</span></div>
-                    <div class="intel-card"><span class="intel-label">Trend Stärke</span><span id="ai-trend" class="intel-val">--</span></div>
-                </div>
-
-                <div class="signal-box">
-                    <div class="intel-label">Neural Signal (H1)</div>
-                    <div id="ai-signal-text" style="font-size: 24px; font-weight: 900; margin: 5px 0;">SCANNING...</div>
-                    <div id="ai-confidence" style="font-size: 11px; color: var(--gray);">Confidence: 0%</div>
-                </div>
-
-                <div style="height:140px; margin-top:15px;"><canvas id="miniChart"></canvas></div>
+                <span class="ind-lbl">Portfolio Recovery</span>
+                <div style="height:180px"><canvas id="alltimeChart"></canvas></div>
+                <div style="margin-top:20px;"><span class="ind-lbl">Markttrend (SOL)</span><div style="height:150px"><canvas id="monthChart"></canvas></div></div>
             </div>
 
             <div class="slide">
-                <div class="intel-label">Exit Strategy & Taxes</div>
-                <div class="card" style="margin: 10px 0; background: rgba(0,230,118,0.05);">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span>Steuerfreier Bestand:</span>
-                        <span id="tax-free-amount" class="sol-txt" style="font-weight:900;">0 SOL</span>
-                    </div>
-                    <div style="font-size: 10px; color: var(--gray);">
-                        Coins, die älter als 1 Jahr sind, werden hier automatisch als steuerfrei markiert.
-                    </div>
+                <span class="ind-lbl">Ziele & Fortschritt</span>
+                <div class="intel-grid">
+                    <div class="ind-item"><span class="ind-lbl">SOL BE</span><span id="sol-be-usd" class="ind-val">-- $</span></div>
+                    <div class="ind-item"><span class="ind-lbl">SUI BE</span><span id="sui-be-usd" class="ind-val">-- $</span></div>
                 </div>
-                <div id="exit-steps">
-                    </div>
+                <div style="margin-top:30px; text-align:center;">
+                    <div class="ind-lbl">Steuerfreier Bestand</div>
+                    <div id="tax-free-val" style="font-size:24px; font-weight:900; color:var(--sol);">0.00 SOL</div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <span class="ind-lbl">Top 15 Market Live</span>
+                <div style="overflow-y:auto; height:100%; margin-top:10px;">
+                    <table class="top15-table" id="top15-body"></table>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div style="display:flex; justify-content:space-between;"><span class="ind-lbl">Neural Matrix</span><select id="intel-asset" onchange="forceKIUpdate()" style="width:auto; padding:2px; font-size:10px;"><option value="SOL">SOL</option><option value="SUI">SUI</option></select></div>
+                <div class="intel-grid">
+                    <div class="ind-item"><span class="ind-lbl">RSI</span><span id="ai-rsi" class="ind-val">--</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Fear&Greed</span><span id="ai-fng" class="ind-val">--</span></div>
+                </div>
+                <div style="margin-top:20px; padding:20px; background:rgba(130,105,217,0.1); border:1px solid var(--purp); border-radius:20px; text-align:center;">
+                    <div class="ind-lbl">Signal</div>
+                    <div id="ai-signal" style="font-size:22px; font-weight:900;">SCANNING...</div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <span class="ind-lbl">Wealth Scenarios 2031</span>
+                <div id="prog-list" style="margin-top:10px;">
+                    <div class="ind-item" style="margin-bottom:10px; border-left:4px solid var(--sol);">Normal: <span id="prog-normal" style="float:right; font-weight:900;">$ 0</span></div>
+                    <div class="ind-item" style="border-left:4px solid var(--purp);">Best: <span id="prog-best" style="float:right; font-weight:900;">$ 0</span></div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <span class="ind-lbl">Kaufkraft Rechner</span>
+                <input type="number" id="calc-eur" value="500" oninput="liveCalc()" style="margin:15px 0; font-size:24px; text-align:center;">
+                <div class="intel-grid">
+                    <div class="ind-item"><span id="res-sol" class="ind-val">0</span><span class="ind-lbl">SOL</span></div>
+                    <div class="ind-item"><span id="res-sui" class="ind-val">0</span><span class="ind-lbl">SUI</span></div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <span class="ind-lbl">Staking Rewards (6.29%)</span>
+                <div class="card" style="text-align:center; margin:15px 0;"><span id="stake-total" style="font-size:22px; font-weight:900; color:var(--sol);">0 SOL</span></div>
+                <div class="intel-grid">
+                    <div class="ind-item"><span class="ind-lbl">Tag</span><span id="stake-day" class="ind-val">0</span></div>
+                    <div class="ind-item"><span class="ind-lbl">Monat</span><span id="stake-month" class="ind-val">0</span></div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <span class="ind-lbl">Exit Simulator</span>
+                <div class="intel-grid">
+                    <input type="number" id="sim-qty" value="5" placeholder="Qty">
+                    <input type="number" id="sim-price" value="120" placeholder="Price $">
+                </div>
+                <div id="sim-res" style="margin-top:20px; font-weight:900; color:var(--sol); text-align:center; font-size:18px;">Rebuy bei Dip: --</div>
             </div>
 
             <div class="slide" style="padding:0">
-                <div id="tv-container" style="height:100%"></div>
+                <div id="tv-chart" style="height:100%;"></div>
             </div>
         </div>
     </div>
 
+    <div class="dots" id="dotBox"></div>
+
     <div class="card">
-        <div class="intel-label" style="margin-bottom:10px;">Transaction Journal</div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-            <input type="number" id="in-eur" placeholder="Betrag €" oninput="autoCalcQty()">
-            <input type="number" id="in-price" placeholder="Kurs $" oninput="autoCalcQty()">
-            <select id="in-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
-            <input type="number" id="in-qty" placeholder="Menge">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+            <input type="number" id="tx-eur" placeholder="Invest €" oninput="autoQty()">
+            <input type="number" id="tx-price" placeholder="Kurs $" oninput="autoQty()">
+            <select id="tx-asset"><option value="SOL">SOLANA</option><option value="SUI">SUI</option></select>
+            <input type="number" id="tx-qty" placeholder="Menge">
         </div>
-        <button class="main-btn" style="margin-top:10px;" onclick="addTrade()">TRADE SPEICHERN</button>
+        <button onclick="saveTrade()">TRADE SPEICHERN</button>
     </div>
 
-    <div class="card" style="overflow-x: auto;">
-        <table class="history-table">
-            <thead>
-                <tr style="text-align:left; color:var(--gray);">
-                    <th>Asset</th>
-                    <th>Menge</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="history-body"></tbody>
-        </table>
+    <div style="display:flex; justify-content:space-between; padding:10px;">
+        <button onclick="exportData()" style="width:48%; background:#2b2f36; font-size:11px;">💾 BACKUP</button>
+        <button onclick="importData()" style="width:48%; background:#2b2f36; font-size:11px;">🔄 RESTORE</button>
     </div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        const DB_NAME = 'neural_krypto_v120';
-        let trades = JSON.parse(localStorage.getItem(DB_NAME)) || [];
-        let market = { SOL: 0, SUI: 0, BTC: 0, EUR_USD: 1.06 };
-        let charts = {};
+        const DB_KEY = 'krypto_neural_v125';
+        let txs = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+        let prices = { SOL: 0, SUI: 0, BTC: 0, EUR: 0.94 };
+        let currentSlide = 0;
 
-        // --- Core Intelligence Logic (Die "CoinGPT" Logik) ---
-        async function updateIntelligence() {
-            const asset = document.getElementById('asset-selector').value;
-            
-            // 1. Fear & Greed Index
-            try {
-                const fngRes = await fetch('https://api.alternative.me/fng/');
-                const fngData = await fngRes.json();
-                document.getElementById('ai-fng').innerText = fngData.data[0].value;
-            } catch(e) { console.log("FnG Error"); }
-
-            // 2. Künstliche "Neural" Signal Berechnung
-            // Nutzt RSI Simulation + Price Action
-            const rsi = 40 + Math.random() * 30;
-            const vola = (Math.random() * 5).toFixed(2);
-            const trendPower = Math.floor(Math.random() * 100);
-
-            document.getElementById('ai-vol').innerText = vola + "%";
-            document.getElementById('ai-trend').innerText = trendPower > 60 ? "Stark" : "Schwach";
-            
-            let signal = "NEUTRAL";
-            let color = var('--gray');
-            let confidence = 50 + Math.random() * 30;
-
-            if(rsi < 40) { signal = "STRONG BUY"; color = "var(--sol)"; }
-            else if(rsi > 70) { signal = "TAKE PROFIT"; color = "var(--red)"; }
-            else if(trendPower > 70) { signal = "ACCUMULATE"; color = "var(--purp)"; }
-
-            const sigElem = document.getElementById('ai-signal-text');
-            sigElem.innerText = signal;
-            sigElem.style.color = color;
-            document.getElementById('ai-confidence').innerText = `Neural Confidence: ${confidence.toFixed(1)}%`;
-            
-            // Whale Flow Simulation
-            const flows = ["High Inflow", "Whale Dumping", "Accumulation", "Neutral"];
-            document.getElementById('ai-flow').innerText = flows[Math.floor(Math.random()*flows.length)];
+        function toggleSide() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
+        function goToSlide(i) { 
+            currentSlide = i; 
+            document.getElementById('track').style.transform = `translateX(-${i * 11.111}%)`; 
+            const dots = document.getElementById('dotBox').children;
+            for(let j=0; j<9; j++) if(dots[j]) dots[j].classList.toggle('active', j === i);
+            if(i === 8) new TradingView.widget({"autosize": true, "symbol": "BINANCE:SOLUSDT", "interval": "H", "theme": "dark", "container_id": "tv-chart", "hide_top_toolbar": true});
+            if(window.innerWidth < 800) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); }
         }
 
-        // --- Portfolio & Tax Logic ---
-        function calculatePortfolio() {
-            let totals = { SOL: 0, SUI: 0, costUSD: 0 };
-            let taxFreeSol = 0;
-            const oneYearAgo = new Date();
-            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-            trades.forEach(t => {
-                const tradeDate = new Date(t.date);
-                if(t.asset === 'SOL') {
-                    totals.SOL += t.qty;
-                    if(tradeDate < oneYearAgo) taxFreeSol += t.qty;
-                }
-                if(t.asset === 'SUI') totals.SUI += t.qty;
-                totals.costUSD += (t.eur * market.EUR_USD);
-            });
-
-            const currentVal = (totals.SOL * market.SOL) + (totals.SUI * market.SUI);
-            document.getElementById('total-val-usd').innerText = `$ ${currentVal.toLocaleString(undefined, {minimumFractionDigits:2})}`;
-            document.getElementById('tax-free-amount').innerText = `${taxFreeSol.toFixed(2)} SOL`;
-            
-            // Performance
-            const perf = (currentVal * (1/market.EUR_USD)) - (totals.costUSD * (1/market.EUR_USD));
-            const perfElem = document.getElementById('total-perf-eur');
-            perfElem.innerText = `${perf >= 0 ? '+' : ''}${perf.toLocaleString()} €`;
-            perfElem.style.color = perf >= 0 ? 'var(--sol)' : 'var(--red)';
-        }
-
-        function addTrade() {
-            const trade = {
-                asset: document.getElementById('in-asset').value,
-                qty: parseFloat(document.getElementById('in-qty').value),
-                price: parseFloat(document.getElementById('in-price').value),
-                eur: parseFloat(document.getElementById('in-eur').value),
-                date: new Date().toISOString()
-            };
-            if(trade.qty > 0) {
-                trades.push(trade);
-                localStorage.setItem(DB_NAME, JSON.stringify(trades));
-                renderHistory();
-                calculatePortfolio();
-            }
-        }
-
-        function renderHistory() {
-            const body = document.getElementById('history-body');
-            body.innerHTML = '';
-            trades.slice().reverse().forEach((t, i) => {
-                const isTaxFree = new Date(t.date) < new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-                body.innerHTML += `
-                    <tr>
-                        <td><b>${t.asset}</b><br><small>${t.date.split('T')[0]}</small></td>
-                        <td>${t.qty}<br><small>$${t.price}</small></td>
-                        <td><span class="tax-tag" style="background:${isTaxFree?'var(--sol)':'#333'}; color:${isTaxFree?'#000':'#ccc'}">${isTaxFree?'FREI':'STEUER'}</span></td>
-                        <td onclick="deleteTrade(${trades.length-1-i})" style="color:var(--red); font-weight:bold; cursor:pointer;">✕</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function deleteTrade(i) { if(confirm('Löschen?')) { trades.splice(i,1); localStorage.setItem(DB_NAME, JSON.stringify(trades)); renderHistory(); calculatePortfolio(); } }
-
-        function autoCalcQty() {
-            const eur = document.getElementById('in-eur').value;
-            const price = document.getElementById('in-price').value;
-            if(eur && price) {
-                document.getElementById('in-qty').value = ((eur * market.EUR_USD) / price).toFixed(4);
-            }
-        }
-
-        // --- Realtime Data & TradingView ---
         async function init() {
-            // Price Updates via Binance WebSocket
+            // Price Feed
             const ws = new WebSocket('wss://stream.binance.com:9443/ws/solusdt@trade/suiusdt@trade/btcusdt@trade');
             ws.onmessage = (e) => {
                 const d = JSON.parse(e.data);
-                if(d.s === 'SOLUSDT') market.SOL = parseFloat(d.p);
-                if(d.s === 'SUIUSDT') market.SUI = parseFloat(d.p);
-                if(d.s === 'BTCUSDT') market.BTC = parseFloat(d.p);
-                calculatePortfolio();
+                const sym = d.s.replace('USDT', '');
+                prices[sym] = parseFloat(d.p);
+                updateUI();
             };
-
-            // TradingView Widget
-            new TradingView.widget({
-                "container_id": "tv-container",
-                "autosize": true,
-                "symbol": "BINANCE:SOLUSDT",
-                "interval": "H",
-                "timezone": "Europe/Berlin",
-                "theme": "dark",
-                "style": "1",
-                "hide_top_toolbar": true,
-                "save_image": false
-            });
-
-            renderHistory();
-            updateIntelligence();
-            setInterval(updateIntelligence, 10000); // Alle 10s neue KI Analyse
+            fetchTop15();
+            updateUI();
         }
 
-        // Slider Navigation
-        let startX = 0;
-        let currentSlide = 0;
-        document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
-        document.getElementById('slider').addEventListener('touchend', e => {
-            let diff = startX - e.changedTouches[0].clientX;
-            if(Math.abs(diff) > 50) {
-                if(diff > 0 && currentSlide < 2) currentSlide++;
-                else if(diff < 0 && currentSlide > 0) currentSlide--;
-                document.getElementById('track').style.transform = `translateX(-${currentSlide * 11.111}%)`;
-            }
-        });
+        function updateUI() {
+            let sQ = 0, suQ = 0, invE = 0, invUSD_SOL = 0, freeSol = 0;
+            const yearAgo = new Date(); yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+
+            txs.forEach(t => {
+                const amt = parseFloat(t.qty);
+                if(t.asset === 'SOL') { 
+                    sQ += amt; invUSD_SOL += (t.eur / prices.EUR); 
+                    if(new Date(t.date) < yearAgo) freeSol += amt;
+                }
+                if(t.asset === 'SUI') suQ += amt;
+                invE += t.eur;
+            });
+
+            const totalUSD = (sQ * prices.SOL) + (suQ * prices.SUI);
+            document.getElementById('total-val-usd').innerText = `$ ${totalUSD.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+            document.getElementById('sol-be-usd').innerText = sQ > 0 ? (invUSD_SOL / sQ).toFixed(2) + " $" : "-- $";
+            document.getElementById('tax-free-val').innerText = `${freeSol.toFixed(2)} SOL`;
+            
+            // Staking
+            const rewards = sQ * 0.0629;
+            document.getElementById('stake-total').innerText = `${sQ.toFixed(2)} SOL`;
+            document.getElementById('stake-day').innerText = (rewards/365).toFixed(4);
+            document.getElementById('stake-month').innerText = (rewards/12).toFixed(2);
+
+            liveCalc();
+        }
+
+        async function fetchTop15() {
+            const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15');
+            const data = await r.json();
+            const b = document.getElementById('top15-body'); b.innerHTML = '';
+            data.forEach((c, i) => {
+                b.innerHTML += `<tr><td>#${i+1} ${c.name}</td><td style="text-align:right;">$${c.current_price.toLocaleString()}</td></tr>`;
+            });
+        }
+
+        function liveCalc() {
+            const val = document.getElementById('calc-eur').value / prices.EUR;
+            document.getElementById('res-sol').innerText = (val / prices.SOL).toFixed(3);
+            document.getElementById('res-sui').innerText = (val / prices.SUI).toFixed(1);
+        }
+
+        function saveTrade() {
+            const t = {
+                asset: document.getElementById('tx-asset').value,
+                eur: parseFloat(document.getElementById('tx-eur').value),
+                price: parseFloat(document.getElementById('tx-price').value),
+                qty: parseFloat(document.getElementById('tx-qty').value),
+                date: new Date().toISOString()
+            };
+            txs.push(t);
+            localStorage.setItem(DB_KEY, JSON.stringify(txs));
+            updateUI();
+        }
+
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(txs)).then(() => alert("Backup kopiert!")); }
+        function importData() { const c = prompt("Backup Paste:"); if(c) { txs = JSON.parse(c); localStorage.setItem(DB_KEY, JSON.stringify(txs)); location.reload(); } }
+        function autoQty() { const e = document.getElementById('tx-eur').value; const p = document.getElementById('tx-price').value; if(e && p) document.getElementById('tx-qty').value = ((e/0.94)/p).toFixed(4); }
+
+        // Init Dots
+        const dBox = document.getElementById('dotBox');
+        for(let i=0; i<9; i++) dBox.innerHTML += `<span class="dot ${i===0?'active':''}"></span>`;
 
         init();
     </script>
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </body>
 </html>
